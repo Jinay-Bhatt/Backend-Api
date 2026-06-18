@@ -9,6 +9,7 @@ import { projectRoutes } from './routes/projects.js';
 import { workflowRoutes } from './routes/workflows.js';
 import { exportRoutes } from './routes/exporter.js';
 import { gatewayRoutes } from './routes/gateway.js';
+import { gitRoutes } from './routes/git.js';
 import { startWorker } from './queue/worker.js';
 import { initWebsocket } from './websocket.js';
 
@@ -34,6 +35,7 @@ await fastify.register(authRoutes, { prefix: '/api' });
 await fastify.register(projectRoutes, { prefix: '/api' });
 await fastify.register(workflowRoutes, { prefix: '/api' });
 await fastify.register(exportRoutes, { prefix: '/api' });
+await fastify.register(gitRoutes, { prefix: '/api' });
 await fastify.register(gatewayRoutes);
 
 const start = async () => {
