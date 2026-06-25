@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { prisma } from "../services/db.js";
+import { invalidateWorkflowCache } from "../services/cache.js";
 
 interface AuthUserPayload {
   id: string;
@@ -22,10 +23,12 @@ export async function createWorkflow(
   reply: FastifyReply
 ) {
   const { projectId } = request.params as { projectId: string };
-  const { name, path, method } = request.body as {
+  const { name, path, method, nodes, edges } = request.body as {
     name?: string;
     path?: string;
     method?: string;
+    nodes?: any[];
+    edges?: any[];
   };
   const user = request.user as AuthUserPayload;
 
@@ -59,11 +62,14 @@ export async function createWorkflow(
         name,
         path,
         method,
-        nodes: [],
-        edges: [],
+        nodes: nodes !== undefined ? nodes : [],
+        edges: edges !== undefined ? edges : [],
         projectId,
       },
     });
+
+    // Invalidate workflows cache for this project
+    invalidateWorkflowCache(projectId);
 
     return reply.status(201).send(workflow);
   } catch (error: any) {
@@ -209,6 +215,9 @@ export async function updateWorkflow(
       },
     });
 
+    // Invalidate workflows cache for this project
+    invalidateWorkflowCache(workflow.projectId);
+
     return reply.send(updatedWorkflow);
   } catch (error: any) {
     request.log.error(error);
@@ -247,6 +256,9 @@ export async function deleteWorkflow(
     await prisma.workflow.delete({
       where: { id },
     });
+
+    // Invalidate workflows cache for this project
+    invalidateWorkflowCache(workflow.projectId);
 
     return reply.send({
       message: "Workflow deleted successfully",
@@ -296,6 +308,9 @@ export async function publishWorkflow(
       where: { id },
       data: { isPublished },
     });
+
+    // Invalidate workflows cache for this project
+    invalidateWorkflowCache(workflow.projectId);
 
     return reply.send({
       message: `Workflow ${

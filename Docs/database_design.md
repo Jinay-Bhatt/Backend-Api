@@ -165,22 +165,48 @@ Audit logs and metric collection for gateway traffic.
 * **requestPayload** (JSONB, Nullable): Truncated header/body log.
 * **createdAt** (Timestamp)
 
+### 2.8 Analytics
+Aggregated daily statistics for workflow metrics.
+* **id** (UUID, Primary Key)
+* **workflowId** (UUID, Foreign Key $\to$ Workflow.id): ON DELETE CASCADE.
+* **date** (Timestamp): Date of aggregation.
+* **totalRequests** (INTEGER): Number of calls on this date.
+* **successCount** (INTEGER): Number of successful runs.
+* **errorCount** (INTEGER): Number of failed runs.
+* **avgLatencyMs** (FLOAT): Average response latency.
+* **p95LatencyMs** (FLOAT): 95th-percentile response latency.
+* **peakHour** (INTEGER): Hour of maximum traffic.
+
+### 2.9 Service
+Represents an external microservice registered in the service mesh.
+* **id** (UUID, Primary Key)
+* **projectId** (UUID, Foreign Key $\to$ Project.id): ON DELETE CASCADE.
+* **name** (VARCHAR(255), Not Null)
+* **baseUrl** (VARCHAR(255), Not Null)
+* **description** (TEXT, Nullable)
+* **isActive** (BOOLEAN): Status of service linkage.
+
+### 2.10 ServiceRoute
+Defines target mesh route configuration mappings.
+* **id** (UUID, Primary Key)
+* **serviceId** (UUID, Foreign Key $\to$ Service.id): ON DELETE CASCADE.
+* **path** (VARCHAR(255), Not Null)
+* **method** (VARCHAR(10), Not Null)
+* **targetService** (VARCHAR(255), Not Null)
+* **description** (TEXT, Nullable)
+
 ---
 
 ## 3. Database Indexing & Optimizations
-To support real-time metrics dashboards and clean API gateway lookups under peak load, the following indices must be configured:
+To support real-time metrics dashboards, search filters, and fast routing, the following database indices are synced via Prisma:
 
 * **Route Lookup Optimization**:
-  ```sql
-  CREATE UNIQUE INDEX idx_workflow_route ON "Workflow" ("projectId", "path", "method");
-  ```
-  *Provides $O(1)$ lookup for the Gateway to match incoming routes to a Workflow definition.*
-
-* **Log Dashboard Aggregation**:
-  ```sql
-  CREATE INDEX idx_logs_aggregate ON "ExecutionLog" ("workflowId", "createdAt", "responseStatus");
-  ```
-  *Improves query speed for throughput dashboards, line graphs, and success rate aggregations.*
-
-* **Cascade Integrity**:
-  Foreign Key indices on `projectId`, `workflowId`, and `userId` are managed natively to optimize nested join operations during data cleanups.
+  Unique constraint `@@unique([projectId, path, method])` on `Workflow` maps incoming gateway endpoints instantly.
+* **Log Dashboard Query Acceleration**:
+  Compound index `@@index([workflowId, createdAt])` on `ExecutionLog` for lightning-fast logs filtering and timeline sorting.
+* **Analytics History Aggregations**:
+  Compound index `@@index([workflowId, date])` on `Analytics` for quick dashboard time-series plotting.
+* **Service Mesh Navigation**:
+  Index `@@index([projectId])` on `Service` and `@@index([serviceId])` on `ServiceRoute` to optimize network mesh lookups.
+* **Version Snapshot Retrieval**:
+  Index `@@index([workflowId])` on `WorkflowVersion` to speed up rollback lookups.

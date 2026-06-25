@@ -237,10 +237,7 @@ Generated APIs: Executed dynamically from workflow JSON
 <!-- No code generation required. -->
 <!-- new start -->
 Supported Hosting Models:
-• Shared Runtime (Managed by FlowForge)
-• Self Hosted Deployment
-• Docker Deployment
-• VPS Deployment
-• Cloud Deployment (AWS, Azure, GCP)
-Code generation is optional and available for users who want full ownership and infrastructure control.
+• Managed Cloud Runtime (SaaS via Vercel + Railway/Render + Neon DB)
+
+*Note: While the FlowForge builder platform itself is fully managed as a SaaS service, users can compile and download their visual API workflows as standard Node.js/Fastify codebases to host on their own infrastructure.*
 <!-- new end -->

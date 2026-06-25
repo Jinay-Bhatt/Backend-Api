@@ -421,6 +421,18 @@ The Static Compilation module converts visual JSON configurations into native Fa
 
 ---
 
+### Phase 7: Branching Execution & OpenAPI (Swagger) Documentation Compilation
+1. **Visual Branching & Skipping (If/Else logic)**:
+   - Visual nodes are executed in topological sorted order.
+   - To support conditional paths, a `skipped` Set tracks nodes that should not run.
+   - When an `ifElseNode` condition evaluates to `true` or `false`, the targets of the alternate branch are added to the `skipped` Set.
+   - Any skipped node propagates its skip status downstream to its children.
+2. **OpenAPI Spec Generation (`swagger.ts`)**:
+   - The project exporter dynamically builds an OpenAPI 3.0 specification (`swagger.ts`) representing all project endpoints, parameters, and payloads.
+   - The compiled code registers `@fastify/swagger` and `@fastify/swagger-ui` to host dynamic API docs under `/docs`.
+
+---
+
 ## Development Scripts
 Add development and build controls inside `package.json`:
 - **Run dev watch**: `npm run dev` (utilizes `tsx` to watch code files on change)

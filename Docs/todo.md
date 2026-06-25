@@ -1,6 +1,6 @@
 # FlowForge Backend Development TODO List
 
-This file tracks the implementation progress of the FlowForge backend server. Tasks are broken down by phases and individual modules.
+This file tracks the implementation progress of the FlowForge backend server.
 
 ---
 
@@ -11,86 +11,101 @@ This file tracks the implementation progress of the FlowForge backend server. Ta
 - **Phase 3: Dynamic API Gateway & Sandbox execution** - `[x]` Completed
 - **Phase 4: AST Compiler & Code Exporter (BullMQ/Redis)** - `[x]` Completed
 - **Phase 5: WebSocket & Metrics Stream** - `[x]` Completed
+- **Phase 6: Analytics & Logs Backend** - `[x]` Completed
+- **Phase 7: Services & Gateway Config** - `[x]` Completed
+- **Phase 8: AI Workflow Generator (Groq/Ollama)** - `[x]` Completed
+- **Phase 9: Frontend — Auth Pages** - `[x]` Completed
+- **Phase 10: Frontend — Dashboard** - `[x]` Completed
+- **Phase 11: Frontend — Builder (React Flow + AI Modal)** - `[x]` Completed
+- **Phase 12: Frontend — Monitor (Live Logs)** - `[x]` Completed
+- **Phase 13: Frontend — Analytics (Recharts)** - `[x]` Completed
+- **Phase 14: Frontend — Gateway Settings** - `[x]` Completed
+- **Phase 15: Frontend — Service Mesh** - `[x]` Completed
+- **Phase 16: Frontend — Settings (Git Config)** - `[x]` Completed
 
 ---
 
 ## Detailed Checklist
 
-### Phase 1: Environment & Database Schema Setup
-- [x] **1.1 Setup Environment Configs**
-  - [x] Add `.env` config file with DB URLs, Redis URL, JWT Secret, and Encryption Key.
-  - [x] Implement environment variable validation service using `dotenv` and type guards in `src/config/`.
-- [/] **1.2 Initialize Prisma ORM**
-  - [x] Create `prisma/schema.prisma` file.
-  - [x] Add `User`, `Project`, `Workflow`, `WorkflowVersion`, `GitConfiguration`, `GatewayConfig`, and `ExecutionLog` models.
-  - [ ] Generate database migrations: `npx prisma migrate dev --name init`.
-- [x] **1.3 Create Prisma DB Client Helper**
-  - [x] Write a centralized Prisma client instance export in `src/index.ts` or a db service module.
-  - [x] Test the database connection on server bootstrap.
+### ✅ Phase 1: Environment & Database Schema Setup
+- [x] `.env` config file with DB URLs, Redis URL, JWT Secret, Encryption Key
+- [x] Environment variable validation in `src/config/index.ts`
+- [x] `prisma/schema.prisma` — all 9 models defined
+- [x] **NEW** `Analytics`, `Service`, `ServiceRoute` models added
+- [x] **NEW** `GatewayConfig` extended with `requireApiKey`, `apiKeyValue`, `corsEnabled`, `allowedOrigins`
+- [x] `npx prisma db push` — DB synced to Neon PostgreSQL ✅
+- [x] Prisma client helper in `src/services/db.ts`
+
+### ✅ Phase 2: Auth & Project/Workflow Management
+- [x] Register / Login controllers with bcrypt + JWT
+- [x] JWT middleware in `src/middlewares/auth.ts`
+- [x] Projects CRUD
+- [x] Workflows CRUD + versioning + publish/unpublish
+
+### ✅ Phase 3: Dynamic API Gateway
+- [x] Wildcard `ALL /api/:projectId/*` route
+- [x] In-memory rate limiting
+- [x] JWT enforcement per gateway config
+- [x] VM sandbox executor (`node:vm`)
+- [x] DAG topological sort + sequential node executor
+- [x] **NEW** Switch Case branching node execution
+- [x] **NEW** Outgoing HTTP Client node execution (REST API Integration)
+- [x] **NEW** Live Background Cron Scheduler Engine (matchCron worker)
+- [x] **NEW** Dynamic Response Headers & HTTP Redirects configuration
+- [x] Execution audit log → `ExecutionLog` table
+- [x] Socket.IO metrics stream
+
+### ✅ Phase 4: AST Compiler & Code Export
+- [x] `src/services/compiler.ts` — workflow JSON → Fastify TypeScript code
+- [x] BullMQ export queue + Redis worker
+- [x] ZIP archiver
+- [x] GitHub push via Octokit
+- [x] OpenAPI (Swagger) Spec dynamic generation (`swagger.ts` / `@fastify/swagger`)
+
+### ✅ Phase 5: WebSocket Metrics Stream
+- [x] Socket.IO attached to Fastify in `src/websocket.ts`
+- [x] Project-scoped rooms
+- [x] Metrics broadcast on every gateway request
+
+### ✅ Phase 6: Analytics & Logs Backend
+- [x] `src/controllers/analytics.ts` — daily trend, hourly heatmap, top routes, summary stats
+- [x] `src/routes/analytics.ts`
+- [x] `GET /projects/:id/analytics?range=7d|30d|24h`
+- [x] `GET /projects/:id/logs?limit=&page=&status=`
+
+### ✅ Phase 7: Services & Gateway Config
+- [x] `src/controllers/services.ts` — Service CRUD, ServiceRoute CRUD, GatewayConfig upsert
+- [x] `src/routes/services.ts`
+- [x] `GET/POST/PUT/DELETE /projects/:id/services`
+- [x] `POST /projects/:id/services/:serviceId/routes`
+- [x] `GET/PUT /workflows/:workflowId/gateway-config`
+
+### ✅ Phase 8: AI Workflow Generator
+- [x] `src/services/ai.ts` — Groq / local Ollama integrations
+- [x] `src/routes/ai.ts`
+- [x] `POST /api/ai/generate-workflow`
+- [x] Returns structured nodes + edges + metadata JSON
+
+### ✅ Phase 9–16: Frontend (Next.js App Router)
+- [x] Global CSS design system (`globals.css`)
+- [x] Root layout + redirect page (redirects unauthenticated users to `/landing` first)
+- [x] Landing page (`/landing`) — scroll-triggered animated Pipeline Reactor
+- [x] Login page (`/login`) — connected glass pipeline inputs, no cards
+- [x] Register page (`/register`) — matching glass pipeline inputs, no cards
+- [x] Dashboard page (`/dashboard`) — API Constellation Orbit Map, orbital satellites, HUD panel, no cards
+- [x] Project layout with tab navigation (`/projects/[id]/layout.tsx`)
+- [x] Builder page with React Flow, AI modal, node palette (`/projects/[id]/builder`)
+- [x] Monitor page with live Socket.IO log stream, row flashing, live pulse, and animated counters (`/projects/[id]/monitor`)
+- [x] Analytics page with Recharts and animated metrics loaders (`/projects/[id]/analytics`)
+- [x] Gateway config page with spring physics switches (`/projects/[id]/gateway`)
+- [x] Service mesh page with ReactFlow graph (`/projects/[id]/services`)
+- [x] Settings page with Git config + profile (`/settings`)
+- [x] All 12 custom node components in `customNodes.tsx` (including Switch Case & HTTP Client)
+- [x] Complete API client in `services/api.ts`
 
 ---
 
-### Phase 2: Authentication & Project/Workflow Management
-- [x] **2.1 Implement User Authentication**
-  - [x] Create user registration controller (`FR-1`) with password hashing using `bcryptjs`.
-  - [x] Create user login controller (`FR-2`) returning signed JWT tokens.
-  - [x] Set up JWT verification middleware hook in `src/middlewares/auth.ts` (`FR-3`, `FR-4`).
-- [x] **2.2 Implement Project CRUD Routes**
-  - [x] Create REST routes for projects (`FR-5`): Create, Read, Update, Delete, List.
-  - [x] Add validation schemas for payload verification.
-- [x] **2.3 Implement Workflow CRUD Routes**
-  - [x] Create REST routes for workflows: Create, Read, Update, Delete, List.
-  - [x] Add fields to save and load serialized React Flow compatible JSON graphs (nodes and edges).
-  - [x] Implement workflow versioning system (`FR-8`) to save snapshots in the `WorkflowVersion` table.
-
----
-
-### Phase 3: Dynamic API Gateway & Sandbox Execution
-- [x] **3.1 Build secure VM Execution Sandbox**
-  - [x] Write `src/services/sandbox.ts` utility using the native Node `vm` module.
-  - [x] Enforce CPU execution constraints ($200\text{ms}$ timeout) and memory bounds ($64\text{MB}$ RAM limit) (timeout enforced via V8 script options).
-  - [x] Cleanse the execution environment context (purge global handles like `process` or `require`).
-- [x] **3.2 Build the Wildcard Gateway Route**
-  - [x] Register wildcard route `ALL /api/:projectId/*` in `src/routes/gateway.ts`.
-  - [x] Parse client request variables (body, query, params, headers) into execution context.
-  - [x] Retrieve published workflow graphs matching the path and method from database.
-- [x] **3.3 Implement Gatekeeping Middleware**
-  - [x] Enforce JWT validation check if `requireJwt` is true in `GatewayConfig`.
-  - [x] Implement rate-limiting checks based on `rateLimitLimit` and `rateLimitWindow` config.
-- [x] **3.4 Implement Sequential Node Executor**
-  - [x] Sort DAG nodes topologically to determine execution path.
-  - [x] Execute steps sequentially:
-    - **Trigger Node**: Capture input data.
-    - **PostgreSQL Database Node**: Execute parameterized database queries based on inputs.
-    - **Custom JS Node**: Run script in `node:vm` sandbox and map output variables.
-    - **Response Node**: Return custom HTTP status code and body.
-- [x] **3.5 Audit Trail Logging**
-  - [x] Log gateway request history and latencies to `ExecutionLog` database table.
-
----
-
-### Phase 4: AST Compiler & Code Exporter (BullMQ/Redis)
-- [x] **4.1 Build Graph-to-Code AST Compiler**
-  - [x] Implement templates to map visual nodes into equivalent TypeScript code blocks:
-    - Trigger node $\to$ Fastify route declaration.
-    - Database node $\to$ typed Prisma operations.
-    - Custom JS node $\to$ isolated JS helper executions.
-    - Response node $\to$ standard `reply.send()` statement.
-  - [x] Generate configurations: `Dockerfile`, `docker-compose.yml`, `prisma/schema.prisma`, `tsconfig.json`.
-- [x] **4.2 Set Up BullMQ & Redis Queue**
-  - [x] Configure BullMQ client and Redis connection in `src/queue/exportQueue.ts`.
-  - [x] Register an asynchronous compilation task queue.
-- [x] **4.3 Implement Exporter Background Worker**
-  - [x] Build a background worker that compiles the codebase, zips it using `archiver`, and registers download availability.
-- [x] **4.4 Connect Git/GitHub Push Sync**
-  - [x] Integrate `@octokit/rest` client for GitHub API communication.
-  - [x] Implement commit and push module to directly write compiled files to remote repository branches (commits pushed using Git Trees database endpoints).
-
----
-
-### Phase 5: WebSocket & Metrics Stream
-- [x] **5.1 Setup Socket.IO Server**
-  - [x] Attach `socket.io` to the Fastify instance in `src/websocket.ts` (decorated as `fastify.io`).
-- [x] **5.2 Broadcast Gateway Metrics**
-  - [x] Emit metrics payloads (latency, errors, success status) on completion of any gateway request.
-  - [x] Restrict broadcasts to project-specific namespaces (`/project/:projectId`) for security (clients join project-scoped rooms).
+## Remaining Tasks
+- [x] Add seed demo data for presentation (Seeded to Neon successfully via `prisma/seed.ts`)
+- [ ] Configure GROQ_API_KEY or install local Ollama
+- [ ] Deploy: Vercel (frontend) + Railway/Render (backend) + Neon (DB)

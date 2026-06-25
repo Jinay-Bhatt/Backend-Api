@@ -1,101 +1,97 @@
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-/**
- * Returns request headers, appending the JWT token if present in localStorage.
- */
-function getHeaders(): Record<string, string> {
-  if (typeof window === "undefined") {
-    return { "Content-Type": "application/json" };
-  }
-  const token = localStorage.getItem("flowforge_token");
+async function request<T = any>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('ff_token') : null;
+
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string> || {}),
   };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${BASE_URL}/api${endpoint}`, { ...options, headers });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error || err.message || `HTTP ${res.status}`);
   }
-  return headers;
+
+  return res.json();
 }
 
-/**
- * Global fetch wrapper handling credentials injection and standardized error responses.
- */
-async function request(path: string, options: RequestInit = {}): Promise<any> {
-  const url = `${BASE_URL}${path}`;
-  const headers = { ...getHeaders(), ...options.headers };
-  const response = await fetch(url, { ...options, headers });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `Request failed with status: ${response.status}`);
-  }
-
-  // Handle JSON response bodies
-  const contentType = response.headers.get("content-type");
-  if (contentType && contentType.includes("application/json")) {
-    return response.json();
-  }
-
-  return response;
-}
+export const BASE_URL_DIRECT = BASE_URL;
 
 export const api = {
   auth: {
-    register: (body: any) =>
-      request("/auth/register", { method: "POST", body: JSON.stringify(body) }),
-    login: (body: any) =>
-      request("/auth/login", { method: "POST", body: JSON.stringify(body) }),
+    login: (body: { email: string; password: string }) =>
+      request('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
+    register: (body: { username: string; email: string; password: string }) =>
+      request('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
+    me: () => request('/auth/me'),
   },
   projects: {
-    list: () => request("/projects"),
-    create: (body: { name: string; description?: string }) =>
-      request("/projects", { method: "POST", body: JSON.stringify(body) }),
+    list: () => request('/projects'),
     get: (id: string) => request(`/projects/${id}`),
-    update: (id: string, body: { name?: string; description?: string }) =>
-      request(`/projects/${id}`, { method: "PUT", body: JSON.stringify(body) }),
-    delete: (id: string) => request(`/projects/${id}`, { method: "DELETE" }),
+    create: (body: { name: string; description?: string }) =>
+      request('/projects', { method: 'POST', body: JSON.stringify(body) }),
+    update: (id: string, body: any) =>
+      request(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+    delete: (id: string) => request(`/projects/${id}`, { method: 'DELETE' }),
   },
   workflows: {
     list: (projectId: string) => request(`/projects/${projectId}/workflows`),
-    create: (projectId: string, body: { name: string; path: string; method: string }) =>
-      request(`/projects/${projectId}/workflows`, {
-        method: "POST",
-        body: JSON.stringify(body),
-      }),
     get: (id: string) => request(`/workflows/${id}`),
-    update: (
-      id: string,
-      body: {
-        name?: string;
-        path?: string;
-        method?: string;
-        nodes?: any[];
-        edges?: any[];
-        isPublished?: boolean;
-      }
-    ) => request(`/workflows/${id}`, { method: "PUT", body: JSON.stringify(body) }),
-    delete: (id: string) => request(`/workflows/${id}`, { method: "DELETE" }),
+    create: (projectId: string, body: any) =>
+      request(`/projects/${projectId}/workflows`, { method: 'POST', body: JSON.stringify(body) }),
+    update: (id: string, body: any) =>
+      request(`/workflows/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+    delete: (id: string) => request(`/workflows/${id}`, { method: 'DELETE' }),
     publish: (id: string, isPublished: boolean) =>
-      request(`/workflows/${id}/publish`, {
-        method: "POST",
-        body: JSON.stringify({ isPublished }),
-      }),
-    createVersion: (id: string, changelog: string) =>
-      request(`/workflows/${id}/version`, {
-        method: "POST",
-        body: JSON.stringify({ changelog }),
-      }),
+      request(`/workflows/${id}/publish`, { method: 'POST', body: JSON.stringify({ isPublished }) }),
+    gatewayConfig: (id: string) => request(`/workflows/${id}/gateway-config`),
+    updateGatewayConfig: (id: string, body: any) =>
+      request(`/workflows/${id}/gateway-config`, { method: 'PUT', body: JSON.stringify(body) }),
+  },
+  analytics: {
+    get: (projectId: string, params?: { workflowId?: string; range?: string }) => {
+      const q = new URLSearchParams(params as any).toString();
+      return request(`/projects/${projectId}/analytics${q ? '?' + q : ''}`);
+    },
+    logs: (projectId: string, params?: { workflowId?: string; limit?: number; page?: number; status?: string }) => {
+      const q = new URLSearchParams(params as any).toString();
+      return request(`/projects/${projectId}/logs${q ? '?' + q : ''}`);
+    },
+  },
+  services: {
+    list: (projectId: string) => request(`/projects/${projectId}/services`),
+    create: (projectId: string, body: any) =>
+      request(`/projects/${projectId}/services`, { method: 'POST', body: JSON.stringify(body) }),
+    update: (projectId: string, serviceId: string, body: any) =>
+      request(`/projects/${projectId}/services/${serviceId}`, { method: 'PUT', body: JSON.stringify(body) }),
+    delete: (projectId: string, serviceId: string) =>
+      request(`/projects/${projectId}/services/${serviceId}`, { method: 'DELETE' }),
+    createRoute: (projectId: string, serviceId: string, body: any) =>
+      request(`/projects/${projectId}/services/${serviceId}/routes`, { method: 'POST', body: JSON.stringify(body) }),
+    deleteRoute: (projectId: string, serviceId: string, routeId: string) =>
+      request(`/projects/${projectId}/services/${serviceId}/routes/${routeId}`, { method: 'DELETE' }),
   },
   exporter: {
     exportProject: (projectId: string, pushToGit: boolean) =>
-      request(`/projects/${projectId}/export`, {
-        method: "POST",
-        body: JSON.stringify({ pushToGit }),
-      }),
+      request(`/projects/${projectId}/export`, { method: 'POST', body: JSON.stringify({ pushToGit }) }),
     getJobStatus: (projectId: string, jobId: string) =>
       request(`/projects/${projectId}/export/status/${jobId}`),
-    getDownloadUrl: (projectId: string) =>
-      `${BASE_URL}/projects/${projectId}/export/download`,
+    getDownloadUrl: (projectId: string) => `${BASE_URL}/api/projects/${projectId}/export/download`,
+  },
+  git: {
+    getConfig: () => request('/git-config'),
+    saveConfig: (body: any) =>
+      request('/git-config', { method: 'POST', body: JSON.stringify(body) }),
+  },
+  ai: {
+    generateWorkflow: (prompt: string) =>
+      request('/ai/generate-workflow', { method: 'POST', body: JSON.stringify({ prompt }) }),
   },
 };
-export { BASE_URL };

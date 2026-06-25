@@ -22,4 +22,5 @@ export const config = {
   redisUrl: process.env.REDIS_URL as string,
   jwtSecret: process.env.JWT_SECRET as string,
   encryptionKey: process.env.ENCRYPTION_KEY as string,
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
 };

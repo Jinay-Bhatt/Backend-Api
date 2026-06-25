@@ -3,7 +3,7 @@ Overview
 <!-- FlowForge is a No-Code Backend Development Platform that allows users to visually design, deploy, secure, monitor, and manage APIs without writing backend code. -->
 <!-- new start-->
 FlowForge is an Open Backend Development Platform that allows users to visually design, deploy, secure, monitor, and manage APIs while maintaining full ownership of their backend code and infrastructure.
-Unlike traditional no-code platforms, FlowForge eliminates vendor lock-in by providing code export, self-hosting capabilities, Git integration, and custom code extensions.
+Unlike traditional no-code platforms, FlowForge eliminates vendor lock-in by providing backend code export, Git integration, and custom code extensions.
 <!-- new end -->
 The platform combines two major concepts:
 1.	No-Code API Builder
@@ -169,7 +169,6 @@ FlowForge combines:
 •   Code Export
 •   Git Integration
 •   Custom Code Extensions
-•   Self Hosting
 <!-- new end -->
 into one platform.
 <!-- new start -->
@@ -178,7 +177,6 @@ ________________________________________
 Core Differentiators
 •   Export Backend Source Code
 •   One Click GitHub Push
-•   Self Hosted Deployments
 •   Local Development Mode
 •   Custom JavaScript Functions
 •   AI Generated APIs
@@ -188,8 +186,8 @@ ________________________________________
 Future Scope
 •	AI Workflow Generation
 •	OpenAPI Export
-•	Docker Deployment
-•	Kubernetes Integration
+•	Custom Domain Mapping
+•	Kubernetes Integration for Exported Runtimes
 •	Multi-Tenant Architecture
 •	Marketplace for Templates
 •	Team Collaboration

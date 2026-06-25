@@ -1,220 +1,425 @@
-import React from "react";
-import { Handle, Position } from "@xyflow/react";
-import { Play, Database, Code, Send } from "lucide-react";
+'use client';
+import { Handle, Position } from '@xyflow/react';
 
-// Helper for styling selected active nodes
-const getSelectedClass = (selected?: boolean) =>
-  selected
-    ? "ring-2 ring-indigo-500/80 ring-offset-2 ring-offset-slate-950 shadow-[0_0_20px_rgba(99,102,241,0.25)] border-indigo-400"
-    : "border-slate-800/80 hover:border-slate-700 shadow-xl";
+// Custom helper to generate sci-fi handle styling
+const getHandleStyle = (color: string, custom = {}) => ({
+  width: 10,
+  height: 10,
+  borderRadius: '50%',
+  border: `2px solid ${color}`,
+  background: '#020617',
+  boxShadow: `0 0 8px ${color}`,
+  zIndex: 10,
+  transition: 'all 0.2s',
+  ...custom
+});
 
-/**
- * 1. Trigger Node Component
- */
+// A mini-terminal simulation inside node blocks
+function MiniConsole({ color, content }: { color: string; content: string }) {
+  return (
+    <div style={{
+      fontFamily: "'JetBrains Mono', monospace",
+      fontSize: 9,
+      background: 'rgba(2, 6, 23, 0.85)',
+      border: `1px solid ${color}30`,
+      boxShadow: `inset 0 0 8px ${color}10`,
+      borderRadius: 4,
+      padding: '6px 8px',
+      color: color,
+      maxWidth: 192,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      marginTop: 6,
+    }}>
+      <span style={{ color: '#475569', marginRight: 4, userSelect: 'none' }}>$</span>
+      {content}
+    </div>
+  );
+}
+
+function NodeShell({ color, icon, title, subtitle, children, selected }: any) {
+  const borderColor = selected ? color : 'rgba(100, 116, 139, 0.35)';
+  const glowShadow = selected ? `0 0 20px ${color}35` : '0 4px 20px rgba(0,0,0,0.4)';
+
+  return (
+    <div style={{
+      position: 'relative',
+      filter: selected ? `drop-shadow(0 0 6px ${color}25)` : 'none',
+      transition: 'all 0.2s',
+    }}>
+      {/* Outer Clipped Border Container */}
+      <div style={{
+        background: borderColor,
+        clipPath: 'polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)',
+        padding: '1.5px', // Acts as the border thickness
+        minWidth: 220,
+        boxShadow: glowShadow,
+      }}>
+        {/* Inner Content Area */}
+        <div style={{
+          background: 'linear-gradient(135deg, #070a13 0%, #0d1527 100%)',
+          clipPath: 'polygon(11.5px 0%, 100% 0%, 100% calc(100% - 11.5px), calc(100% - 11.5px) 100%, 0% 100%, 0% 11.5px)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          fontFamily: "'JetBrains Mono', monospace",
+        }}>
+          {/* Header Bar */}
+          <div style={{
+            background: `linear-gradient(90deg, ${color}12 0%, transparent 100%)`,
+            borderBottom: `1px solid ${color}25`,
+            padding: '10px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+          }}>
+            {/* Tech Icon Container */}
+            <div style={{
+              width: 26,
+              height: 26,
+              borderRadius: 4,
+              background: `${color}15`,
+              border: `1px solid ${color}35`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 13,
+              boxShadow: `0 0 8px ${color}15`
+            }}>{icon}</div>
+            
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <div style={{
+                fontSize: 11,
+                fontWeight: 900,
+                color: '#f1f5f9',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>{title}</div>
+              {subtitle && (
+                <div style={{
+                  fontSize: 8,
+                  color: '#64748b',
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  marginTop: 1
+                }}>{subtitle}</div>
+              )}
+            </div>
+            
+            {/* Telemetry Corner Notch Decal */}
+            <div style={{
+              fontSize: 8,
+              color: color,
+              opacity: 0.6,
+              fontWeight: 800,
+            }}>
+              [SYS]
+            </div>
+          </div>
+
+          {/* Children / Body content */}
+          {children && (
+            <div style={{
+              padding: '12px 14px',
+              fontSize: 10,
+              color: '#94a3b8',
+              lineHeight: 1.5,
+              background: 'rgba(2, 6, 23, 0.3)'
+            }}>
+              {children}
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Small glowing corner ticks for selected state */}
+      {selected && (
+        <>
+          <div style={{ position: 'absolute', top: -3, left: -3, width: 6, height: 6, borderTop: `2px solid ${color}`, borderLeft: `2px solid ${color}` }} />
+          <div style={{ position: 'absolute', bottom: -3, right: -3, width: 6, height: 6, borderBottom: `2px solid ${color}`, borderRight: `2px solid ${color}` }} />
+        </>
+      )}
+    </div>
+  );
+}
+
+function DataRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+      <span style={{ color: '#475569', minWidth: 50, fontSize: 9 }}>{label}</span>
+      <span style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 9,
+        background: '#040814',
+        border: '1px solid #14223c',
+        borderRadius: 3,
+        padding: '1px 6px',
+        color: '#e2e8f0',
+        maxWidth: 130,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      }}>{value || '—'}</span>
+    </div>
+  );
+}
+
+// ─── TRIGGER NODE ──────────────────────────────────────────────────────────
 export function TriggerNode({ data, selected }: any) {
-  const method = data.method || "GET";
-  const path = data.path || "/";
-
-  const getMethodBadgeClass = (m: string) => {
-    switch (m.toUpperCase()) {
-      case "GET":
-        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-      case "POST":
-        return "bg-sky-500/10 text-sky-400 border-sky-500/20";
-      case "PUT":
-        return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-      case "DELETE":
-        return "bg-rose-500/10 text-rose-400 border-rose-500/20";
-      default:
-        return "bg-slate-500/10 text-slate-400 border-slate-500/20";
-    }
-  };
-
+  const methodColors: Record<string, string> = { GET: '#10b981', POST: '#6366f1', PUT: '#f59e0b', DELETE: '#ef4444', PATCH: '#38bdf8', ANY: '#8b5cf6' };
+  const color = methodColors[data.method] || '#10b981';
   return (
-    <div
-      className={`w-60 bg-slate-900/90 backdrop-blur-md border rounded-xl overflow-hidden text-left transition-all duration-200 ${getSelectedClass(
-        selected
-      )}`}
-    >
-      <div className="bg-slate-950/80 px-4 py-2.5 border-b border-slate-800/60 flex items-center gap-2">
-        <div className="p-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-          <Play size={14} className="fill-emerald-400/20" />
-        </div>
-        <span className="text-xs font-semibold text-slate-200 tracking-wide">
-          HTTP Request Trigger
-        </span>
-      </div>
-      <div className="p-4 space-y-2">
-        <div className="flex items-center gap-2">
-          <span
-            className={`px-2 py-0.5 border rounded-md text-[10px] font-bold uppercase ${getMethodBadgeClass(
-              method
-            )}`}
-          >
-            {method}
-          </span>
-          <span className="text-xs font-mono font-medium text-slate-300 truncate max-w-[130px]">
-            {path}
-          </span>
-        </div>
-        <p className="text-[10px] text-slate-500">
-          Starts the request execution context.
-        </p>
-      </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full hover:bg-emerald-400"
-      />
-    </div>
+    <NodeShell color={color} icon="🌐" title="HTTP Trigger" subtitle="Entry point" selected={selected}>
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Method" value={data.method || 'GET'} />
+      <DataRow label="Path" value={data.path || '/endpoint'} />
+    </NodeShell>
   );
 }
 
-/**
- * 2. Database Node Component
- */
+// ─── WEBHOOK NODE ──────────────────────────────────────────────────────────
+export function WebhookNode({ data, selected }: any) {
+  const color = '#f59e0b';
+  return (
+    <NodeShell color={color} icon="🔔" title="Webhook" subtitle="External trigger" selected={selected}>
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Path" value={data.path || '/webhook'} />
+      <DataRow label="Secret" value={data.secret ? '••••••••' : 'not set'} />
+    </NodeShell>
+  );
+}
+
+// ─── SCHEDULED TRIGGER ─────────────────────────────────────────────────────
+export function ScheduledNode({ data, selected }: any) {
+  const color = '#8b5cf6';
+  return (
+    <NodeShell color={color} icon="⏰" title="Scheduled" subtitle="Cron trigger" selected={selected}>
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Cron" value={data.cron || '0 * * * *'} />
+      <DataRow label="TZ" value={data.timezone || 'UTC'} />
+    </NodeShell>
+  );
+}
+
+// ─── DATABASE NODE ─────────────────────────────────────────────────────────
 export function DatabaseNode({ data, selected }: any) {
-  const query = data.query || "SELECT * FROM users;";
-
+  const color = '#38bdf8';
   return (
-    <div
-      className={`w-60 bg-slate-900/90 backdrop-blur-md border rounded-xl overflow-hidden text-left transition-all duration-200 ${getSelectedClass(
-        selected
-      )}`}
-    >
-      <div className="bg-slate-950/80 px-4 py-2.5 border-b border-slate-800/60 flex items-center gap-2">
-        <div className="p-1 rounded-md bg-sky-500/10 border border-sky-500/20 text-sky-400">
-          <Database size={14} />
-        </div>
-        <span className="text-xs font-semibold text-slate-200 tracking-wide">
-          PostgreSQL Database Query
-        </span>
-      </div>
-      <div className="p-4 space-y-2">
-        <div className="bg-slate-950/80 border border-slate-850/50 rounded-lg p-2.5 font-mono text-[10px] text-sky-300 max-h-16 overflow-y-auto break-all scrollbar-thin scrollbar-thumb-slate-850">
-          {query}
-        </div>
-        <p className="text-[10px] text-slate-500">
-          Supports context parameters (e.g. $request.query.id).
-        </p>
-      </div>
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="w-3 h-3 bg-sky-500 border-2 border-slate-900 rounded-full"
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="w-3 h-3 bg-sky-500 border-2 border-slate-900 rounded-full hover:bg-sky-400"
-      />
-    </div>
+    <NodeShell color={color} icon="🗄️" title="Database" subtitle="PostgreSQL query" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <MiniConsole color="#7dd3fc" content={data.query || 'SELECT * FROM table;'} />
+    </NodeShell>
   );
 }
 
-/**
- * 3. Custom Code Node Component
- */
+// ─── CUSTOM CODE NODE ──────────────────────────────────────────────────────
 export function CustomCodeNode({ data, selected }: any) {
-  const code = data.code || "return context.request.body;";
-
+  const color = '#f59e0b';
+  const preview = (data.code || '// custom logic').split('\n')[0].slice(0, 40);
   return (
-    <div
-      className={`w-60 bg-slate-900/90 backdrop-blur-md border rounded-xl overflow-hidden text-left transition-all duration-200 ${getSelectedClass(
-        selected
-      )}`}
-    >
-      <div className="bg-slate-950/80 px-4 py-2.5 border-b border-slate-800/60 flex items-center gap-2">
-        <div className="p-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400">
-          <Code size={14} />
-        </div>
-        <span className="text-xs font-semibold text-slate-200 tracking-wide">
-          Custom JS Sandbox
-        </span>
-      </div>
-      <div className="p-4 space-y-2">
-        <div className="bg-slate-950/80 border border-slate-850/50 rounded-lg p-2.5 font-mono text-[10px] text-amber-300 max-h-16 overflow-y-auto break-all scrollbar-thin scrollbar-thumb-slate-850">
-          {code}
-        </div>
-        <p className="text-[10px] text-slate-500">
-          Purged global variables, 200ms timeout lock.
-        </p>
-      </div>
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="w-3 h-3 bg-amber-500 border-2 border-slate-900 rounded-full"
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="w-3 h-3 bg-amber-500 border-2 border-slate-900 rounded-full hover:bg-amber-400"
-      />
-    </div>
+    <NodeShell color={color} icon="⚡" title="JavaScript" subtitle="Custom logic" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <MiniConsole color="#fcd34d" content={`${preview}...`} />
+    </NodeShell>
   );
 }
 
-/**
- * 4. Response Node Component
- */
+// ─── IF/ELSE NODE ──────────────────────────────────────────────────────────
+export function IfElseNode({ data, selected }: any) {
+  const color = '#a78bfa';
+  return (
+    <NodeShell color={color} icon="🔀" title="If / Else" subtitle="Conditional branch" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle id="true" type="source" position={Position.Right} style={getHandleStyle('#10b981', { top: '35%' })} className="handle-pulse" />
+      <Handle id="false" type="source" position={Position.Right} style={getHandleStyle('#ef4444', { top: '65%' })} className="handle-pulse" />
+      <DataRow label="If" value={data.condition || 'ctx.body.x > 0'} />
+      <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+        <span style={{ fontSize: 9, color: '#10b981', fontFamily: "'JetBrains Mono', monospace" }}>✓ true →</span>
+        <span style={{ fontSize: 9, color: '#ef4444', fontFamily: "'JetBrains Mono', monospace" }}>✗ false →</span>
+      </div>
+    </NodeShell>
+  );
+}
+
+// ─── SWITCH CASE NODE ──────────────────────────────────────────────────────
+export function SwitchCaseNode({ data, selected }: any) {
+  const color = '#d946ef';
+  const cases = data.cases || ['paid', 'pending', 'default'];
+  return (
+    <NodeShell color={color} icon="🔀" title="Switch Case" subtitle="Multi-branch switch" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      
+      {/* Map cases to handles */}
+      {cases.map((c: string, index: number) => {
+        const topPct = `${((index + 1) * 100) / (cases.length + 1)}%`;
+        const handleColor = c === 'default' ? '#64748b' : '#d946ef';
+        return (
+          <Handle
+            key={c}
+            id={c}
+            type="source"
+            position={Position.Right}
+            style={getHandleStyle(handleColor, { top: topPct })}
+            className="handle-pulse"
+          />
+        );
+      })}
+      
+      <DataRow label="Select" value={data.expression || 'context.request.body.status'} />
+      <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {cases.map((c: string, idx: number) => (
+          <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: c === 'default' ? '#64748b' : '#e2e8f0', fontFamily: "'JetBrains Mono', monospace" }}>
+            <span>↳ {c}</span>
+            <span style={{ color: '#475569' }}>→</span>
+          </div>
+        ))}
+      </div>
+    </NodeShell>
+  );
+}
+
+// ─── TRANSFORM NODE ────────────────────────────────────────────────────────
+export function TransformNode({ data, selected }: any) {
+  const color = '#ec4899';
+  return (
+    <NodeShell color={color} icon="🔄" title="Transform" subtitle="Map & reshape data" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Map" value={data.mapping || '{ id: body.id }'} />
+    </NodeShell>
+  );
+}
+
+// ─── JWT VALIDATE NODE ─────────────────────────────────────────────────────
+export function JwtValidateNode({ data, selected }: any) {
+  const color = '#ef4444';
+  return (
+    <NodeShell color={color} icon="🔐" title="JWT Validate" subtitle="Verify Bearer token" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Secret" value={data.secret ? '••••••••' : 'env.JWT_SECRET'} />
+    </NodeShell>
+  );
+}
+
+// ─── API KEY NODE ──────────────────────────────────────────────────────────
+export function ApiKeyNode({ data, selected }: any) {
+  const color = '#f97316';
+  return (
+    <NodeShell color={color} icon="🗝️" title="API Key" subtitle="Header validation" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Header" value={data.headerName || 'x-api-key'} />
+    </NodeShell>
+  );
+}
+
+// ─── RESPONSE NODE ─────────────────────────────────────────────────────────
 export function ResponseNode({ data, selected }: any) {
-  const statusCode = data.statusCode || 200;
-  const body = data.body || "$steps.previousNodeId";
-
-  const getStatusColorClass = (code: number) => {
-    if (code >= 200 && code < 300) {
-      return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-    }
-    if (code >= 300 && code < 400) {
-      return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-    }
-    return "bg-rose-500/10 text-rose-400 border-rose-500/20";
-  };
-
+  const statusColor = (data.statusCode || 200) < 400 ? '#10b981' : '#ef4444';
   return (
-    <div
-      className={`w-60 bg-slate-900/90 backdrop-blur-md border rounded-xl overflow-hidden text-left transition-all duration-200 ${getSelectedClass(
-        selected
-      )}`}
-    >
-      <div className="bg-slate-950/80 px-4 py-2.5 border-b border-slate-800/60 flex items-center gap-2">
-        <div className="p-1 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-          <Send size={14} />
-        </div>
-        <span className="text-xs font-semibold text-slate-200 tracking-wide">
-          JSON HTTP Response
-        </span>
-      </div>
-      <div className="p-4 space-y-2">
-        <div className="flex items-center gap-2">
-          <span
-            className={`px-2 py-0.5 border rounded-md text-[10px] font-bold ${getStatusColorClass(
-              statusCode
-            )}`}
-          >
-            {statusCode}
-          </span>
-          <span className="text-xs font-mono font-medium text-slate-400 truncate max-w-[140px]">
-            {typeof body === "string" ? body : "Custom Object"}
-          </span>
-        </div>
-        <p className="text-[10px] text-slate-500">
-          Terminates pipeline, returns response.
-        </p>
-      </div>
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="w-3 h-3 bg-indigo-500 border-2 border-slate-900 rounded-full hover:bg-indigo-400"
-      />
-    </div>
+    <NodeShell color={statusColor} icon="📤" title="Response" subtitle="HTTP response" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(statusColor)} className="handle-pulse" />
+      <DataRow label="Status" value={String(data.statusCode || 200)} />
+      {data.redirectUrl ? (
+        <DataRow label="Redirect" value={data.redirectUrl} />
+      ) : (
+        <DataRow label="Body" value={typeof data.body === 'string' ? data.body.slice(0, 25) : JSON.stringify(data.body || {}).slice(0, 25)} />
+      )}
+    </NodeShell>
   );
 }
 
-// Export mapping to bind custom types in React Flow registries
+// ─── HTTP CLIENT NODE ──────────────────────────────────────────────────────
+export function HttpClientNode({ data, selected }: any) {
+  const color = '#14b8a6';
+  return (
+    <NodeShell color={color} icon="📡" title="HTTP Client" subtitle="External API Call" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Method" value={data.method || 'GET'} />
+      <MiniConsole color="#5eead4" content={data.url || 'https://api.example.com'} />
+    </NodeShell>
+  );
+}
+
+// ─── NODE TYPES MAP ────────────────────────────────────────────────────────
 export const nodeTypes = {
   triggerNode: TriggerNode,
+  webhookNode: WebhookNode,
+  scheduledNode: ScheduledNode,
   databaseNode: DatabaseNode,
   customCodeNode: CustomCodeNode,
+  ifElseNode: IfElseNode,
+  switchCaseNode: SwitchCaseNode,
+  httpClientNode: HttpClientNode,
+  transformNode: TransformNode,
+  jwtValidateNode: JwtValidateNode,
+  apiKeyNode: ApiKeyNode,
   responseNode: ResponseNode,
 };
+
+// ─── NODE PALETTE CONFIG ───────────────────────────────────────────────────
+export const NODE_PALETTE = [
+  {
+    category: 'Triggers',
+    color: '#10b981',
+    nodes: [
+      { type: 'triggerNode', icon: '🌐', label: 'HTTP Trigger', desc: 'REST endpoint entry', defaultData: { method: 'GET', path: '/api/endpoint' } },
+      { type: 'webhookNode', icon: '🔔', label: 'Webhook', desc: 'External event trigger', defaultData: { path: '/webhook', secret: '' } },
+      { type: 'scheduledNode', icon: '⏰', label: 'Scheduled', desc: 'Cron-based trigger', defaultData: { cron: '0 * * * *', timezone: 'UTC' } },
+    ]
+  },
+  {
+    category: 'Logic',
+    color: '#a78bfa',
+    nodes: [
+      { type: 'ifElseNode', icon: '🔀', label: 'If / Else', desc: 'Conditional branch', defaultData: { condition: 'context.request.body.active === true' } },
+      { type: 'switchCaseNode', icon: '🔀', label: 'Switch Case', desc: 'Multi-branch switch', defaultData: { expression: 'context.request.body.status', cases: ['paid', 'pending', 'default'] } },
+      { type: 'transformNode', icon: '🔄', label: 'Transform', desc: 'Map & reshape data', defaultData: { mapping: '{ id: steps.prev.id }' } },
+    ]
+  },
+  {
+    category: 'Data',
+    color: '#38bdf8',
+    nodes: [
+      { type: 'databaseNode', icon: '🗄️', label: 'Database', desc: 'PostgreSQL query', defaultData: { query: 'SELECT * FROM users WHERE id = $request.params.id;' } },
+    ]
+  },
+  {
+    category: 'Integrations',
+    color: '#14b8a6',
+    nodes: [
+      { type: 'httpClientNode', icon: '📡', label: 'HTTP Client', desc: 'Call external REST APIs', defaultData: { method: 'GET', url: 'https://api.github.com/users/$request.body.username', headers: '{\n  "User-Agent": "FlowForge-Platform"\n}', body: '' } },
+    ]
+  },
+  {
+    category: 'Security',
+    color: '#ef4444',
+    nodes: [
+      { type: 'jwtValidateNode', icon: '🔐', label: 'JWT Validate', desc: 'Verify JWT token', defaultData: { secret: '' } },
+      { type: 'apiKeyNode', icon: '🗝️', label: 'API Key', desc: 'Check API key header', defaultData: { headerName: 'x-api-key' } },
+    ]
+  },
+  {
+    category: 'Custom',
+    color: '#f59e0b',
+    nodes: [
+      { type: 'customCodeNode', icon: '⚡', label: 'JavaScript', desc: 'Custom JS logic', defaultData: { code: '// Access context\nconst { body } = context.request;\n\n// Return output\nreturn { processed: true, data: body };' } },
+    ]
+  },
+  {
+    category: 'Response',
+    color: '#10b981',
+    nodes: [
+      { type: 'responseNode', icon: '📤', label: 'Response', desc: 'Send HTTP response', defaultData: { statusCode: 200, body: '$steps.nodeId' } },
+    ]
+  },
+];
+
