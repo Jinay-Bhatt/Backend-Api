@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { api } from '../../../../services/api';
+import CustomSelect from '../../../../components/CustomSelect';
 
 export default function GatewayPage() {
   const params = useParams();
@@ -90,10 +91,17 @@ export default function GatewayPage() {
         {/* Workflow selector capsule */}
         <div className="cyber-plate-cyan tech-corners" style={{ padding: '20px 24px' }}>
           <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10, fontFamily: 'var(--mono)' }}>[ ACTIVE_ENDPOINT_WORKFLOW ]</label>
-          <select value={selectedWfId} onChange={e => setSelectedWfId(e.target.value)} 
-            style={{ width: '100%', background: 'rgba(2, 6, 23, 0.95)', border: '1px solid rgba(0, 242, 254, 0.3)', padding: '11px 14px', color: '#f1f5f9', fontSize: 13, outline: 'none', transition: 'border-color 0.2s', cursor: 'pointer', fontFamily: 'var(--mono)' }}>
-            {workflows.map(wf => <option key={wf.id} value={wf.id}>{wf.method} {wf.path} — {wf.name} {wf.isPublished ? '● LIVE' : ''}</option>)}
-          </select>
+          <CustomSelect
+            value={selectedWfId}
+            onChange={(val) => setSelectedWfId(val)}
+            options={workflows.map(wf => ({
+              value: wf.id,
+              label: `${wf.method} ${wf.path} — ${wf.name}`,
+              method: wf.method,
+              badge: wf.isPublished ? 'LIVE' : undefined,
+              badgeColor: '#05ffc4'
+            }))}
+          />
           {selectedWf && (
             <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
               <span className={selectedWf.isPublished ? 'badge badge-success' : 'badge badge-accent'} style={{ fontSize: 10 }}>

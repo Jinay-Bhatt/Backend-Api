@@ -9,6 +9,7 @@ import '@xyflow/react/dist/style.css';
 import { io, Socket } from 'socket.io-client';
 import { api, BASE_URL_DIRECT } from '../../../../services/api';
 import { nodeTypes, NODE_PALETTE } from '../../../../components/customNodes';
+import CustomSelect from '../../../../components/CustomSelect';
 
 const METHOD_COLORS: Record<string, string> = { GET: '#10b981', POST: '#6366f1', PUT: '#f59e0b', DELETE: '#ef4444', PATCH: '#38bdf8' };
 
@@ -29,6 +30,28 @@ export default function BuilderPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [isMinimapVisible, setIsMinimapVisible] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastZoomRef = useRef<number | null>(null);
+
+  const onMove = useCallback((_event: any, viewport: any) => {
+    const currentZoom = viewport.zoom;
+    if (lastZoomRef.current !== null && lastZoomRef.current !== currentZoom) {
+      setIsMinimapVisible(true);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        setIsMinimapVisible(false);
+      }, 1500);
+    }
+    lastZoomRef.current = currentZoom;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
 
   // AI
   const [showAi, setShowAi] = useState(false);
@@ -380,13 +403,21 @@ export default function BuilderPage() {
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => setSelectedNodeId(node.id)}
           onPaneClick={() => setSelectedNodeId(null)}
+          onMove={onMove}
           fitView
           style={{ background: 'var(--bg-base)' }}
           defaultEdgeOptions={{ animated: true, style: { stroke: '#00f2fe', strokeWidth: 2 } }}
         >
           <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="rgba(0, 242, 254, 0.08)" />
           <Controls style={{ background: '#0a0f1e', border: '1px solid rgba(0, 242, 254, 0.25)', borderRadius: 0, boxShadow: '0 0 10px rgba(0, 242, 254, 0.15)' }} />
-          <MiniMap style={{ background: '#020617', border: '1px solid rgba(0, 242, 254, 0.25)', borderRadius: 0 }} nodeColor={() => '#00f2fe'} maskColor="rgba(2,6,23,0.85)" />
+          <MiniMap style={{
+            background: '#020617',
+            border: '1px solid rgba(0, 242, 254, 0.25)',
+            borderRadius: 0,
+            opacity: isMinimapVisible ? 1 : 0,
+            pointerEvents: isMinimapVisible ? 'all' : 'none',
+            transition: 'opacity 0.3s ease-in-out',
+          }} nodeColor={() => '#00f2fe'} maskColor="rgba(2,6,23,0.85)" />
           {nodes.length === 0 && (
             <Panel position="top-center">
               <div style={{ marginTop: 100, textAlign: 'center', pointerEvents: 'none' }}>
@@ -467,19 +498,11 @@ export default function BuilderPage() {
               ))}
               <div>
                 <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#00f2fe', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'JetBrains Mono', monospace" }}>REST Method</label>
-                <select value={newWf.method} onChange={e => setNewWf(p => ({ ...p, method: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    background: '#040814',
-                    border: '1.5px solid rgba(0, 242, 254, 0.25)',
-                    color: '#fff',
-                    fontSize: 12,
-                    fontFamily: "'JetBrains Mono', monospace",
-                    padding: '9px 12px',
-                    outline: 'none'
-                  }}>
-                  {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(m => <option key={m}>{m}</option>)}
-                </select>
+                <CustomSelect
+                  value={newWf.method}
+                  onChange={(val) => setNewWf(p => ({ ...p, method: val }))}
+                  options={['GET', 'POST', 'PUT', 'PATCH', 'DELETE']}
+                />
               </div>
               <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
                 <button type="button" onClick={() => setShowCreateWf(false)} className="btn btn-ghost" style={{ flex: 1, borderRadius: 0, border: '1px solid rgba(255,255,255,0.15)' }}>Cancel</button>
@@ -640,19 +663,11 @@ function NodeConfigPanel({ node, onChange }: { node: Node; onChange: (k: string,
       <>
         <div style={{ marginBottom: 14 }}>
           <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>Method</label>
-          <select value={data.method || 'GET'} onChange={e => onChange('method', e.target.value)}
-            style={{
-              width: '100%',
-              background: '#040814',
-              border: '1.5px solid rgba(0, 242, 254, 0.25)',
-              color: '#fff',
-              fontSize: 11,
-              fontFamily: "'JetBrains Mono', monospace",
-              padding: '8px 10px',
-              outline: 'none'
-            }}>
-            {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(m => <option key={m}>{m}</option>)}
-          </select>
+          <CustomSelect
+            value={data.method || 'GET'}
+            onChange={(val) => onChange('method', val)}
+            options={['GET', 'POST', 'PUT', 'PATCH', 'DELETE']}
+          />
         </div>
         <Field label="Path" fieldKey="path" placeholder="/api/resource" />
       </>
@@ -700,19 +715,11 @@ function NodeConfigPanel({ node, onChange }: { node: Node; onChange: (k: string,
       <>
         <div style={{ marginBottom: 14 }}>
           <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>Method</label>
-          <select value={data.method || 'GET'} onChange={e => onChange('method', e.target.value)}
-            style={{
-              width: '100%',
-              background: '#040814',
-              border: '1.5px solid rgba(0, 242, 254, 0.25)',
-              color: '#fff',
-              fontSize: 11,
-              fontFamily: "'JetBrains Mono', monospace",
-              padding: '8px 10px',
-              outline: 'none'
-            }}>
-            {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(m => <option key={m}>{m}</option>)}
-          </select>
+          <CustomSelect
+            value={data.method || 'GET'}
+            onChange={(val) => onChange('method', val)}
+            options={['GET', 'POST', 'PUT', 'PATCH', 'DELETE']}
+          />
         </div>
         <Field label="URL (use $request or $steps to interpolate)" fieldKey="url" placeholder="https://api.github.com/users/$request.body.username" />
         <Field label="Headers (JSON string)" fieldKey="headers" type="textarea" placeholder='{\n  "Content-Type": "application/json"\n}' />

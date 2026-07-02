@@ -107,5 +107,9 @@ export function startWorker() {
     console.error(`❌ Job ${job?.id} failed: ${err.message}`);
   });
 
+  workerInstance.on("error", (err) => {
+    console.error(`❌ BullMQ worker connection error: ${err.message}`);
+  });
+
   return workerInstance;
 }

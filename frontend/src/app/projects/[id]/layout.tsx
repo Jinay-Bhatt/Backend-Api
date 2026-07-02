@@ -53,7 +53,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
           <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none', padding: '4px 8px', borderRadius: 7, transition: 'background 0.15s', color: 'var(--text-muted)' }}
             onMouseEnter={e => { (e.currentTarget as any).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as any).style.color = 'var(--text-secondary)'; }}
             onMouseLeave={e => { (e.currentTarget as any).style.background = 'transparent'; (e.currentTarget as any).style.color = 'var(--text-muted)'; }}>
-            <div style={{ width: 26, height: 26, borderRadius: 7, background: 'var(--grad-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, boxShadow: '0 2px 8px rgba(99,102,241,0.35)' }}>⚡</div>
+            <img src="/FlowForge.png" alt="FlowForge Logo" width="26" height="26" style={{ objectFit: 'contain' }} />
             <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>FlowForge</span>
           </Link>
           <span style={{ color: 'var(--text-faint)', fontSize: 16 }}>/</span>

@@ -30,12 +30,18 @@ export function runInSandbox(
     // Create secure V8 context (purges globals like process, require, module)
     const vmContext = vm.createContext(sandbox);
 
-    // Wrap the user's code in an IIFE so they can write top-level "return" statements
+    // Wrap the user's code in an IIFE so they can write top-level "return" statements.
+    // If the function returns a value (explicit return), we assign it to result.
+    // If the function returns undefined (implicit return), we preserve whatever was assigned to result directly.
     const wrappedCode = `
-      result = (function(context) {
+      const fnResult = (function(context) {
         ${code}
       })(context);
+      if (fnResult !== undefined) {
+        result = fnResult;
+      }
     `;
+
 
     const script = new vm.Script(wrappedCode);
     script.runInContext(vmContext, {

@@ -24,3 +24,4 @@ export const config = {
   encryptionKey: process.env.ENCRYPTION_KEY as string,
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
 };
+  

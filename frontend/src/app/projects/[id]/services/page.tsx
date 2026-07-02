@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import {
   ReactFlow,
@@ -188,6 +188,27 @@ export default function ServicesPage() {
   const [adding, setAdding] = useState(false);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [isMinimapVisible, setIsMinimapVisible] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastZoomRef = useRef<number | null>(null);
+
+  const onMove = useCallback((_event: any, viewport: any) => {
+    const currentZoom = viewport.zoom;
+    if (lastZoomRef.current !== null && lastZoomRef.current !== currentZoom) {
+      setIsMinimapVisible(true);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        setIsMinimapVisible(false);
+      }, 1500);
+    }
+    lastZoomRef.current = currentZoom;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   useEffect(() => { if (projectId) loadServices(); }, [projectId]);
 
@@ -427,10 +448,17 @@ export default function ServicesPage() {
             >+ Add First Service</button>
           </div>
         ) : (
-          <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView style={{ background: 'var(--bg-base)' }}>
+          <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} onMove={onMove} fitView style={{ background: 'var(--bg-base)' }}>
             <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="rgba(0, 242, 254, 0.1)" />
             <Controls style={{ background: '#0a0f1e', border: '1px solid rgba(0, 242, 254, 0.25)', borderRadius: 0, boxShadow: '0 0 10px rgba(0, 242, 254, 0.15)' }} />
-            <MiniMap style={{ background: '#020617', border: '1px solid rgba(0, 242, 254, 0.25)', borderRadius: 0 }} nodeColor={(n) => n.data?.isActive ? '#05ffc4' : '#64748b'} maskColor="rgba(2,6,23,0.85)" />
+            <MiniMap style={{
+              background: '#020617',
+              border: '1px solid rgba(0, 242, 254, 0.25)',
+              borderRadius: 0,
+              opacity: isMinimapVisible ? 1 : 0,
+              pointerEvents: isMinimapVisible ? 'all' : 'none',
+              transition: 'opacity 0.3s ease-in-out',
+            }} nodeColor={(n) => n.data?.isActive ? '#05ffc4' : '#64748b'} maskColor="rgba(2,6,23,0.85)" />
           </ReactFlow>
         )}
       </div>

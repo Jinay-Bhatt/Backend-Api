@@ -1,4 +1,5 @@
 import { prisma } from "../services/db.js";
+import { invalidateWorkflowCache } from "../services/cache.js";
 // Helper to verify user owns the project associated with a workflow or directly
 async function verifyProjectOwnership(projectId, userId) {
     const project = await prisma.project.findFirst({
@@ -8,7 +9,7 @@ async function verifyProjectOwnership(projectId, userId) {
 }
 export async function createWorkflow(request, reply) {
     const { projectId } = request.params;
-    const { name, path, method } = request.body;
+    const { name, path, method, nodes, edges } = request.body;
     const user = request.user;
     if (!name || !path || !method) {
         return reply.status(400).send({
@@ -36,11 +37,13 @@ export async function createWorkflow(request, reply) {
                 name,
                 path,
                 method,
-                nodes: [],
-                edges: [],
+                nodes: nodes !== undefined ? nodes : [],
+                edges: edges !== undefined ? edges : [],
                 projectId,
             },
         });
+        // Invalidate workflows cache for this project
+        invalidateWorkflowCache(projectId);
         return reply.status(201).send(workflow);
     }
     catch (error) {
@@ -150,6 +153,8 @@ export async function updateWorkflow(request, reply) {
                 isPublished: isPublished !== undefined ? isPublished : workflow.isPublished,
             },
         });
+        // Invalidate workflows cache for this project
+        invalidateWorkflowCache(workflow.projectId);
         return reply.send(updatedWorkflow);
     }
     catch (error) {
@@ -181,6 +186,8 @@ export async function deleteWorkflow(request, reply) {
         await prisma.workflow.delete({
             where: { id },
         });
+        // Invalidate workflows cache for this project
+        invalidateWorkflowCache(workflow.projectId);
         return reply.send({
             message: "Workflow deleted successfully",
         });
@@ -221,6 +228,8 @@ export async function publishWorkflow(request, reply) {
             where: { id },
             data: { isPublished },
         });
+        // Invalidate workflows cache for this project
+        invalidateWorkflowCache(workflow.projectId);
         return reply.send({
             message: `Workflow ${isPublished ? "published" : "unpublished"} successfully`,
             workflow: updatedWorkflow,

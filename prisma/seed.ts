@@ -93,21 +93,46 @@ async function main() {
     },
   });
 
-  // 3. Create Test Project
-  console.log("📦 Creating test project...");
+  // 3. Create Test Projects
+  console.log("📦 Creating test projects...");
   
-  // Let's delete any old seed projects to avoid accumulation
-  const oldProjects = await prisma.project.findMany({
-    where: { ownerId: user.id, name: "E-Commerce Core API Gateway" }
-  });
-  for (const op of oldProjects) {
-    await prisma.project.delete({ where: { id: op.id } });
+  // Let's delete any old seed projects by ID to avoid unique constraint violations
+  const projectIdsToClean = [
+    "bb1484ba-e457-435d-a071-9b706d64959f",
+    "f0341bff-f947-477f-b046-c4b5a492cab0",
+    "c359218a-13dc-4279-a8ac-c73d2a1bacb4"
+  ];
+  for (const pid of projectIdsToClean) {
+    try {
+      await prisma.project.delete({ where: { id: pid } });
+    } catch (e) {
+      // Ignore if project doesn't exist yet
+    }
   }
 
-  const project = await prisma.project.create({
+  const projectEcommerce = await prisma.project.create({
     data: {
+      id: "bb1484ba-e457-435d-a071-9b706d64959f",
       name: "E-Commerce Core API Gateway",
       description: "Visual pipelines for payment processing, inventory status check, and logging audits",
+      ownerId: user.id,
+    },
+  });
+
+  const projectProcurement = await prisma.project.create({
+    data: {
+      id: "f0341bff-f947-477f-b046-c4b5a492cab0",
+      name: "Procurement and Vendor Management System",
+      description: "Vendor logins, invoice approvals, and internal diagnostics",
+      ownerId: user.id,
+    },
+  });
+
+  const projectTesting = await prisma.project.create({
+    data: {
+      id: "c359218a-13dc-4279-a8ac-c73d2a1bacb4",
+      name: "Testing",
+      description: "Sandbox project to test and verify dynamic workflow transformations and logs",
       ownerId: user.id,
     },
   });
@@ -129,6 +154,7 @@ async function main() {
   // 5. Create Workflows
   console.log("⚡ Creating workflows...");
 
+  // --- E-Commerce Core API Gateway Workflows ---
   // Workflow 1: Checkout Processing
   const checkoutNodes = [
     {
@@ -188,13 +214,14 @@ async function main() {
 
   await prisma.workflow.create({
     data: {
+      id: "400b187a-a782-4a45-94de-6417e8801557",
       name: "Checkout Process",
       method: "POST",
       path: "/checkout",
       nodes: checkoutNodes,
       edges: checkoutEdges,
       isPublished: true,
-      projectId: project.id,
+      projectId: projectEcommerce.id,
     },
   });
 
@@ -241,13 +268,14 @@ async function main() {
 
   await prisma.workflow.create({
     data: {
+      id: "3273aa8a-fbb7-46ab-90f8-108b3f32bd0e",
       name: "Get Invoices List",
       method: "GET",
       path: "/invoices",
       nodes: invoicesNodes,
       edges: invoicesEdges,
       isPublished: true,
-      projectId: project.id,
+      projectId: projectEcommerce.id,
     },
   });
 
@@ -294,13 +322,88 @@ async function main() {
 
   await prisma.workflow.create({
     data: {
+      id: "ee49b906-4842-49c4-a3bb-93a6c20242ec",
       name: "Diagnostics Status",
       method: "GET",
       path: "/status",
       nodes: diagNodes,
       edges: diagEdges,
       isPublished: true,
-      projectId: project.id,
+      projectId: projectEcommerce.id,
+    },
+  });
+
+  // --- Procurement and Vendor Management System Workflows ---
+  await prisma.workflow.create({
+    data: {
+      id: "2acd072c-36ed-4e52-96b7-3b26ac0f5790",
+      name: "Fetch Login id",
+      method: "GET",
+      path: "/Users:id",
+      nodes: [],
+      edges: [],
+      isPublished: true,
+      projectId: projectProcurement.id,
+    },
+  });
+
+  // --- Testing Workflows ---
+  await prisma.workflow.create({
+    data: {
+      id: "d1d74661-62a8-45a1-a9c7-c4e2029943e9",
+      name: "Get Product",
+      method: "GET",
+      path: "/Product",
+      nodes: [],
+      edges: [],
+      isPublished: false,
+      projectId: projectTesting.id,
+    },
+  });
+
+  const productCrudNodes = [
+    {
+      id: "node_1",
+      data: { path: "/products", method: "GET" },
+      type: "triggerNode",
+      position: { x: 0, y: 300 }
+    },
+    {
+      id: "node_2",
+      data: { query: "SELECT * FROM products" },
+      type: "databaseNode",
+      position: { x: 250, y: 300 }
+    },
+    {
+      id: "node_3",
+      data: { mapping: "context.steps.node_2.map(product => ({ id: product.id, name: product.name, price: product.price }))" },
+      type: "transformNode",
+      position: { x: 500, y: 300 }
+    },
+    {
+      id: "node_4",
+      data: { body: "$steps.node_3", statusCode: 200 },
+      type: "responseNode",
+      position: { x: 750, y: 300 }
+    }
+  ];
+
+  const productCrudEdges = [
+    { id: "edge_1", source: "node_1", target: "node_2", animated: true },
+    { id: "edge_2", source: "node_2", target: "node_3", animated: true },
+    { id: "edge_3", source: "node_3", target: "node_4", animated: true }
+  ];
+
+  await prisma.workflow.create({
+    data: {
+      id: "50d30142-40fa-499e-acb8-b529ee3bbbd0",
+      name: "Product CRUD API",
+      method: "GET",
+      path: "/products",
+      nodes: productCrudNodes,
+      edges: productCrudEdges,
+      isPublished: true,
+      projectId: projectTesting.id,
     },
   });
 

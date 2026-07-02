@@ -2,17 +2,33 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { 
+  Zap, 
+  Folder, 
+  Settings, 
+  Trash2, 
+  Plus, 
+  GitBranch, 
+  Play, 
+  Radio,
+  Terminal,
+  Cpu,
+  Database,
+  Globe
+} from 'lucide-react';
 import { api } from '../../services/api';
 
-const PROJECT_ICONS = ['📦', '🔌', '⚙️', '🛠️', '🚀', '🌐', '🔗', '💡', '🎯', '🔮'];
-const PROJECT_GRADIENTS = [
-  'linear-gradient(135deg, #6366f1 0%, #a5b4fc 100%)',
-  'linear-gradient(135deg, #ec4899 0%, #f472b6 100%)',
-  'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)',
-  'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-  'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
-  'linear-gradient(135deg, #8b5cf6 0%, #c084fc 100%)',
-];
+function getProjectIcon(idx: number, color: string) {
+  const size = 18;
+  const icons = [
+    <Folder size={size} style={{ color }} />,
+    <Terminal size={size} style={{ color }} />,
+    <Cpu size={size} style={{ color }} />,
+    <Globe size={size} style={{ color }} />,
+    <Database size={size} style={{ color }} />
+  ];
+  return icons[idx % icons.length];
+}
 
 function AnimatedCounter({ value, duration = 1000 }: { value: number; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -46,7 +62,7 @@ function AnimatedCounter({ value, duration = 1000 }: { value: number; duration?:
 
 function DashboardHud({ projects, totalWorkflows, publishedCount }: any) {
   return (
-    <div className="cyber-plate-cyan tech-corners" style={{
+    <div className="card-clean" style={{
       padding: '24px 32px',
       display: 'flex',
       alignItems: 'center',
@@ -57,166 +73,87 @@ function DashboardHud({ projects, totalWorkflows, publishedCount }: any) {
       animation: 'fadeIn 0.5s ease both'
     }}>
       {[
-        { icon: '📁', label: 'Projects Deployed', value: projects.length, color: '#00f2fe' },
-        { icon: '⚙️', label: 'Total Workflows', value: totalWorkflows, color: '#f355da' },
-        { icon: '🚀', label: 'Live APIs', value: publishedCount, sub: 'Running in sandbox', color: '#05ffc4' },
-        { icon: '📡', label: 'Gateway Status', value: 'ONLINE', isStatus: true, color: '#38bdf8' }
+        { icon: <Folder size={18} color="#6366f1" />, label: 'Projects Deployed', value: projects.length, color: '#6366f1' },
+        { icon: <GitBranch size={18} color="#8b5cf6" />, label: 'Total Workflows', value: totalWorkflows, color: '#8b5cf6' },
+        { icon: <Play size={18} color="#10b981" />, label: 'Live APIs', value: publishedCount, sub: 'Running in sandbox', color: '#10b981' },
+        { icon: <Radio size={18} color="#38bdf8" />, label: 'Gateway Status', value: 'ONLINE', isStatus: true, color: '#38bdf8' }
       ].map((stat, i) => (
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 160, position: 'relative' }}>
-          <div style={{ width: 44, height: 44, borderRadius: '50%', background: `${stat.color}15`, border: `1px solid ${stat.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, boxShadow: `0 0 15px ${stat.color}18`, animation: 'float 3s ease-in-out infinite' }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {stat.icon}
           </div>
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'var(--mono)' }}>{stat.label}</div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: stat.isStatus ? stat.color : 'var(--text-primary)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--mono)' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{stat.label}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
               {stat.isStatus ? stat.value : <AnimatedCounter value={stat.value} />}
-              {stat.isStatus && <span style={{ width: 7, height: 7, borderRadius: '50%', background: stat.color, boxShadow: `0 0 10px ${stat.color}`, animation: 'pulseGlow 2.5s infinite' }} />}
+              {stat.isStatus && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />}
             </div>
-            {stat.sub && <div style={{ fontSize: 9, color: 'var(--text-faint)', marginTop: 2, fontFamily: 'var(--mono)' }}>{stat.sub}</div>}
+            {stat.sub && <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{stat.sub}</div>}
           </div>
-          {i < 3 && <div style={{ position: 'absolute', right: -12, top: '10%', bottom: '10%', width: 1, background: 'linear-gradient(180deg, transparent, rgba(0, 242, 254, 0.1), transparent)' }} />}
+          {i < 3 && <div style={{ position: 'absolute', right: -12, top: '10%', bottom: '10%', width: 1, background: 'var(--border)' }} />}
         </div>
       ))}
     </div>
   );
 }
 
-function ConnectionWeb() {
-  return (
-    <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, opacity: 0.25 }} xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6366f1" />
-          <stop offset="50%" stopColor="#8b5cf6" />
-          <stop offset="100%" stopColor="#38bdf8" />
-        </linearGradient>
-        <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="rgba(99,102,241,0.12)" />
-          <stop offset="100%" stopColor="transparent" />
-        </radialGradient>
-      </defs>
-      
-      {/* Center glowing nebula */}
-      <circle cx="50%" cy="50%" r="300" fill="url(#centerGlow)" />
-      
-      {/* Core dynamic axes */}
-      <line x1="0" y1="50%" x2="100%" y2="50%" stroke="url(#glowGrad)" strokeWidth="0.8" strokeDasharray="6 8" />
-      <line x1="50%" y1="0" x2="50%" y2="100%" stroke="url(#glowGrad)" strokeWidth="0.8" strokeDasharray="6 8" />
-
-      {/* Dynamic rotating coordinate rings */}
-      <circle cx="50%" cy="50%" r="120" fill="none" stroke="url(#glowGrad)" strokeWidth="0.8" strokeDasharray="5 10" style={{ transformOrigin: 'center', animation: 'spin 25s linear infinite' }} />
-      <circle cx="50%" cy="50%" r="240" fill="none" stroke="url(#glowGrad)" strokeWidth="0.6" strokeDasharray="8 16" style={{ transformOrigin: 'center', animation: 'spinReverse 40s linear infinite' }} />
-      <circle cx="50%" cy="50%" r="380" fill="none" stroke="url(#glowGrad)" strokeWidth="0.4" strokeDasharray="10 20" style={{ transformOrigin: 'center', animation: 'spin 60s linear infinite' }} />
-
-      {/* Pulse lines traveling from center outwards */}
-      <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="url(#glowGrad)" strokeWidth="1" strokeDasharray="15 30" style={{ animation: 'pulseLine 6s linear infinite' }} />
-      <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="url(#glowGrad)" strokeWidth="1" strokeDasharray="15 30" style={{ animation: 'pulseLine 8s linear infinite' }} />
-      <line x1="50%" y1="50%" x2="15%" y2="75%" stroke="url(#glowGrad)" strokeWidth="1" strokeDasharray="15 30" style={{ animation: 'pulseLine 10s linear infinite' }} />
-      <line x1="50%" y1="50%" x2="85%" y2="80%" stroke="url(#glowGrad)" strokeWidth="1" strokeDasharray="15 30" style={{ animation: 'pulseLine 7s linear infinite' }} />
-    </svg>
-  );
-}
-
-function ProjectPod({ proj, idx, handleDelete, deleting }: any) {
-  const icon = PROJECT_ICONS[idx % PROJECT_ICONS.length];
+function ProjectCard({ proj, idx, handleDelete, deleting }: any) {
+  const colors = ['#6366f1', '#8b5cf6', '#38bdf8', '#10b981', '#f59e0b', '#ec4899'];
+  const color = colors[idx % colors.length];
+  const icon = getProjectIcon(idx, color);
   const wfCount = proj._count?.workflows ?? proj.workflows?.length ?? 0;
-  
-  const orbitSpeed1 = 12 + (idx % 3) * 4;
-  const orbitSpeed2 = 18 + (idx % 2) * 5;
-
-  const themes = ['cyan', 'fuchsia', 'emerald'];
-  const theme = themes[idx % themes.length];
-  const neonColor = `var(--neon-${theme})`;
 
   return (
-    <div style={{
-      position: 'relative',
-      width: '100%',
-      aspectRatio: '1/1',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '0 auto',
-      animation: `floatSlow ${7 + idx}s ease-in-out infinite`,
-      animationDelay: `${idx * 0.1}s`,
-    }}>
-      {/* Orbital rings */}
-      <div style={{
-        position: 'absolute',
-        width: 220,
-        height: 220,
-        borderRadius: '50%',
-        border: `1px dashed rgba(${theme === 'cyan' ? '0,242,254' : theme === 'fuchsia' ? '243,85,218' : '5,255,196'}, 0.15)`,
-        animation: `spin ${orbitSpeed1}s linear infinite`
-      }}>
-        <div style={{ position: 'absolute', top: -5, left: '50%', width: 10, height: 10, borderRadius: '50%', background: neonColor, boxShadow: `0 0 12px ${neonColor}` }} />
-      </div>
-      <div style={{
-        position: 'absolute',
-        width: 260,
-        height: 260,
-        borderRadius: '50%',
-        border: `1px solid rgba(${theme === 'cyan' ? '0,242,254' : theme === 'fuchsia' ? '243,85,218' : '5,255,196'}, 0.05)`,
-        animation: `spinReverse ${orbitSpeed2}s linear infinite`
-      }}>
-        <div style={{ position: 'absolute', bottom: -3, left: '30%', width: 6, height: 6, borderRadius: '50%', background: neonColor, boxShadow: `0 0 8px ${neonColor}` }} />
-      </div>
+    <div style={{ position: 'relative' }}>
+      <Link href={`/projects/${proj.id}/builder`} style={{ textDecoration: 'none', display: 'block' }}>
+        <div className="card card-interactive" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16, height: '100%', minHeight: 180 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {icon}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {proj.name}
+              </h3>
+            </div>
+            <button
+              onClick={e => { e.preventDefault(); e.stopPropagation(); handleDelete(proj.id, proj.name); }}
+              disabled={deleting === proj.id}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-muted)',
+                cursor: 'pointer',
+                padding: 6,
+                borderRadius: 6,
+                transition: 'all 0.15s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                zIndex: 20
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--danger)'; e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
 
-      {/* Main pod core: polygonal cyber-plate */}
-      <div 
-        className={`cyber-plate-${theme} tech-corners`}
-        style={{
-          width: 170,
-          height: 170,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 16,
-          textAlign: 'center',
-          transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
-          cursor: 'pointer',
-          position: 'relative',
-          zIndex: 10
-        }}
-      >
-        <div style={{ width: 48, height: 48, borderRadius: '50%', background: `rgba(${theme === 'cyan' ? '0,242,254' : theme === 'fuchsia' ? '243,85,218' : '5,255,196'}, 0.1)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, marginBottom: 12, border: `1px solid ${neonColor}` }}>
-          {icon}
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0, flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5 }}>
+            {proj.description || 'No description provided.'}
+          </p>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+              Last updated {new Date(proj.updatedAt || proj.createdAt || Date.now()).toLocaleDateString()}
+            </span>
+            <span style={{ fontSize: 11, fontWeight: 650, color: 'var(--accent-light)', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', padding: '2px 8px', borderRadius: 4 }}>
+              {wfCount} workflow{wfCount !== 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
-
-        <h3 style={{ fontSize: 13, fontWeight: 800, color: '#f1f5f9', letterSpacing: '-0.3px', margin: '0 0 6px', fontFamily: "'Plus Jakarta Sans', Inter, sans-serif", width: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{proj.name}</h3>
-        
-        <div style={{ fontSize: 9, color: neonColor, fontWeight: 700, letterSpacing: '0.04em', background: `rgba(${theme === 'cyan' ? '0,242,254' : theme === 'fuchsia' ? '243,85,218' : '5,255,196'}, 0.08)`, border: `1px solid rgba(${theme === 'cyan' ? '0,242,254' : theme === 'fuchsia' ? '243,85,218' : '5,255,196'}, 0.25)`, padding: '2px 8px', borderRadius: 4, fontFamily: 'var(--mono)' }}>
-          {wfCount} WORKFLOW{wfCount !== 1 ? 'S' : ''}
-        </div>
-
-        <Link href={`/projects/${proj.id}/builder`} style={{ position: 'absolute', inset: 0, zIndex: 5 }} />
-
-        <button
-          onClick={e => { e.stopPropagation(); handleDelete(proj.id, proj.name); }}
-          disabled={deleting === proj.id}
-          style={{
-            position: 'absolute',
-            bottom: 8,
-            width: 22,
-            height: 22,
-            border: '1px solid rgba(239,68,68,0.3)',
-            background: 'rgba(239,68,68,0.08)',
-            color: '#f87171',
-            cursor: 'pointer',
-            fontSize: 9,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s',
-            zIndex: 20
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = '#fff'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; e.currentTarget.style.color = '#f87171'; }}
-        >
-          {deleting === proj.id ? '·' : '✕'}
-        </button>
-      </div>
+      </Link>
     </div>
   );
 }
@@ -278,41 +215,49 @@ export default function DashboardPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-base)', fontFamily: 'Inter, sans-serif' }}>
-      {/* Ambient background */}
+      {/* Ambient background grid */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
-        <div style={{ position: 'absolute', top: '20%', left: '5%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(99,102,241,0.07) 0%, transparent 70%)', animation: 'orb1 18s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', bottom: '10%', right: '5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(139,92,246,0.06) 0%, transparent 70%)', animation: 'orb2 22s ease-in-out infinite' }} />
+        <div style={{
+          position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)',
+          width: 800, height: 600, borderRadius: '50%',
+          background: 'radial-gradient(ellipse, rgba(99,102,241,0.05) 0%, transparent 70%)',
+        }} />
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.01) 1px, transparent 0)',
+          backgroundSize: '24px 24px',
+        }} />
       </div>
 
       {/* ── TOP NAV ─────────────────────────────────── */}
       <nav style={{
-        background: 'rgba(10,15,30,0.9)',
+        background: 'rgba(5, 5, 5, 0.75)',
         borderBottom: '1px solid var(--border)',
         backdropFilter: 'blur(20px) saturate(180%)',
         position: 'sticky', top: 0, zIndex: 100,
       }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 28px', height: 60, display: 'flex', alignItems: 'center', gap: 16 }}>
-          {/* Brand */}
+          {/* Brand Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 9, background: 'var(--grad-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, boxShadow: '0 4px 14px rgba(99,102,241,0.4)' }}>⚡</div>
-            <span style={{ fontSize: 17, fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.3px', fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>FlowForge</span>
+            <img src="/FlowForge.png" alt="FlowForge Logo" width="28" height="28" style={{ objectFit: 'contain' }} />
+            <span style={{ fontSize: 17, fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.3px', fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>
+              Flow<span style={{ background: 'linear-gradient(135deg, #6366f1, #38bdf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+            </span>
           </div>
 
           {/* Nav links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginLeft: 24 }}>
             {[{ label: 'Dashboard', active: true }].map(n => (
-              <a key={n.label} href={(n as any).href || '#'}
-                style={{ padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600, color: (n as any).active ? 'var(--text-primary)' : 'var(--text-muted)', background: (n as any).active ? 'rgba(99,102,241,0.1)' : 'transparent', textDecoration: 'none', transition: 'all 0.15s' }}
-                onMouseEnter={e => { if (!(n as any).active) (e.currentTarget.style.color = 'var(--text-secondary)'); }}
-                onMouseLeave={e => { if (!(n as any).active) (e.currentTarget.style.color = 'var(--text-muted)'); }}>
+              <a key={n.label} href="#"
+                style={{ padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', background: 'rgba(255,255,255,0.03)', textDecoration: 'none' }}>
                 {n.label}
               </a>
             ))}
           </div>
 
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
             <Link href="/settings" style={{
-              display: 'flex', alignItems: 'center', gap: 7,
+              display: 'flex', alignItems: 'center', gap: 6,
               padding: '6px 12px', borderRadius: 8,
               border: '1px solid var(--border)', background: 'transparent',
               color: 'var(--text-muted)', fontSize: 12, textDecoration: 'none',
@@ -320,7 +265,7 @@ export default function DashboardPage() {
             }}
               onMouseEnter={e => { (e.currentTarget as any).style.borderColor = 'var(--border-strong)'; (e.currentTarget as any).style.color = 'var(--text-secondary)'; }}
               onMouseLeave={e => { (e.currentTarget as any).style.borderColor = 'var(--border)'; (e.currentTarget as any).style.color = 'var(--text-muted)'; }}>
-              ⚙ Settings
+              <Settings size={13} /> Settings
             </Link>
             {/* Avatar */}
             <div style={{
@@ -348,9 +293,8 @@ export default function DashboardPage() {
           transition: 'all 0.45s cubic-bezier(0.16,1,0.3,1)',
         }}>
           <div>
-            <h1 style={{ fontSize: 34, fontWeight: 900, letterSpacing: '-0.8px', lineHeight: 1.1, fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>
-              Welcome back{user?.username ? `, ${user.username}` : ''}
-              <span style={{ marginLeft: 10, fontSize: 30 }}>👋</span>
+            <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-0.8px', lineHeight: 1.1, fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>
+              Welcome back{user?.username ? `, ${user.username}` : ''} 👋
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: 15, marginTop: 8 }}>
               Manage your API projects and workflow automations
@@ -359,19 +303,19 @@ export default function DashboardPage() {
           <button
             onClick={() => setShowCreate(true)}
             style={{
-              display: 'flex', alignItems: 'center', gap: 9,
-              padding: '11px 22px', borderRadius: 12, border: 'none',
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 22px', borderRadius: 100, border: 'none',
               background: 'var(--grad-brand)', color: '#fff',
-              fontSize: 14, fontWeight: 700, cursor: 'pointer',
-              boxShadow: '0 4px 24px rgba(99,102,241,0.4)',
-              transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
-              letterSpacing: '0.01em', fontFamily: "'Plus Jakarta Sans', Inter, sans-serif",
+              fontSize: 14, fontWeight: 650, cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(99,102,241,0.25)',
+              transition: 'all 0.15s',
+              fontFamily: "'Plus Jakarta Sans', Inter, sans-serif",
               flexShrink: 0,
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.5)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(99,102,241,0.4)'; }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; }}
           >
-            <span style={{ fontSize: 20, lineHeight: 1 }}>+</span>
+            <Plus size={16} />
             New Project
           </button>
         </div>
@@ -379,44 +323,43 @@ export default function DashboardPage() {
         {/* Stats HUD */}
         <DashboardHud projects={projects} totalWorkflows={totalWorkflows} publishedCount={publishedCount} />
 
-        {/* Projects Constellation */}
+        {/* Projects List */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
             <h2 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.3px', fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>
-              API Constellation Map
-              {!loading && <span style={{ marginLeft: 10, fontSize: 13, fontWeight: 500, color: 'var(--text-faint)', background: 'var(--bg-elevated)', padding: '2px 9px', borderRadius: 'var(--r-full)' }}>{projects.length} nodes</span>}
+              Your Projects
+              {!loading && <span style={{ marginLeft: 10, fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', padding: '2px 8px', borderRadius: '4px' }}>{projects.length} projects</span>}
             </h2>
           </div>
 
           {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 24, padding: 32 }}>
-              {[1, 2, 3].map(i => <div key={i} className="skeleton" style={{ height: 220, borderRadius: '50%' }} />)}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+              {[1, 2, 3].map(i => <div key={i} className="skeleton" style={{ height: 180, borderRadius: 16 }} />)}
             </div>
           ) : projects.length === 0 ? (
             <div style={{
               textAlign: 'center', padding: '80px 24px',
-              background: 'rgba(15,23,42,0.4)',
-              border: '1px dashed var(--border-strong)',
-              borderRadius: 24,
+              background: 'rgba(15,23,42,0.2)',
+              border: '1px dashed var(--border)',
+              borderRadius: 16,
               animation: 'fadeIn 0.4s ease',
             }}>
-              <div style={{ fontSize: 56, marginBottom: 16, animation: 'float 3s ease-in-out infinite' }}>🚀</div>
-              <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>No projects yet</h3>
-              <p style={{ color: 'var(--text-muted)', marginBottom: 28, fontSize: 14 }}>
-                Spawn your first visual API node to map out your endpoints.
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <Folder size={24} color="var(--text-muted)" />
+              </div>
+              <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8, fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>No projects yet</h3>
+              <p style={{ color: 'var(--text-muted)', marginBottom: 24, fontSize: 14 }}>
+                Create your first project workspace to map out your API endpoints.
               </p>
-              <button onClick={() => setShowCreate(true)} style={{ padding: '11px 24px', borderRadius: 12, border: 'none', background: 'var(--grad-brand)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 20px rgba(99,102,241,0.4)' }}>
-                + Spawn First Node
+              <button onClick={() => setShowCreate(true)} style={{ padding: '10px 24px', borderRadius: 100, border: 'none', background: 'var(--grad-brand)', color: '#fff', fontSize: 14, fontWeight: 650, cursor: 'pointer', boxShadow: '0 4px 14px rgba(99,102,241,0.25)', fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>
+                Create First Project
               </button>
             </div>
           ) : (
-            <div style={{ position: 'relative', width: '100%', minHeight: 460, borderRadius: 24, padding: '40px 24px', background: 'rgba(10,15,30,0.3)', border: '1px solid rgba(99,102,241,0.06)', overflow: 'hidden' }}>
-              <ConnectionWeb />
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 36, position: 'relative', zIndex: 10 }}>
-                {projects.map((proj, idx) => (
-                  <ProjectPod key={proj.id} proj={proj} idx={idx} handleDelete={handleDelete} deleting={deleting} />
-                ))}
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+              {projects.map((proj, idx) => (
+                <ProjectCard key={proj.id} proj={proj} idx={idx} handleDelete={handleDelete} deleting={deleting} />
+              ))}
             </div>
           )}
         </div>
@@ -427,12 +370,14 @@ export default function DashboardPage() {
         <div className="overlay" onClick={e => { if (e.target === e.currentTarget) setShowCreate(false); }}>
           <div className="modal" style={{ maxWidth: 480 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 26 }}>
-              <div style={{ width: 42, height: 42, borderRadius: 12, background: 'var(--grad-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, boxShadow: '0 4px 14px rgba(99,102,241,0.4)' }}>📦</div>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--grad-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 14px rgba(99,102,241,0.2)' }}>
+                <Folder size={18} color="#fff" />
+              </div>
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.3px' }}>Create New Project</h2>
+                <h2 style={{ fontSize: 17, fontWeight: 800, letterSpacing: '-0.3px' }}>Create New Project</h2>
                 <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>Set up your API workspace</p>
               </div>
-              <button onClick={() => setShowCreate(false)} style={{ marginLeft: 'auto', width: 32, height: 32, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
+              <button onClick={() => setShowCreate(false)} style={{ marginLeft: 'auto', width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-strong)'}
                 onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
               >✕</button>
@@ -446,15 +391,15 @@ export default function DashboardPage() {
               <div>
                 <label className="label">Description</label>
                 <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Describe what this project does..." rows={3}
-                  style={{ width: '100%', background: 'var(--bg-void)', border: '1px solid var(--border)', borderRadius: 10, padding: '11px 14px', color: 'var(--text-primary)', fontFamily: 'inherit', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
+                  style={{ width: '100%', background: 'var(--bg-void)', border: '1px solid var(--border)', borderRadius: 8, padding: '11px 14px', color: 'var(--text-primary)', fontFamily: 'inherit', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
                   onFocus={e => e.target.style.borderColor = 'var(--accent)'}
                   onBlur={e => e.target.style.borderColor = 'var(--border)'}
                 />
               </div>
               <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-                <button type="button" onClick={() => setShowCreate(false)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
-                <button type="submit" disabled={creating} className="btn" style={{ flex: 2, background: creating ? 'var(--bg-elevated)' : 'var(--grad-brand)', color: '#fff', boxShadow: creating ? 'none' : 'var(--shadow-btn)' }}>
-                  {creating ? <><span className="spinner" />Creating...</> : '✨ Create Project'}
+                <button type="button" onClick={() => setShowCreate(false)} className="btn btn-ghost" style={{ flex: 1, padding: '10px 16px', borderRadius: 8 }}>Cancel</button>
+                <button type="submit" disabled={creating} className="btn" style={{ flex: 2, padding: '10px 16px', borderRadius: 8, background: creating ? 'var(--bg-elevated)' : 'var(--grad-brand)', color: '#fff', boxShadow: creating ? 'none' : 'var(--shadow-btn)' }}>
+                  {creating ? <><span className="spinner" />Creating...</> : 'Create Project'}
                 </button>
               </div>
             </form>

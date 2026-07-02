@@ -6,3 +6,6 @@ export const exportQueue = new Queue("export-jobs", {
         url: config.redisUrl,
     },
 });
+exportQueue.on("error", (err) => {
+    console.error(`❌ BullMQ queue connection error: ${err.message}`);
+});

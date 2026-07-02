@@ -5,24 +5,24 @@
    ───────────────────────────────────────────────────── */
 :root {
   /* Backgrounds */
-  --bg-void: #010409;
-  --bg-base: #020617;
-  --bg-surface: #0a0f1e;
-  --bg-card: #0f172a;
-  --bg-elevated: #1e293b;
-  --bg-hover: #253147;
+  --bg-void: #000000;
+  --bg-base: #030303;
+  --bg-surface: #0a0a0a;
+  --bg-card: rgba(12, 12, 12, 0.5);
+  --bg-elevated: #141414;
+  --bg-hover: #1e1e1e;
 
   /* Borders */
-  --border-subtle: #0f172a;
-  --border: #1e293b;
-  --border-strong: #334155;
-  --border-accent: rgba(99,102,241,0.35);
+  --border-subtle: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-accent: rgba(99, 102, 241, 0.25);
 
   /* Text */
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --text-faint: #334155;
+  --text-faint: #475569;
 
   /* Accent / Brand */
   --accent: #6366f1;
@@ -46,10 +46,10 @@
   /* Gradients */
   --grad-brand: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   --grad-brand-h: linear-gradient(135deg, #4f52e0 0%, #7c3aed 100%);
-  --grad-surface: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  --grad-card: linear-gradient(145deg, #0f172a 0%, #141e33 50%, #1e293b 100%);
-  --grad-glow-blue: radial-gradient(ellipse at top left, rgba(99,102,241,0.2) 0%, transparent 60%);
-  --grad-glow-violet: radial-gradient(ellipse at bottom right, rgba(139,92,246,0.15) 0%, transparent 60%);
+  --grad-surface: linear-gradient(135deg, #0a0a0a 0%, #141414 100%);
+  --grad-card: linear-gradient(145deg, rgba(15, 15, 15, 0.6) 0%, rgba(5, 5, 5, 0.7) 100%);
+  --grad-glow-blue: radial-gradient(ellipse at top left, rgba(99,102,241,0.12) 0%, transparent 60%);
+  --grad-glow-violet: radial-gradient(ellipse at bottom right, rgba(139,92,246,0.1) 0%, transparent 60%);
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
@@ -60,16 +60,33 @@
   --shadow-glow-lg: 0 0 80px rgba(99,102,241,0.3);
   --shadow-btn: 0 4px 24px rgba(99,102,241,0.4), 0 1px 4px rgba(0,0,0,0.3);
 
-  /* Radius */
-  --r-xs: 4px;
-  --r-sm: 8px;
-  --r-md: 12px;
+  /* Radius — Meta-inspired 9-level scale */
+  --r-xs: 2px;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-base: 8px;
   --r-lg: 16px;
   --r-xl: 20px;
-  --r-2xl: 28px;
+  --r-2xl: 24px;
+  --r-3xl: 32px;
+  --r-feature: 40px;
+  --r-pill: 100px;
   --r-full: 9999px;
 
-  /* Spacing */
+  /* Spacing — 4px base-unit grid with named section sizes */
+  --sp-xxs: 4px;
+  --sp-xs: 8px;
+  --sp-sm: 10px;
+  --sp-md: 12px;
+  --sp-base: 16px;
+  --sp-lg: 20px;
+  --sp-xl: 24px;
+  --sp-2xl: 32px;
+  --sp-3xl: 40px;
+  --sp-section-sm: 48px;
+  --sp-section: 64px;
+  --sp-section-lg: 80px;
+  --sp-hero: 120px;
   --page-pad: 28px;
 
   /* Timing */
@@ -255,6 +272,11 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
+/* Meta-inspired 3-tier weight rhythm */
+.text-display { font-weight: 900; letter-spacing: -0.03em; }
+.text-editorial { font-weight: 300; letter-spacing: -0.01em; }
+.text-body { font-weight: 400; letter-spacing: -0.01em; }
+
 code, pre, .mono {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-feature-settings: 'liga' 1, 'calt' 1;
@@ -280,34 +302,36 @@ code, pre, .mono {
    GLASS & CARD COMPONENTS
    ───────────────────────────────────────────────────── */
 .glass {
-  background: rgba(15,23,42,0.75);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(99,102,241,0.12);
+  background: rgba(10, 10, 10, 0.45);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 .glass-heavy {
-  background: rgba(10,15,30,0.92);
-  backdrop-filter: blur(32px) saturate(200%);
-  -webkit-backdrop-filter: blur(32px) saturate(200%);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(5, 5, 5, 0.75);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 .card {
-  background: var(--grad-card);
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-2xl);
   transition: border-color var(--t-base), box-shadow var(--t-base), transform var(--t-base);
 }
 .card:hover {
-  border-color: var(--border-accent);
-  box-shadow: var(--shadow-glow);
+  border-color: var(--border-strong);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
 }
 .card-interactive {
   cursor: pointer;
 }
 .card-interactive:hover {
   transform: translateY(-2px);
-  border-color: var(--border-accent);
-  box-shadow: var(--shadow-glow);
+  border-color: var(--accent);
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.12);
 }
 
 /* ─────────────────────────────────────────────────────
@@ -332,19 +356,20 @@ code, pre, .mono {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 9px 18px;
-  border-radius: var(--r-sm);
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--r-pill);
   border: none;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
   transition: all var(--t-base) var(--ease-out);
   white-space: nowrap;
   position: relative;
   overflow: hidden;
   user-select: none;
+  letter-spacing: -0.01em;
 }
 .btn::after {
   content: '';
@@ -360,18 +385,18 @@ code, pre, .mono {
 .btn-primary {
   background: var(--grad-brand);
   color: #fff;
-  box-shadow: var(--shadow-btn);
+  box-shadow: 0 4px 20px rgba(99,102,241,0.35);
 }
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 30px rgba(99,102,241,0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(99,102,241,0.45);
 }
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border-strong);
 }
-.btn-ghost:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--text-primary); background: rgba(99,102,241,0.06); }
 .btn-danger {
   background: rgba(239,68,68,0.12);
   color: #fca5a5;
@@ -391,17 +416,19 @@ code, pre, .mono {
   width: 100%;
   background: var(--bg-void);
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 11px 14px;
+  border-radius: var(--r-base);
+  padding: 12px 16px;
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   outline: none;
   transition: border-color var(--t-base), box-shadow var(--t-base);
   box-sizing: border-box;
+  height: 44px;
 }
 .input:focus {
   border-color: var(--accent);
+  border-width: 2px;
   box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
 }
 .input::placeholder { color: var(--text-faint); }
@@ -422,15 +449,16 @@ code, pre, .mono {
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border-radius: var(--r-full);
-  font-size: 11px;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
 }
-.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .badge-success { background: var(--success-dim); color: var(--success); border: 1px solid rgba(16,185,129,0.2); }
 .badge-success::before { background: var(--success); box-shadow: 0 0 6px var(--success); animation: pulse 2s ease-in-out infinite; }
 .badge-danger  { background: var(--danger-dim);  color: var(--danger);  border: 1px solid rgba(239,68,68,0.2); }
@@ -586,11 +614,11 @@ main, .page-content {
 .modal {
   background: var(--bg-card);
   border: 1px solid var(--border-accent);
-  border-radius: var(--r-xl);
-  padding: 32px;
+  border-radius: var(--r-3xl);
+  padding: 36px;
   width: 100%;
   max-width: 480px;
-  box-shadow: var(--shadow-xl), var(--shadow-glow-lg);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(99,102,241,0.12);
   animation: slideInUp 0.3s var(--ease-spring);
 }
 
@@ -675,8 +703,8 @@ main, .page-content {
 .stat-card {
   background: var(--grad-card);
   border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 20px 22px;
+  border-radius: var(--r-2xl);
+  padding: 22px 24px;
   position: relative;
   overflow: hidden;
   transition: transform var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
@@ -690,7 +718,7 @@ main, .page-content {
   opacity: 0;
   transition: opacity var(--t-base);
 }
-.stat-card:hover { transform: translateY(-2px); border-color: var(--border-accent); box-shadow: var(--shadow-glow); }
+.stat-card:hover { transform: translateY(-2px); border-color: var(--border-accent); box-shadow: 0 0 24px rgba(99,102,241,0.12); }
 .stat-card:hover::before { opacity: 1; }
 
 /* ─────────────────────────────────────────────────────
@@ -733,114 +761,29 @@ main, .page-content {
 }
 
 /* ─────────────────────────────────────────────────────
-   SCI-FI HUD & CYBER-PLATE CUSTOM TOKENS
+   CLEAN DEVELOPER CARDS & UTILITIES
    ───────────────────────────────────────────────────── */
-:root {
-  --neon-cyan: #00f2fe;
-  --neon-fuchsia: #f355da;
-  --neon-emerald: #05ffc4;
-  --neon-amber: #ffb300;
-  --neon-rose: #ff2e93;
+.card-clean {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 30px;
+  transition: border-color var(--t-base), box-shadow var(--t-base), transform var(--t-base);
+}
+.card-clean:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.05);
 }
 
-/* Custom Cyber scanner overlay */
-.cyber-scanner {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, transparent 0%, rgba(0, 242, 254, 0.05) 50%, transparent 100%);
-  background-size: 100% 200%;
-  animation: cyberScan 6s linear infinite;
-  z-index: 1;
-}
-
-@keyframes cyberScan {
-  0% { background-position: 0% -200%; }
-  100% { background-position: 0% 200%; }
-}
-
-/* Cyber cuts & plates */
-.cyber-plate-cyan {
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-  border: 1px solid rgba(0, 242, 254, 0.2);
-  background: rgba(10, 15, 30, 0.75);
-  box-shadow: inset 0 0 15px rgba(0, 242, 254, 0.05);
-  position: relative;
-  transition: all 0.3s var(--ease-out);
-}
-.cyber-plate-cyan:hover {
-  border-color: rgba(0, 242, 254, 0.6);
-  box-shadow: 0 0 25px rgba(0, 242, 254, 0.15), inset 0 0 20px rgba(0, 242, 254, 0.1);
-  transform: translateY(-2px);
-}
-
-.cyber-plate-fuchsia {
-  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-  border: 1px solid rgba(243, 85, 218, 0.2);
-  background: rgba(10, 15, 30, 0.75);
-  box-shadow: inset 0 0 15px rgba(243, 85, 218, 0.05);
-  position: relative;
-  transition: all 0.3s var(--ease-out);
-}
-.cyber-plate-fuchsia:hover {
-  border-color: rgba(243, 85, 218, 0.6);
-  box-shadow: 0 0 25px rgba(243, 85, 218, 0.15), inset 0 0 20px rgba(243, 85, 218, 0.1);
-  transform: translateY(-2px);
-}
-
-.cyber-plate-emerald {
-  clip-path: polygon(0 12px, 12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
-  border: 1px solid rgba(5, 255, 196, 0.2);
-  background: rgba(10, 15, 30, 0.75);
-  box-shadow: inset 0 0 15px rgba(5, 255, 196, 0.05);
-  position: relative;
-  transition: all 0.3s var(--ease-out);
-}
-.cyber-plate-emerald:hover {
-  border-color: rgba(5, 255, 196, 0.6);
-  box-shadow: 0 0 25px rgba(5, 255, 196, 0.15), inset 0 0 20px rgba(5, 255, 196, 0.1);
-  transform: translateY(-2px);
-}
-
-/* Sci-fi tech corners decoration */
-.tech-corners::before {
-  content: '';
-  position: absolute;
-  top: 4px; left: 4px;
-  width: 6px; height: 6px;
-  border-top: 2px solid var(--accent);
-  border-left: 2px solid var(--accent);
-}
-.tech-corners::after {
-  content: '';
-  position: absolute;
-  bottom: 4px; right: 4px;
-  width: 6px; height: 6px;
-  border-bottom: 2px solid var(--accent);
-  border-right: 2px solid var(--accent);
-}
-
-/* Pulsing handle animation */
-@keyframes handlePulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
-  70% { transform: scale(1.2); box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-}
-
-.handle-pulse {
-  animation: handlePulse 2s infinite;
-}
-
-/* Monospace mini terminal output inside nodes */
 .node-console {
   background: #020617;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 6px;
   padding: 6px 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  color: #38bdf8;
-  max-height: 80px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  max-height: 120px;
   overflow: hidden;
 }
 
