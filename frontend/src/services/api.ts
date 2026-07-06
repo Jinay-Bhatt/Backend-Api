@@ -7,14 +7,23 @@ async function request<T = any>(
   const token = typeof window !== 'undefined' ? localStorage.getItem('ff_token') : null;
 
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...(options.headers as Record<string, string> || {}),
   };
+  if (options.body) {
+    headers['Content-Type'] = 'application/json';
+  }
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const res = await fetch(`${BASE_URL}/api${endpoint}`, { ...options, headers });
 
   if (!res.ok) {
+    if (res.status === 401 && endpoint !== '/auth/login' && endpoint !== '/auth/register') {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('ff_token');
+        localStorage.removeItem('ff_user');
+        window.location.href = '/';
+      }
+    }
     const err = await res.json().catch(() => ({ error: res.statusText }));
     throw new Error(err.error || err.message || `HTTP ${res.status}`);
   }

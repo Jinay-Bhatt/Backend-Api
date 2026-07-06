@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { api } from '../../../../services/api';
 import CustomSelect from '../../../../components/CustomSelect';
+import { Key, Info, Shield } from 'lucide-react';
 
 export default function GatewayPage() {
   const params = useParams();
@@ -42,35 +43,43 @@ export default function GatewayPage() {
   };
 
   const Toggle = ({ label, sub, field }: any) => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 0', borderBottom: '1px solid var(--border)' }}>
       <div>
-        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--mono)' }}>[ {label.toUpperCase().replace(/ /g, '_')} ]</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--mono)' }}>{label.toUpperCase().replace(/ /g, '_')}</div>
         {sub && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, fontFamily: 'var(--mono)' }}>{sub.toUpperCase()}</div>}
       </div>
       <button onClick={() => setConfig((p: any) => ({ ...p, [field]: !p[field] }))}
         style={{
-          padding: '6px 16px',
-          border: `1.5px solid ${config[field] ? 'var(--neon-cyan)' : 'var(--border-strong)'}`,
-          background: config[field] ? 'rgba(0, 242, 254, 0.08)' : 'rgba(255,255,255,0.02)',
-          color: config[field] ? 'var(--neon-cyan)' : 'var(--text-muted)',
+          padding: '6px 14px',
+          border: config[field] ? 'none' : '1px solid var(--border)',
+          background: config[field] ? '#ffffff' : 'rgba(255,255,255,0.02)',
+          color: config[field] ? '#000000' : 'var(--text-muted)',
           cursor: 'pointer',
           fontFamily: 'var(--mono)',
           fontSize: 10,
-          fontWeight: 900,
+          fontWeight: 700,
+          borderRadius: '6px',
           letterSpacing: '0.08em',
-          transition: 'all 0.2s',
-          boxShadow: config[field] ? '0 0 12px rgba(0, 242, 254, 0.15)' : 'none'
+          transition: 'all 0.15s ease',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.background = config[field] ? 'rgba(0, 242, 254, 0.15)' : 'rgba(255,255,255,0.06)';
-          e.currentTarget.style.boxShadow = config[field] ? '0 0 15px rgba(0, 242, 254, 0.3)' : 'none';
+          if (!config[field]) {
+            e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+          } else {
+            e.currentTarget.style.background = '#cbd5e1';
+          }
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.background = config[field] ? 'rgba(0, 242, 254, 0.08)' : 'rgba(255,255,255,0.02)';
-          e.currentTarget.style.boxShadow = config[field] ? '0 0 12px rgba(0, 242, 254, 0.15)' : 'none';
+          if (!config[field]) {
+            e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+            e.currentTarget.style.borderColor = 'var(--border)';
+          } else {
+            e.currentTarget.style.background = '#ffffff';
+          }
         }}
       >
-        {config[field] ? 'ACTIVE //' : 'DISABLED //'}
+        {config[field] ? 'ACTIVE' : 'DISABLED'}
       </button>
     </div>
   );
@@ -80,17 +89,16 @@ export default function GatewayPage() {
   return (
     <div style={{ height: 'calc(100vh - 104px)', overflowY: 'auto', background: 'var(--bg-base)', fontFamily: 'Inter, sans-serif' }}>
       {/* Visual Header */}
-      <div style={{ padding: '24px 32px', borderBottom: '1px solid rgba(0, 242, 254, 0.15)', background: 'rgba(10,15,30,0.6)', backdropFilter: 'blur(20px)', position: 'relative', animation: 'fadeIn 0.35s ease both' }}>
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, background: 'var(--grad-brand)' }} />
-        <h1 style={{ fontSize: 18, fontWeight: 800, color: '#f1f5f9', letterSpacing: '-0.3px', fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>🛡️ API Gateway Configuration</h1>
-        <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>Configure security controls, rate limiting, and CORS headers per endpoint.</p>
+      <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border)', background: '#09090b', position: 'relative' }}>
+        <h1 style={{ fontSize: 16, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.3px', fontFamily: "'Plus Jakarta Sans', Inter, sans-serif", display: 'flex', alignItems: 'center', gap: 8 }}><Shield size={16} /> API Gateway Configuration</h1>
+        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>Configure security controls, rate limiting, and CORS headers per endpoint.</p>
       </div>
 
-      <div style={{ maxWidth: 760, margin: '0 auto', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 24, animation: 'fadeIn 0.5s ease both' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 24 }}>
         
         {/* Workflow selector capsule */}
-        <div className="cyber-plate-cyan tech-corners" style={{ padding: '20px 24px' }}>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10, fontFamily: 'var(--mono)' }}>[ ACTIVE_ENDPOINT_WORKFLOW ]</label>
+        <div style={{ padding: '20px 24px', background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px' }}>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10, fontFamily: 'var(--mono)' }}>ACTIVE_ENDPOINT_WORKFLOW</label>
           <CustomSelect
             value={selectedWfId}
             onChange={(val) => setSelectedWfId(val)}
@@ -99,129 +107,107 @@ export default function GatewayPage() {
               label: `${wf.method} ${wf.path} — ${wf.name}`,
               method: wf.method,
               badge: wf.isPublished ? 'LIVE' : undefined,
-              badgeColor: '#05ffc4'
+              badgeColor: '#10b981'
             }))}
           />
           {selectedWf && (
             <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-              <span className={selectedWf.isPublished ? 'badge badge-success' : 'badge badge-accent'} style={{ fontSize: 10 }}>
+              <span className={selectedWf.isPublished ? 'badge badge-success' : 'badge badge-accent'} style={{ fontSize: 10, background: selectedWf.isPublished ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 255, 255, 0.04)', color: selectedWf.isPublished ? '#10b981' : 'var(--text-muted)', border: `1px solid ${selectedWf.isPublished ? 'rgba(16, 185, 129, 0.2)' : 'var(--border)'}`, padding: '2px 8px', borderRadius: '4px' }}>
                 {selectedWf.isPublished ? 'Published' : 'Draft'}
               </span>
-              <span className="badge" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: 10 }}>ID: {selectedWf.id.slice(0,8)}...</span>
+              <span style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 10, padding: '2px 8px', borderRadius: '4px', fontFamily: "'JetBrains Mono', monospace" }}>ID: {selectedWf.id.slice(0,8)}...</span>
             </div>
           )}
         </div>
 
-        {loading ? <div className="skeleton" style={{ height: 320, borderRadius: 0 }} /> : (
+        {loading ? <div className="skeleton" style={{ height: 320, borderRadius: '12px' }} /> : (
           <>
             {/* Auth section */}
-            <div className="cyber-plate-fuchsia tech-corners" style={{ padding: '24px 28px' }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--neon-fuchsia)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--mono)' }}>[ AUTHENTICATION_CONTROLS ]</div>
+            <div style={{ padding: '24px 28px', background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--mono)' }}>AUTHENTICATION_CONTROLS</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>Require credentials to invoke this API endpoint.</div>
               <Toggle label="Require JWT Bearer Token" sub="Verify Authorization: Bearer <JWT> token on requests" field="requireJwt" />
               <Toggle label="Require API Key" sub="Verify custom x-api-key header credentials" field="requireApiKey" />
               
               {config.requireApiKey && (
-                <div style={{ marginTop: 18, animation: 'fadeInFast 0.2s ease', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label className="label" style={{ color: 'var(--neon-fuchsia)' }}>[ SECURE_API_KEY_VALUE ]</label>
+                <div style={{ marginTop: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>SECURE_API_KEY_VALUE</label>
                   <div style={{
                     position: 'relative',
-                    background: 'rgba(2, 6, 23, 0.95)',
-                    border: '1px solid rgba(243, 85, 218, 0.25)',
-                    padding: '12px 14px',
-                    transition: 'all 0.25s',
+                    background: '#030303',
+                    border: '1px solid var(--border)',
+                    borderRadius: '6px',
+                    padding: '10px 14px',
+                    transition: 'all 0.15s ease',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 10
-                  }}
-                  onFocusCapture={e => {
-                    e.currentTarget.style.borderColor = 'var(--neon-fuchsia)';
-                    e.currentTarget.style.boxShadow = '0 0 15px rgba(243, 85, 218, 0.25)';
-                  }}
-                  onBlurCapture={e => {
-                    e.currentTarget.style.borderColor = 'rgba(243, 85, 218, 0.25)';
-                    e.currentTarget.style.boxShadow = 'none';
                   }}>
-                    <span style={{ color: 'var(--neon-fuchsia)', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 'bold' }}>{'>'}</span>
                     <input type="password" value={config.apiKeyValue} onChange={e => setConfig((p: any) => ({ ...p, apiKeyValue: e.target.value }))} placeholder="••••••••••••••••••••••••••••••••"
-                      style={{ width: '100%', background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: 13, outline: 'none', fontFamily: 'var(--mono)' }} />
+                      style={{ width: '100%', background: 'transparent', border: 'none', color: '#ffffff', fontSize: 13, outline: 'none', fontFamily: 'var(--mono)' }} />
                   </div>
-                  <div style={{ marginTop: 4, fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--mono)' }}>
-                    🔑 Leaving it blank will retain the previously saved secure API key.
+                  <div style={{ marginTop: 4, fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--mono)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Key size={10} style={{ color: '#cbd5e1', flexShrink: 0 }} />
+                    <span>Leaving it blank will retain the previously saved secure API key.</span>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Rate limiting */}
-            <div className="cyber-plate-cyan tech-corners" style={{ padding: '24px 28px' }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--neon-cyan)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--mono)' }}>[ RATE_LIMITING_LIMITS ]</div>
+            <div style={{ padding: '24px 28px', background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--mono)' }}>RATE_LIMITING_LIMITS</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 18 }}>Throttle request volume per client IP to prevent abuse.</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
                 {[{ label: 'Max Requests', key: 'rateLimitLimit', placeholder: 'e.g. 100' }, { label: 'Window (seconds)', key: 'rateLimitWindow', placeholder: 'e.g. 60' }].map(f => (
                   <div key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <label className="label" style={{ color: 'var(--neon-cyan)' }}>{f.label}</label>
+                    <label style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{f.label}</label>
                     <div style={{
                       position: 'relative',
-                      background: 'rgba(2, 6, 23, 0.95)',
-                      border: '1px solid rgba(0, 242, 254, 0.25)',
-                      padding: '12px 14px',
-                      transition: 'all 0.25s',
+                      background: '#030303',
+                      border: '1px solid var(--border)',
+                      borderRadius: '6px',
+                      padding: '10px 14px',
+                      transition: 'all 0.15s ease',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 10
-                    }}
-                    onFocusCapture={e => {
-                      e.currentTarget.style.borderColor = 'var(--neon-cyan)';
-                      e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 242, 254, 0.25)';
-                    }}
-                    onBlurCapture={e => {
-                      e.currentTarget.style.borderColor = 'rgba(0, 242, 254, 0.25)';
-                      e.currentTarget.style.boxShadow = 'none';
                     }}>
-                      <span style={{ color: 'var(--neon-cyan)', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 'bold' }}>{'>'}</span>
                       <input type="number" value={config[f.key]} onChange={e => setConfig((p: any) => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder}
-                        style={{ width: '100%', background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: 13, outline: 'none', fontFamily: 'var(--mono)' }} />
+                        style={{ width: '100%', background: 'transparent', border: 'none', color: '#ffffff', fontSize: 13, outline: 'none', fontFamily: 'var(--mono)' }} />
                     </div>
                   </div>
                 ))}
               </div>
               {config.rateLimitLimit && config.rateLimitWindow && (
-                <div style={{ marginTop: 14, padding: '10px 14px', borderRadius: 0, background: 'rgba(0, 242, 254, 0.05)', border: '1px solid rgba(0, 242, 254, 0.2)', fontSize: 11, color: 'var(--accent-light)', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--mono)' }}>
-                  <span>ℹ️ Endpoint configured for {config.rateLimitLimit} requests every {config.rateLimitWindow} seconds per IP.</span>
+                <div style={{ marginTop: 14, padding: '10px 14px', borderRadius: '6px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border)', fontSize: 11, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--mono)' }}>
+                  <Info size={12} style={{ flexShrink: 0 }} />
+                  <span>Endpoint configured for {config.rateLimitLimit} requests every {config.rateLimitWindow} seconds per IP.</span>
                 </div>
               )}
             </div>
 
             {/* CORS */}
-            <div className="cyber-plate-emerald tech-corners" style={{ padding: '24px 28px' }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--neon-emerald)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--mono)' }}>[ CROSS_ORIGIN_RESOURCE_POLICIES ]</div>
+            <div style={{ padding: '24px 28px', background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--mono)' }}>CROSS_ORIGIN_RESOURCE_POLICIES</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 18 }}>Manage which web applications are permitted to call this endpoint.</div>
               <Toggle label="Enable CORS headers" sub="Authorize cross-origin requests & preflight prechecks" field="corsEnabled" />
               {config.corsEnabled && (
-                <div style={{ marginTop: 18, animation: 'fadeInFast 0.2s ease', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label className="label" style={{ color: 'var(--neon-emerald)' }}>Allowed Origins</label>
+                <div style={{ marginTop: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>Allowed Origins</label>
                   <div style={{
                     position: 'relative',
-                    background: 'rgba(2, 6, 23, 0.95)',
-                    border: '1px solid rgba(5, 255, 196, 0.25)',
-                    padding: '12px 14px',
-                    transition: 'all 0.25s',
+                    background: '#030303',
+                    border: '1px solid var(--border)',
+                    borderRadius: '6px',
+                    padding: '10px 14px',
+                    transition: 'all 0.15s ease',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 10
-                  }}
-                  onFocusCapture={e => {
-                    e.currentTarget.style.borderColor = 'var(--neon-emerald)';
-                    e.currentTarget.style.boxShadow = '0 0 15px rgba(5, 255, 196, 0.25)';
-                  }}
-                  onBlurCapture={e => {
-                    e.currentTarget.style.borderColor = 'rgba(5, 255, 196, 0.25)';
-                    e.currentTarget.style.boxShadow = 'none';
                   }}>
-                    <span style={{ color: 'var(--neon-emerald)', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 'bold' }}>{'>'}</span>
                     <input value={config.allowedOrigins} onChange={e => setConfig((p: any) => ({ ...p, allowedOrigins: e.target.value }))} placeholder="* or https://my-client-app.com"
-                      style={{ width: '100%', background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: 13, outline: 'none', fontFamily: 'var(--mono)' }} />
+                      style={{ width: '100%', background: 'transparent', border: 'none', color: '#ffffff', fontSize: 13, outline: 'none', fontFamily: 'var(--mono)' }} />
                   </div>
                 </div>
               )}
@@ -230,25 +216,25 @@ export default function GatewayPage() {
             <button onClick={handleSave} disabled={saving || !selectedWfId}
               style={{
                 padding: '14px',
-                background: saving ? 'rgba(30, 41, 59, 0.5)' : saved ? 'rgba(16,185,129,0.1)' : 'rgba(0, 242, 254, 0.08)',
-                color: saving ? 'var(--text-muted)' : saved ? 'var(--success)' : 'var(--neon-cyan)',
-                border: `1.5px solid ${saved ? 'var(--success)' : 'var(--neon-cyan)'}`,
+                background: saving ? '#1e293b' : saved ? 'rgba(16,185,129,0.1)' : '#ffffff',
+                color: saving ? '#475569' : saved ? '#10b981' : '#000000',
+                border: saved ? '1px solid rgba(16,185,129,0.2)' : 'none',
                 fontFamily: 'var(--mono)',
                 fontSize: 13,
-                fontWeight: 800,
+                fontWeight: 700,
                 cursor: saving ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                transition: 'all 0.25s',
-                boxShadow: '0 0 10px rgba(0, 242, 254, 0.1)',
+                borderRadius: '6px',
+                transition: 'all 0.15s ease',
                 letterSpacing: '0.05em'
               }}
-              onMouseEnter={e => { if (!saving) { e.currentTarget.style.background = saved ? 'rgba(16,185,129,0.15)' : 'rgba(0, 242, 254, 0.2)'; e.currentTarget.style.boxShadow = `0 0 20px ${saved ? 'rgba(16,185,129,0.4)' : 'rgba(0, 242, 254, 0.4)'}`; e.currentTarget.style.transform = 'translateY(-1px)'; }}}
-              onMouseLeave={e => { e.currentTarget.style.background = saving ? 'rgba(30, 41, 59, 0.5)' : saved ? 'rgba(16,185,129,0.1)' : 'rgba(0, 242, 254, 0.08)'; e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 242, 254, 0.1)'; e.currentTarget.style.transform = 'none'; }}
+              onMouseEnter={e => { if (!saving) { e.currentTarget.style.background = saved ? 'rgba(16,185,129,0.15)' : '#cbd5e1'; }}}
+              onMouseLeave={e => { e.currentTarget.style.background = saving ? '#1e293b' : saved ? 'rgba(16,185,129,0.1)' : '#ffffff'; }}
             >
-              {saving ? <><span className="spinner" /> COMMITTING CONFIGURATION...</> : saved ? '✓ GATEWAY CONFIGURATION COMMITTED SUCCESS' : 'SAVE GATEWAY GATEWAYS CONFIG //'}
+              {saving ? 'COMMITTING CONFIGURATION...' : saved ? '✓ GATEWAY CONFIGURATION COMMITTED SUCCESS' : 'SAVE GATEWAY CONFIG'}
             </button>
           </>
         )}

@@ -15,20 +15,24 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { api } from '../../../../services/api';
+import { Link2, Network, Play, Pause, Trash2 } from 'lucide-react';
+
 
 const ServiceNode = ({ data }: any) => {
   const { name, baseUrl, isActive, routesCount } = data;
-  const statusColor = isActive ? '#05ffc4' : '#64748b';
-  const glowShadow = isActive ? '0 0 15px rgba(5, 255, 196, 0.6)' : 'none';
+  const statusColor = isActive ? '#10b981' : '#64748b';
+  const borderColor = isActive ? '#10b981' : 'rgba(255, 255, 255, 0.08)';
   
   return (
     <div style={{
       position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
+      background: '#09090b',
+      border: `1px solid ${borderColor}`,
+      borderRadius: '10px',
+      padding: '12px 16px',
+      minWidth: 180,
+      boxShadow: isActive ? '0 0 16px rgba(16, 185, 129, 0.15)' : '0 4px 12px rgba(0,0,0,0.5)',
+      fontFamily: "'JetBrains Mono', monospace",
     }}>
       {/* Target Handle */}
       <Handle
@@ -38,123 +42,50 @@ const ServiceNode = ({ data }: any) => {
           width: 8,
           height: 8,
           borderRadius: '50%',
-          background: isActive ? '#00f2fe' : '#334155',
-          border: `1.5px solid ${isActive ? '#05ffc4' : '#475569'}`,
-          boxShadow: isActive ? '0 0 8px #00f2fe' : 'none',
-          left: -4,
+          background: '#09090b',
+          border: `2px solid ${statusColor}`,
+          left: -5,
         }}
       />
       
-      {/* Planetary Orbit Ring */}
-      <div style={{
-        position: 'absolute',
-        width: 86,
-        height: 86,
-        borderRadius: '50%',
-        border: `1px dashed ${isActive ? 'rgba(5, 255, 196, 0.3)' : 'rgba(100, 116, 139, 0.15)'}`,
-        animation: isActive ? 'spin 12s linear infinite' : 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        pointerEvents: 'none',
-      }}>
-        {/* Orbiting particle */}
-        {isActive && (
-          <div style={{
-            position: 'absolute',
-            top: -3,
-            width: 6,
-            height: 6,
-            borderRadius: '50%',
-            background: '#05ffc4',
-            boxShadow: '0 0 8px #05ffc4',
-          }} />
-        )}
-      </div>
-
-      {/* Outer Pulse/Glow Ring */}
-      <div style={{
-        position: 'absolute',
-        width: 68,
-        height: 68,
-        borderRadius: '50%',
-        border: `1.5px solid ${isActive ? 'rgba(0, 242, 254, 0.4)' : 'rgba(51, 65, 85, 0.3)'}`,
-        boxShadow: isActive ? '0 0 12px rgba(0, 242, 254, 0.2)' : 'none',
-        animation: isActive ? 'floatSlow 4s ease-in-out infinite' : 'none',
-        pointerEvents: 'none',
-      }} />
-
-      {/* Planetary Server Core */}
-      <div style={{
-        width: 48,
-        height: 48,
-        borderRadius: '50%',
-        background: `radial-gradient(circle, ${isActive ? '#0a1f30' : '#0f172a'} 0%, #020617 100%)`,
-        border: `2px solid ${statusColor}`,
-        boxShadow: glowShadow,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 2,
-        cursor: 'pointer',
-      }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <div style={{
-          width: 12,
-          height: 12,
+          width: 6,
+          height: 6,
           borderRadius: '50%',
           background: statusColor,
-          boxShadow: glowShadow,
-          animation: isActive ? 'pulse 2s infinite' : 'none',
         }} />
-      </div>
-
-      {/* Telemetry/HUD Slate below core */}
-      <div style={{
-        marginTop: 12,
-        padding: '8px 12px',
-        minWidth: 150,
-        textAlign: 'center',
-        zIndex: 3,
-        clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%)',
-        background: 'rgba(5, 10, 20, 0.85)',
-        border: `1.5px solid ${isActive ? '#00f2fe' : '#334155'}`,
-        boxShadow: isActive ? '0 0 15px rgba(0, 242, 254, 0.15)' : 'none',
-        color: '#f1f5f9',
-      }}>
         <div style={{
-          fontWeight: 800,
+          fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          color: isActive ? '#00f2fe' : '#94a3b8',
+          color: '#ffffff',
           fontSize: 11,
-          fontFamily: "'Plus Jakarta Sans', sans-serif"
         }}>
           {name}
         </div>
-        <div style={{
-          fontSize: 9,
-          color: '#64748b',
-          fontFamily: "'JetBrains Mono', monospace",
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          marginTop: 2
-        }}>
-          {baseUrl}
-        </div>
-        {routesCount > 0 && (
-          <div style={{
-            fontSize: 8,
-            color: '#05ffc4',
-            marginTop: 4,
-            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-            paddingTop: 4,
-            fontFamily: "'JetBrains Mono', monospace"
-          }}>
-            NODE ACTIVE · {routesCount} PATHS
-          </div>
-        )}
       </div>
+      <div style={{
+        fontSize: 9,
+        color: '#64748b',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }}>
+        {baseUrl}
+      </div>
+      {routesCount > 0 && (
+        <div style={{
+          fontSize: 8.5,
+          color: '#10b981',
+          marginTop: 6,
+          borderTop: '1px solid rgba(255, 255, 255, 0.04)',
+          paddingTop: 6,
+          fontWeight: 600,
+        }}>
+          ● {routesCount} ACTIVE PATHS
+        </div>
+      )}
 
       {/* Source Handle */}
       <Handle
@@ -164,10 +95,9 @@ const ServiceNode = ({ data }: any) => {
           width: 8,
           height: 8,
           borderRadius: '50%',
-          background: isActive ? '#00f2fe' : '#334155',
-          border: `1.5px solid ${isActive ? '#05ffc4' : '#475569'}`,
-          boxShadow: isActive ? '0 0 8px #00f2fe' : 'none',
-          right: -4,
+          background: '#09090b',
+          border: `2px solid ${statusColor}`,
+          right: -5,
         }}
       />
     </div>
@@ -291,111 +221,110 @@ export default function ServicesPage() {
   return (
     <div style={{ height: 'calc(100vh - 104px)', display: 'flex', background: 'var(--bg-base)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       {/* ── LEFT PANEL ─────────────────────────────── */}
-      <div style={{ width: 340, borderRight: '1px solid rgba(0, 242, 254, 0.2)', display: 'flex', flexDirection: 'column', background: 'rgba(10,15,30,0.85)', backdropFilter: 'blur(20px)', flexShrink: 0, animation: 'fadeIn 0.35s ease both' }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(0, 242, 254, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ width: 340, borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', background: '#09090b', flexShrink: 0 }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: '#f1f5f9', letterSpacing: '0.03em' }}>🔗 CORE SERVICES</div>
-            <div style={{ fontSize: 11, color: '#00f2fe', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>{services.length} ACTIVE NAMESPACES</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Link2 size={13} style={{ color: '#ffffff' }} /> CORE SERVICES
+            </div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>{services.length} ACTIVE NAMESPACES</div>
           </div>
           <button
             onClick={() => setShowAdd(true)}
-            className="btn"
             style={{
               padding: '6px 12px',
-              background: 'transparent',
-              border: '1px solid #00f2fe',
-              color: '#00f2fe',
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid var(--border)',
+              color: '#ffffff',
               fontSize: 11,
-              fontWeight: 700,
+              fontWeight: 600,
               cursor: 'pointer',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
               fontFamily: "'JetBrains Mono', monospace",
-              boxShadow: '0 0 10px rgba(0, 242, 254, 0.2)',
-              clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)'
+              borderRadius: '6px',
+              transition: 'all 0.15s ease'
             }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
           >+ Register</button>
         </div>
 
         <div className="scroll-area" style={{ flex: 1, padding: '16px' }}>
           {loading ? (
             [...Array(3)].map((_, i) => (
-              <div key={i} className="skeleton" style={{ height: 110, borderRadius: 14, marginBottom: 12 }} />
+              <div key={i} className="skeleton" style={{ height: 110, borderRadius: 8, marginBottom: 12 }} />
             ))
           ) : services.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 16px', color: 'var(--text-faint)' }}>
-              <div style={{ fontSize: 40, marginBottom: 12, animation: 'float 3s infinite' }}>🕸️</div>
-              <p style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-secondary)' }}>NO MESH NAMESPACES DETECTED.</p>
+            <div style={{ textAlign: 'center', padding: '60px 16px', color: 'var(--text-faint)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <Network size={40} style={{ color: 'var(--text-faint)', marginBottom: 12 }} />
+              <p style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-secondary)', margin: 0 }}>NO MESH NAMESPACES DETECTED.</p>
             </div>
           ) : services.map((svc, idx) => {
             const isSvcActive = svc.isActive;
-            const cyberClass = isSvcActive ? 'cyber-plate-cyan' : 'cyber-plate-fuchsia';
-            const borderCol = isSvcActive ? 'rgba(0, 242, 254, 0.3)' : 'rgba(243, 85, 218, 0.3)';
-            const glowText = isSvcActive ? '#00f2fe' : '#f355da';
-
             return (
-              <div key={svc.id} className={cyberClass}
+              <div key={svc.id}
                 style={{
                   padding: 16,
                   marginBottom: 14,
-                  border: `1.5px solid ${borderCol}`,
-                  background: 'rgba(5, 10, 20, 0.6)',
-                  animation: `fadeIn 0.3s ease ${idx * 0.05}s both`,
+                  border: '1px solid var(--border)',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.015)',
+                  transition: 'all 0.2s ease',
                 }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.015)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{
-                      width: 8,
-                      height: 8,
+                      width: 6,
+                      height: 6,
                       borderRadius: '50%',
-                      background: isSvcActive ? '#05ffc4' : '#64748b',
-                      boxShadow: isSvcActive ? '0 0 10px #05ffc4' : 'none',
-                      animation: isSvcActive ? 'pulseGlow 2s infinite' : 'none'
+                      background: isSvcActive ? '#10b981' : '#64748b',
                     }} />
-                    <span style={{ fontSize: 13, fontWeight: 800, color: '#f1f5f9', letterSpacing: '0.02em' }}>{svc.name}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', letterSpacing: '0.02em' }}>{svc.name}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 6, zIndex: 10 }}>
                     <button onClick={() => handleToggleActive(svc)} title={isSvcActive ? 'Pause service' : 'Activate service'}
                       style={{
                         width: 24,
                         height: 24,
-                        border: `1px solid ${borderCol}`,
-                        background: 'transparent',
-                        color: isSvcActive ? '#05ffc4' : '#64748b',
+                        border: '1px solid var(--border)',
+                        borderRadius: '6px',
+                        background: 'rgba(255,255,255,0.03)',
+                        color: isSvcActive ? '#10b981' : '#64748b',
                         cursor: 'pointer',
-                        fontSize: 10,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontFamily: 'monospace',
                       }}
-                    >{isSvcActive ? '⏸' : '▶'}</button>
+                    >{isSvcActive ? <Pause size={11} /> : <Play size={11} />}</button>
                     <button onClick={() => handleDelete(svc.id, svc.name)}
                       style={{
                         width: 24,
                         height: 24,
                         border: `1px solid rgba(239, 68, 68, 0.2)`,
-                        background: 'transparent',
+                        borderRadius: '6px',
+                        background: 'rgba(239, 68, 68, 0.04)',
                         color: '#ef4444',
                         cursor: 'pointer',
-                        fontSize: 11,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
-                    >🗑</button>
+                    ><Trash2 size={11} /></button>
                   </div>
                 </div>
-                <div style={{ fontSize: 11, color: glowText, fontFamily: "'JetBrains Mono', monospace", marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{svc.baseUrl}</div>
-                {svc.description && <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>{svc.description}</div>}
+                <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{svc.baseUrl}</div>
+                {svc.description && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{svc.description}</div>}
                 
                 {(svc.routes?.length > 0) && (
-                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px dashed rgba(255,255,255,0.08)' }}>
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
                     {svc.routes.slice(0, 3).map((r: any, i: number) => (
                       <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 5 }}>
                         <span className={`method-${r.method}`} style={{ fontSize: 8, padding: '1px 4px', borderRadius: 3 }}>{r.method}</span>
-                        <span style={{ fontSize: 10, color: 'var(--text-secondary)', fontFamily: "'JetBrains Mono', monospace", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }}>{r.path}</span>
+                        <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }}>{r.path}</span>
                       </div>
                     ))}
                   </div>
@@ -414,67 +343,72 @@ export default function ServicesPage() {
           left: 16,
           zIndex: 10,
           padding: '8px 16px',
-          background: 'rgba(10,15,30,0.9)',
-          border: '1px solid rgba(0, 242, 254, 0.3)',
+          background: 'rgba(9, 9, 11, 0.92)',
+          border: '1px solid var(--border)',
           fontFamily: "'JetBrains Mono', monospace",
           fontSize: 11,
-          color: '#00f2fe',
-          boxShadow: '0 0 15px rgba(0, 242, 254, 0.1)',
-          clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%)'
+          color: '#ffffff',
+          borderRadius: '6px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6
         }}>
-          📡 MESH GRAPH CONTROL · {services.length} NODES · {edges.length} GLOW VECTORS
+          <Network size={12} style={{ color: '#ffffff' }} /> MESH GRAPH CONTROL · {services.length} NODES · {edges.length} LINKS
         </div>
 
         {services.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-faint)', gap: 12 }}>
-            <div style={{ fontSize: 64, animation: 'floatSlow 4s infinite' }}>🕸️</div>
-            <p style={{ fontSize: 13, fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-secondary)' }}>SERVICE NETWORK OFFLINE</p>
+            <Network size={40} style={{ color: 'var(--text-faint)' }} />
+            <p style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-secondary)' }}>SERVICE NETWORK OFFLINE</p>
             <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Register nodes in the command telemetry panel to initiate graph link diagnostics.</p>
             <button onClick={() => setShowAdd(true)}
               style={{
                 marginTop: 12,
                 padding: '8px 16px',
-                background: 'transparent',
-                border: '1.5px solid #05ffc4',
-                color: '#05ffc4',
+                background: '#ffffff',
+                border: 'none',
+                color: '#000000',
                 fontSize: 12,
                 fontWeight: 700,
                 cursor: 'pointer',
                 fontFamily: "'JetBrains Mono', monospace",
                 textTransform: 'uppercase',
-                boxShadow: '0 0 15px rgba(5, 255, 196, 0.2)',
-                clipPath: 'polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)'
+                borderRadius: '6px',
+                transition: 'all 0.15s ease'
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#cbd5e1'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; }}
             >+ Add First Service</button>
           </div>
         ) : (
           <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} onMove={onMove} fitView style={{ background: 'var(--bg-base)' }}>
-            <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="rgba(0, 242, 254, 0.1)" />
-            <Controls style={{ background: '#0a0f1e', border: '1px solid rgba(0, 242, 254, 0.25)', borderRadius: 0, boxShadow: '0 0 10px rgba(0, 242, 254, 0.15)' }} />
+            <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="rgba(255, 255, 255, 0.05)" />
+            <Controls style={{ background: '#09090b', border: '1px solid var(--border)', borderRadius: '6px' }} />
             <MiniMap style={{
-              background: '#020617',
-              border: '1px solid rgba(0, 242, 254, 0.25)',
-              borderRadius: 0,
+              background: '#020202',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
               opacity: isMinimapVisible ? 1 : 0,
               pointerEvents: isMinimapVisible ? 'all' : 'none',
               transition: 'opacity 0.3s ease-in-out',
-            }} nodeColor={(n) => n.data?.isActive ? '#05ffc4' : '#64748b'} maskColor="rgba(2,6,23,0.85)" />
+            }} nodeColor={(n) => n.data?.isActive ? '#10b981' : '#64748b'} maskColor="rgba(2,2,2,0.85)" />
           </ReactFlow>
         )}
       </div>
 
       {/* ── REGISTER SERVICE MODAL ─────────────────────── */}
       {showAdd && (
-        <div className="overlay" onClick={e => { if (e.target === e.currentTarget) setShowAdd(false); }}>
-          <div className="cyber-plate-cyan tech-corners" style={{ maxWidth: 460, width: '100%', padding: 28, background: '#0a0f1e', border: '2.5px solid #00f2fe', clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }} onClick={e => { if (e.target === e.currentTarget) setShowAdd(false); }}>
+          <div style={{ maxWidth: 460, width: '100%', padding: 28, background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-              <div style={{ width: 38, height: 38, border: '1px solid #00f2fe', background: 'rgba(0, 242, 254, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, boxShadow: '0 0 10px rgba(0,242,254,0.2)' }}>🔗</div>
-              <div>
-                <h2 style={{ fontSize: 16, fontWeight: 900, letterSpacing: '0.04em', color: '#fff', textTransform: 'uppercase' }}>REGISTER NODE</h2>
-                <p style={{ fontSize: 11, color: '#00f2fe', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>ESTABLISHING NEW MESH NAMESPACE</p>
+              <div style={{ width: 38, height: 38, border: '1px solid var(--border)', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                <Link2 size={18} />
               </div>
-              <button onClick={() => setShowAdd(false)} style={{ marginLeft: 'auto', width: 28, height: 28, border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >✕</button>
+              <div>
+                <h2 style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.04em', color: '#fff', textTransform: 'uppercase' }}>REGISTER NODE</h2>
+                <p style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>ESTABLISHING NEW MESH NAMESPACE</p>
+              </div>
+              <button onClick={() => setShowAdd(false)} style={{ marginLeft: 'auto', width: 24, height: 24, border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
             </div>
             
             <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
@@ -484,41 +418,52 @@ export default function ServicesPage() {
                 { k: 'description', label: 'Service Description', placeholder: 'Handles profile security tokens', type: 'text' },
               ].map(f => (
                 <div key={f.k}>
-                  <label className="label" style={{ color: '#00f2fe', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.05em' }}>{f.label}</label>
+                  <label style={{ color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>{f.label}</label>
                   <input
                     type={f.type} value={(form as any)[f.k]}
                     onChange={e => setForm(p => ({ ...p, [f.k]: e.target.value }))}
                     placeholder={f.placeholder}
                     required={f.k !== 'description'}
-                    className="input"
                     style={{
-                      background: 'rgba(0,0,0,0.3)',
-                      border: '1.5px solid rgba(0, 242, 254, 0.25)',
-                      borderRadius: 0,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      background: '#030303',
+                      border: '1px solid var(--border)',
+                      borderRadius: '6px',
                       color: '#fff',
-                      fontSize: 12,
+                      fontSize: 12.5,
                       fontFamily: f.k === 'description' ? 'inherit' : "'JetBrains Mono', monospace",
+                      padding: '8px 12px',
+                      outline: 'none',
                     }}
                   />
                 </div>
               ))}
               <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                <button type="button" onClick={() => setShowAdd(false)} className="btn btn-ghost" style={{ flex: 1, borderRadius: 0, border: '1px solid rgba(255,255,255,0.15)' }}>Cancel</button>
-                <button type="submit" disabled={adding} className="btn"
+                <button type="button" onClick={() => setShowAdd(false)} style={{ flex: 1, borderRadius: '6px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s' }}>Cancel</button>
+                <button type="submit" disabled={adding}
                   style={{
                     flex: 2,
-                    background: 'rgba(0, 242, 254, 0.15)',
-                    border: '1.5px solid #00f2fe',
-                    color: '#00f2fe',
-                    borderRadius: 0,
-                    boxShadow: '0 0 15px rgba(0, 242, 254, 0.2)',
+                    background: adding ? '#1e293b' : '#ffffff',
+                    border: 'none',
+                    color: adding ? '#475569' : '#000000',
+                    borderRadius: '6px',
+                    fontSize: 12.5,
+                    fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     fontFamily: "'JetBrains Mono', monospace",
-                    fontWeight: 700
+                    cursor: adding ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.15s'
                   }}
+                  onMouseEnter={e => { if(!adding) e.currentTarget.style.background = '#cbd5e1'; }}
+                  onMouseLeave={e => { if(!adding) e.currentTarget.style.background = '#ffffff'; }}
                 >
-                  {adding ? 'Registering...' : '🔗 Register Service'}
+                  {adding ? 'Registering...' : (
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <Link2 size={14} /> Register Service
+                    </span>
+                  )}
                 </button>
               </div>
             </form>

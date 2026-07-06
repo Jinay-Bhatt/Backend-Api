@@ -46,7 +46,7 @@ export default function LoginPage() {
         <div style={{
           position: 'absolute', top: '-15%', left: '50%', transform: 'translateX(-50%)',
           width: 600, height: 600, borderRadius: '50%',
-          background: 'radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 65%)',
+          background: 'radial-gradient(ellipse, rgba(255,255,255,0.04) 0%, transparent 65%)',
         }} />
         <div style={{
           position: 'absolute', inset: 0,
@@ -142,8 +142,8 @@ export default function LoginPage() {
               style={{
                 width: '100%',
                 padding: '12px',
-                background: loading ? 'rgba(30, 41, 59, 0.5)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-                color: loading ? 'var(--text-muted)' : '#fff',
+                background: loading ? 'rgba(255, 255, 255, 0.15)' : '#ffffff',
+                color: loading ? 'var(--text-muted)' : '#000000',
                 border: 'none',
                 borderRadius: 100,
                 fontFamily: "'Plus Jakarta Sans', Inter, sans-serif",
@@ -155,7 +155,7 @@ export default function LoginPage() {
                 justifyContent: 'center',
                 gap: 8,
                 transition: 'all 0.15s',
-                boxShadow: loading ? 'none' : '0 4px 14px rgba(99,102,241,0.25)',
+                boxShadow: loading ? 'none' : '0 4px 14px rgba(255,255,255,0.12)',
                 letterSpacing: '-0.01em',
                 marginTop: 8
               }}

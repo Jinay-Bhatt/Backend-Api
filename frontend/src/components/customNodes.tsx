@@ -1,5 +1,37 @@
 'use client';
 import { Handle, Position } from '@xyflow/react';
+import { 
+  Globe, 
+  Bell, 
+  Clock, 
+  Database, 
+  Zap, 
+  GitBranch, 
+  RefreshCw, 
+  Lock, 
+  Key, 
+  Send, 
+  Radio 
+} from 'lucide-react';
+
+// Mapper to translate emoji strings to Lucide components dynamically
+export function getNodeIcon(iconName: string, size = 14, color?: string) {
+  const style = color ? { color } : undefined;
+  switch (iconName) {
+    case '🌐': return <Globe size={size} style={style} />;
+    case '🔔': return <Bell size={size} style={style} />;
+    case '⏰': return <Clock size={size} style={style} />;
+    case '🗄️': return <Database size={size} style={style} />;
+    case '⚡': return <Zap size={size} style={style} />;
+    case '🔀': return <GitBranch size={size} style={style} />;
+    case '🔄': return <RefreshCw size={size} style={style} />;
+    case '🔐': return <Lock size={size} style={style} />;
+    case '🗝️': return <Key size={size} style={style} />;
+    case '📤': return <Send size={size} style={style} />;
+    case '📡': return <Radio size={size} style={style} />;
+    default: return null;
+  }
+}
 
 // Custom helper to generate sci-fi handle styling
 const getHandleStyle = (color: string, custom = {}) => ({
@@ -39,109 +71,86 @@ function MiniConsole({ color, content }: { color: string; content: string }) {
 }
 
 function NodeShell({ color, icon, title, subtitle, children, selected }: any) {
-  const borderColor = selected ? color : 'rgba(100, 116, 139, 0.35)';
-  const glowShadow = selected ? `0 0 20px ${color}35` : '0 4px 20px rgba(0,0,0,0.4)';
+  const borderColor = selected ? color : 'rgba(255, 255, 255, 0.08)';
+  const glowShadow = selected ? `0 0 16px ${color}20` : '0 4px 12px rgba(0,0,0,0.5)';
 
   return (
     <div style={{
       position: 'relative',
-      filter: selected ? `drop-shadow(0 0 6px ${color}25)` : 'none',
-      transition: 'all 0.2s',
+      background: '#09090b',
+      border: `1px solid ${borderColor}`,
+      borderRadius: '10px',
+      minWidth: 220,
+      boxShadow: glowShadow,
+      overflow: 'hidden',
+      transition: 'all 0.2s ease',
+      fontFamily: "'JetBrains Mono', monospace",
     }}>
-      {/* Outer Clipped Border Container */}
+      {/* Header Bar */}
       <div style={{
-        background: borderColor,
-        clipPath: 'polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)',
-        padding: '1.5px', // Acts as the border thickness
-        minWidth: 220,
-        boxShadow: glowShadow,
+        background: `${color}0b`,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+        padding: '10px 14px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
       }}>
-        {/* Inner Content Area */}
+        {/* Tech Icon Container */}
         <div style={{
-          background: 'linear-gradient(135deg, #070a13 0%, #0d1527 100%)',
-          clipPath: 'polygon(11.5px 0%, 100% 0%, 100% calc(100% - 11.5px), calc(100% - 11.5px) 100%, 0% 100%, 0% 11.5px)',
+          width: 26,
+          height: 26,
+          borderRadius: '6px',
+          background: `${color}12`,
+          border: `1px solid ${color}20`,
           display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          fontFamily: "'JetBrains Mono', monospace",
-        }}>
-          {/* Header Bar */}
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>{typeof icon === 'string' ? getNodeIcon(icon, 13, color) : icon}</div>
+        
+        <div style={{ flex: 1, overflow: 'hidden' }}>
           <div style={{
-            background: `linear-gradient(90deg, ${color}12 0%, transparent 100%)`,
-            borderBottom: `1px solid ${color}25`,
-            padding: '10px 14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}>
-            {/* Tech Icon Container */}
-            <div style={{
-              width: 26,
-              height: 26,
-              borderRadius: 4,
-              background: `${color}15`,
-              border: `1px solid ${color}35`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 13,
-              boxShadow: `0 0 8px ${color}15`
-            }}>{icon}</div>
-            
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <div style={{
-                fontSize: 11,
-                fontWeight: 900,
-                color: '#f1f5f9',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}>{title}</div>
-              {subtitle && (
-                <div style={{
-                  fontSize: 8,
-                  color: '#64748b',
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  marginTop: 1
-                }}>{subtitle}</div>
-              )}
-            </div>
-            
-            {/* Telemetry Corner Notch Decal */}
+            fontSize: 11,
+            fontWeight: 700,
+            color: '#ffffff',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}>{title}</div>
+          {subtitle && (
             <div style={{
               fontSize: 8,
-              color: color,
-              opacity: 0.6,
-              fontWeight: 800,
-            }}>
-              [SYS]
-            </div>
-          </div>
-
-          {/* Children / Body content */}
-          {children && (
-            <div style={{
-              padding: '12px 14px',
-              fontSize: 10,
-              color: '#94a3b8',
-              lineHeight: 1.5,
-              background: 'rgba(2, 6, 23, 0.3)'
-            }}>
-              {children}
-            </div>
+              color: '#64748b',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              marginTop: 1
+            }}>{subtitle}</div>
           )}
         </div>
+        
+        {/* Technical eyebrow System Indicator */}
+        <div style={{
+          fontSize: 8,
+          color: color,
+          fontWeight: 700,
+        }}>
+          SYS
+        </div>
       </div>
-      
-      {/* Small glowing corner ticks for selected state */}
-      {selected && (
-        <>
-          <div style={{ position: 'absolute', top: -3, left: -3, width: 6, height: 6, borderTop: `2px solid ${color}`, borderLeft: `2px solid ${color}` }} />
-          <div style={{ position: 'absolute', bottom: -3, right: -3, width: 6, height: 6, borderBottom: `2px solid ${color}`, borderRight: `2px solid ${color}` }} />
-        </>
+
+      {/* Children / Body content */}
+      {children && (
+        <div style={{
+          padding: '12px 14px',
+          fontSize: 10,
+          color: '#cbd5e1',
+          lineHeight: 1.5,
+          background: '#030303',
+          borderTop: '1px solid rgba(255, 255, 255, 0.02)',
+        }}>
+          {children}
+        </div>
       )}
     </div>
   );
