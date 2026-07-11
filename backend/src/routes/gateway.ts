@@ -46,10 +46,9 @@ function checkRateLimit(
  */
 function matchPath(
   pattern: string,
-  requestPath: string
+  reqParts: string[]
 ): Record<string, string> | null {
   const routeParts = pattern.split("/").filter(Boolean);
-  const reqParts = requestPath.split("/").filter(Boolean);
 
   if (routeParts.length !== reqParts.length) return null;
 
@@ -79,6 +78,9 @@ export async function gatewayRoutes(fastify: FastifyInstance) {
       let matchedParams: Record<string, string> = {};
 
       try {
+        // Pre-split the request path once to optimize matches in loop
+        const reqParts = wildPath.split("/").filter(Boolean);
+
         // Fetch all published workflows for the project from cache
         const workflows = await getCachedWorkflows(projectId);
 
@@ -89,7 +91,7 @@ export async function gatewayRoutes(fastify: FastifyInstance) {
           if (method !== "OPTIONS" && w.method !== method) {
             continue;
           }
-          const params = matchPath(w.path, wildPath);
+          const params = matchPath(w.path, reqParts);
           if (params !== null) {
             matchedWorkflow = w;
             matchedParams = params;

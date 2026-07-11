@@ -13,11 +13,22 @@ import { gitRoutes } from './routes/git.js';
 import { analyticsRoutes } from './routes/analytics.js';
 import { servicesRoutes } from './routes/services.js';
 import { aiRoutes } from './routes/ai.js';
-import { startWorker } from './queue/worker.js';
+import { startWorker, setRedisStatus } from './queue/worker.js';
+import { initializeQueue } from './queue/exportQueue.js';
+import { checkRedisConnection } from './queue/redisCheck.js';
 import { initWebsocket } from './websocket.js';
 import { initScheduler } from './services/scheduler.js';
 
 const fastify = Fastify({ logger: true });
+
+// Register secure HTTP response headers (OWASP standards)
+fastify.addHook("onRequest", async (request, reply) => {
+  reply.header("X-Content-Type-Options", "nosniff");
+  reply.header("X-Frame-Options", "DENY");
+  reply.header("X-XSS-Protection", "1; mode=block");
+  reply.header("Referrer-Policy", "no-referrer");
+  reply.header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';");
+});
 
 // Initialize Socket.IO WebSocket server
 initWebsocket(fastify);
@@ -51,8 +62,12 @@ const start = async () => {
     await prisma.$connect();
     console.log('✅ Database connection established successfully');
 
+    const redisOnline = await checkRedisConnection(config.redisUrl);
+    setRedisStatus(redisOnline);
+    initializeQueue(redisOnline);
+
     startWorker();
-    console.log('📦 BullMQ background compilation worker started');
+    console.log('📦 Compilation queue worker initialized');
 
     initScheduler(fastify);
 

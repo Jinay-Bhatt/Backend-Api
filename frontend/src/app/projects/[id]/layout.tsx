@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Zap, Radio, ChartColumn, Shield, Link2, Settings } from 'lucide-react';
+import { Zap, Radio, ChartColumn, Shield, Link2, Settings, Package } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: 'builder',   icon: Zap, label: 'Builder',   color: '#818cf8' },
@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: 'analytics', icon: ChartColumn, label: 'Analytics', color: '#38bdf8' },
   { href: 'gateway',   icon: Shield, label: 'Gateway',   color: '#f97316' },
   { href: 'services',  icon: Link2, label: 'Services',  color: '#a78bfa' },
+  { href: 'export',     icon: Package, label: 'Export',     color: '#ec4899' },
 ];
 
 export default function ProjectLayout({ children }: { children: React.ReactNode }) {
@@ -65,7 +66,9 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
             onMouseEnter={e => { (e.currentTarget as any).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as any).style.color = 'var(--text-secondary)'; }}
             onMouseLeave={e => { (e.currentTarget as any).style.background = 'transparent'; (e.currentTarget as any).style.color = 'var(--text-muted)'; }}>
             <img src="/FlowForge.png" alt="FlowForge Logo" width="26" height="26" style={{ objectFit: 'contain' }} />
-            <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>FlowForge</span>
+            <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>
+              Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+            </span>
           </Link>
           <span style={{ color: 'var(--text-faint)', fontSize: 16 }}>/</span>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

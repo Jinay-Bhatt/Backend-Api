@@ -6,24 +6,24 @@
 export function orderNodes(nodes: any[], edges: any[]): any[] {
   const ordered: any[] = [];
   
-  // Build adjacency list and in-degree counter
+  // Build node lookup map for O(1) retrieval
+  const nodeMap = new Map<string, any>();
   const adj: Record<string, string[]> = {};
   const inDegree: Record<string, number> = {};
 
   for (const node of nodes) {
+    nodeMap.set(node.id, node);
     adj[node.id] = [];
     inDegree[node.id] = 0;
   }
 
   for (const edge of edges) {
-    // Check if source and target are defined in nodes
     if (adj[edge.source] !== undefined && adj[edge.target] !== undefined) {
       adj[edge.source].push(edge.target);
       inDegree[edge.target]++;
     }
   }
 
-  // Find all start nodes (in-degree = 0)
   const queue: string[] = [];
   for (const node of nodes) {
     if (inDegree[node.id] === 0) {
@@ -31,10 +31,10 @@ export function orderNodes(nodes: any[], edges: any[]): any[] {
     }
   }
 
-  // BFS Queue traversal
+  // BFS Queue traversal using map for O(1) lookups instead of O(N) search
   while (queue.length > 0) {
     const nodeId = queue.shift()!;
-    const node = nodes.find((n) => n.id === nodeId);
+    const node = nodeMap.get(nodeId);
     if (node) {
       ordered.push(node);
     }
@@ -47,7 +47,6 @@ export function orderNodes(nodes: any[], edges: any[]): any[] {
     }
   }
 
-  // If ordered nodes length is less than original nodes length, a loop/cycle exists
   if (ordered.length < nodes.length) {
     throw new Error(
       "Circular dependency detected: The visual graph contains routing loops."

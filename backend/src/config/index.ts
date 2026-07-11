@@ -1,5 +1,20 @@
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+import fs from "fs";
+
+const loadEnv = () => {
+  const paths = [
+    path.join(process.cwd(), ".env"),
+    path.join(process.cwd(), "..", ".env"),
+  ];
+  for (const envPath of paths) {
+    if (fs.existsSync(envPath)) {
+      dotenv.config({ path: envPath });
+      break;
+    }
+  }
+};
+loadEnv();
 
 const requiredEnv = [
   "DATABASE_URL",

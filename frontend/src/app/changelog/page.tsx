@@ -30,7 +30,9 @@ export default function ChangelogPage() {
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: '#ffffff' }}>
             <img src="/FlowForge.png" alt="FlowForge" width={24} height={24} />
-            <span style={{ fontSize: 16, fontWeight: 900 }}>FlowForge Changelog</span>
+            <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span><span style={{ color: '#94a3b8', marginLeft: 6, fontWeight: 500, fontSize: 13.5 }}>Changelog</span>
+            </span>
           </Link>
           <Link href="/" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Back to Home</Link>
         </div>

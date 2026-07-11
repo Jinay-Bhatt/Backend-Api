@@ -10,7 +10,7 @@ import { io, Socket } from 'socket.io-client';
 import { api, BASE_URL_DIRECT } from '../../../../services/api';
 import { nodeTypes, NODE_PALETTE, getNodeIcon } from '../../../../components/customNodes';
 import CustomSelect from '../../../../components/CustomSelect';
-import { Play, Pause, Settings, Zap, Trash2, Monitor, Save, Rocket, Loader2 } from 'lucide-react';
+import { Play, Pause, Settings, Zap, Trash2, Monitor, Save, Rocket, Loader2, Sparkles } from 'lucide-react';
 
 const METHOD_COLORS: Record<string, string> = { GET: '#10b981', POST: '#6366f1', PUT: '#f59e0b', DELETE: '#ef4444', PATCH: '#38bdf8' };
 
@@ -507,7 +507,7 @@ export default function BuilderPage() {
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
           >
-            ✨ AI SYNTHESIZE
+            <Sparkles size={11} style={{ color: '#ffb300', fill: 'rgba(255, 179, 0, 0.15)' }} /> AI SYNTHESIZE
           </button>
         </div>
 
@@ -625,14 +625,15 @@ export default function BuilderPage() {
                 />
               </div>
               <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                <button type="button" onClick={() => setShowCreateWf(false)} style={{ flex: 1, borderRadius: '6px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s' }}>Cancel</button>
+                <button type="button" onClick={() => setShowCreateWf(false)} style={{ flex: 1, height: 38, borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s' }}>Cancel</button>
                 <button type="submit"
                   style={{
                     flex: 2,
+                    height: 38,
                     background: '#ffffff',
                     border: 'none',
                     color: '#000000',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     fontSize: 12.5,
                     fontWeight: 700,
                     textTransform: 'uppercase',
@@ -710,14 +711,15 @@ export default function BuilderPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => { setShowAi(false); setAiError(''); }} style={{ flex: 1, borderRadius: '6px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s ease' }}>Cancel</button>
+              <button onClick={() => { setShowAi(false); setAiError(''); }} style={{ flex: 1, height: 38, borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s ease' }}>Cancel</button>
               <button onClick={handleAiGenerate} disabled={aiLoading || !aiPrompt.trim()}
                 style={{
                   flex: 3,
+                  height: 38,
                   background: aiLoading ? '#1e293b' : '#ffffff',
                   border: 'none',
                   color: aiLoading ? '#475569' : '#000000',
-                  borderRadius: '6px',
+                  borderRadius: '8px',
                   fontSize: 12.5,
                   fontWeight: 700,
                   textTransform: 'uppercase',

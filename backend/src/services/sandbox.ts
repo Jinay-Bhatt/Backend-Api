@@ -15,6 +15,18 @@ export function runInSandbox(
   contextData: any,
   timeoutMs = 200
 ): SandboxResult {
+  // Static code validation to prevent sandbox escape vectors
+  const escapeKeywords = ["constructor", "prototype", "__proto__", "process", "global", "require", "import"];
+  for (const kw of escapeKeywords) {
+    if (code.includes(kw)) {
+      return {
+        success: false,
+        data: null,
+        error: `Security Violation: Code contains restricted keyword '${kw}'`,
+      };
+    }
+  }
+
   try {
     // Isolate variables scope by deep-copying input data
     const sandbox = {

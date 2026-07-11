@@ -717,7 +717,7 @@ export default function DocsPage() {
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', gap: 24 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
             <img src="/FlowForge.png" alt="FlowForge" width={22} height={22} style={{ objectFit: 'contain' }} />
-            <span style={{ fontSize: 15.5, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Flow<span style={{ color: '#a1a1aa' }}>Forge</span></span>
+            <span style={{ fontSize: 15.5, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span></span>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#475569', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', padding: '2px 7px', borderRadius: 4, letterSpacing: '0.06em', textTransform: 'uppercase' as const, marginLeft: 4 }}>Docs</span>
           </Link>
           <div style={{ flex: 1, maxWidth: 360, marginLeft: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, height: 36, display: 'flex', alignItems: 'center', padding: '0 14px', gap: 10 }}>

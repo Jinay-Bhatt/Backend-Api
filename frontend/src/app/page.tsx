@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { api } from '../services/api';
+import { api, BASE_URL_DIRECT } from '../services/api';
+import { io } from 'socket.io-client';
 import {
   Zap, Shield, BarChart3, Globe, Lock, Database, CheckCircle,
   ArrowRight, Terminal, Layers, GitBranch, Activity, Code2,
@@ -150,7 +151,10 @@ function Nav({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveIdx: Rea
       pricing: 6
     };
     if (id in mapping) {
-      setActiveIdx(mapping[id]);
+      const idx = mapping[id];
+      setActiveIdx(idx);
+      const el = document.getElementById(`slide-inner-${idx}`);
+      if (el) el.scrollTop = 0;
     }
   };
 
@@ -220,7 +224,7 @@ function Nav({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveIdx: Rea
 }
 
 /* ─── Hero Section ──────────────────────────────── */
-function Hero() {
+function Hero({ onWatchDemoClick }: { onWatchDemoClick: (e: React.MouseEvent) => void }) {
   const [mounted, setMounted] = useState(false);
   const [isPrimaryHovered, setIsPrimaryHovered] = useState(false);
   const [isSecondaryHovered, setIsSecondaryHovered] = useState(false);
@@ -306,6 +310,7 @@ function Hero() {
               </Link>
               <a
                 href="#demo"
+                onClick={onWatchDemoClick}
                 className="hero-btn-secondary"
                 onMouseEnter={() => setIsSecondaryHovered(true)}
                 onMouseLeave={() => setIsSecondaryHovered(false)}
@@ -313,6 +318,7 @@ function Hero() {
                 <Play size={13} fill="currentColor" /> Watch Demo
               </a>
             </div>
+
 
             {/* Trust Indicators */}
             <div style={{
@@ -362,7 +368,7 @@ function Hero() {
 }
 
 /* ─── Watch Demo Component ──────────────────────── */
-function WatchDemo() {
+function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
   const [activeStep, setActiveStep] = useState<number>(-1);
   const [logs, setLogs] = useState<string[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -403,10 +409,21 @@ function WatchDemo() {
     return () => clearTimeout(timerRef.current);
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (playTrigger > 0) {
+      const timer = setTimeout(() => {
+        playDemo();
+      }, 750);
+      return () => clearTimeout(timer);
+    }
+  }, [playTrigger]);
+
+
   return (
-    <section id="demo" style={{ padding: '120px 32px', position: 'relative', background: '#020202' }}>
+    <section id="demo" style={{ padding: '32px 32px 120px', position: 'relative', background: '#020202' }}>
       <SectionDivider />
-      <div style={{ maxWidth: 1280, margin: '64px auto 0', position: 'relative', zIndex: 5 }}>
+      <div style={{ maxWidth: 1280, margin: '24px auto 0', position: 'relative', zIndex: 5 }}>
         <Reveal direction="up">
           <div style={{ marginBottom: 56, textAlign: 'center' }}>
             <h2 style={{ fontSize: 'clamp(36px, 4.5vw, 52px)', fontWeight: 900, letterSpacing: '-1.8px', fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff', lineHeight: 1.06, marginBottom: 12 }}>
@@ -691,13 +708,13 @@ function StatsBar() {
   }
 
   return (
-    <section style={{ padding: '120px 32px', position: 'relative', background: '#020202', overflow: 'hidden' }}>
+    <section style={{ padding: '32px 32px 120px', position: 'relative', background: '#020202', overflow: 'hidden' }}>
       <SectionDivider />
       
       {/* Soft background glow */}
       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 900, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(99,102,241,0.015) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1 }} />
 
-      <div style={{ maxWidth: 1280, margin: '64px auto 0', position: 'relative', zIndex: 2 }}>
+      <div style={{ maxWidth: 1280, margin: '24px auto 0', position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 64, alignItems: 'center' }}>
           
           {/* LEFT: Spacial Content Block */}
@@ -891,17 +908,48 @@ function MiniCanvasDemo() {
 
 /* ─── Mini Analytics Demo (for full-width card) ─── */
 function MiniAnalyticsDemo() {
-  const [activeDots, setActiveDots] = useState<number[]>([]);
+  const [data, setData] = useState([40, 65, 30, 85, 45, 95, 60, 75, 50, 90, 35, 70]);
+  const [activeSockets, setActiveSockets] = useState(1);
+  const lastRealMetricTime = useRef<number>(0);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveDots(prev => {
-        const next = [...prev];
-        if (next.length > 5) next.shift();
-        next.push(Math.floor(Math.random() * 5));
+    const socket = io(BASE_URL_DIRECT);
+
+    socket.on("global-connections", (d: { count: number }) => {
+      if (d && typeof d.count === "number") {
+        setActiveSockets(d.count);
+      }
+    });
+
+    socket.on("global-metrics", (m: any) => {
+      lastRealMetricTime.current = Date.now();
+      const latency = m.latencyMs || 0;
+      const heightPercent = Math.max(15, Math.min(Math.round((latency / 400) * 80) + 15, 95));
+      
+      setData(prev => {
+        const next = [...prev.slice(1)];
+        next.push(heightPercent);
         return next;
       });
-    }, 1200);
-    return () => clearInterval(interval);
+    });
+
+    // Fallback simulation when no live backend traffic is detected for 8 seconds
+    const interval = setInterval(() => {
+      const isIdle = Date.now() - lastRealMetricTime.current > 8000;
+      if (isIdle) {
+        setData(prev => {
+          const next = [...prev.slice(1)];
+          const val = Math.floor(Math.random() * 55) + 20; // 20% to 75%
+          next.push(val);
+          return next;
+        });
+      }
+    }, 1000);
+
+    return () => {
+      socket.disconnect();
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -916,10 +964,10 @@ function MiniAnalyticsDemo() {
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 8px #10b981' }} />
           <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Live Analytics Stream</span>
         </div>
-        <div style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8', fontFamily: 'monospace' }}>128 active sockets</div>
+        <div style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8', fontFamily: 'monospace' }}>{activeSockets} active sockets</div>
       </div>
       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', height: 60, paddingBottom: 4 }}>
-        {[40, 65, 30, 85, 45, 95, 60, 75, 50, 90, 35, 70].map((val, idx) => (
+        {data.map((val, idx) => (
           <div key={idx} style={{
             flex: 1, background: 'linear-gradient(to top, rgba(236,72,153,0.05), rgba(236,72,153,0.35))',
             height: `${val}%`, borderRadius: 2, transition: 'height 0.4s ease',
@@ -934,9 +982,9 @@ function MiniAnalyticsDemo() {
 
 function Features() {
   return (
-    <section id="features" style={{ padding: '120px 32px', background: '#020202' }}>
+    <section id="features" style={{ padding: '32px 32px 120px', background: '#020202' }}>
       <SectionDivider />
-      <div style={{ maxWidth: 1280, margin: '64px auto 0' }}>
+      <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
         <Reveal direction="up" threshold={0.1}>
           <div style={{ marginBottom: 56 }}>
             <h2 style={{ fontSize: 'clamp(36px, 4.5vw, 52px)', fontWeight: 900, letterSpacing: '-1.8px', fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff', lineHeight: 1.06, marginBottom: 12 }}>
@@ -954,7 +1002,7 @@ function Features() {
         </Reveal>
  
         {/* Bento grid — featured wide card top-left */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gridAutoRows: 'auto', gap: 16 }}>
+        <div className="bento-grid">
           {FEATURES.map((f, i) => {
             const [hov, setHov] = useState(false);
             const isWide = f.wide;
@@ -965,10 +1013,7 @@ function Features() {
                 delay={i * 70}
                 direction="up"
                 threshold={0.08}
-                className={isFullWidth ? 'full-width-card' : ''}
-                style={{
-                  gridColumn: isFullWidth ? 'span 3' : (isWide ? 'span 2' : 'span 1'),
-                }}
+                className={isFullWidth ? 'bento-card-full' : (isWide ? 'bento-card-wide' : 'bento-card-normal')}
               >
                 <div
                   onMouseEnter={() => setHov(true)}
@@ -1053,9 +1098,9 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" style={{ padding: '80px 32px 100px', position: 'relative' }}>
+    <section id="how-it-works" style={{ padding: '32px 32px 100px', position: 'relative' }}>
       <SectionDivider />
-      <div style={{ maxWidth: 1280, margin: '64px auto 0' }}>
+      <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
         <Reveal direction="up">
           <div style={{ marginBottom: 80 }}>
             <h2 style={{ fontSize: 'clamp(36px, 4.5vw, 52px)', fontWeight: 900, letterSpacing: '-1.8px', fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff', lineHeight: 1.06, marginBottom: 12 }}>
@@ -1248,9 +1293,9 @@ function APIFlowSection() {
   ];
 
   return (
-    <section id="lock-in" style={{ padding: '120px 32px', position: 'relative', background: '#020202' }}>
+    <section id="lock-in" style={{ padding: '32px 32px 120px', position: 'relative', background: '#020202' }}>
       <SectionDivider />
-      <div style={{ maxWidth: 1280, margin: '64px auto 0' }}>
+      <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
 
           {/* Left: Text */}
@@ -1364,8 +1409,9 @@ function PricingSection() {
   const plans = [
     {
       name: 'Hobby',
-      price: billingCycle === 'monthly' ? '$0' : '$0',
+      price: '₹0',
       period: '/mo',
+      subtext: 'Free forever',
       desc: 'Perfect for building side projects and testing ideas.',
       features: [
         '1 Active Project container',
@@ -1381,8 +1427,9 @@ function PricingSection() {
     },
     {
       name: 'Pro',
-      price: billingCycle === 'monthly' ? '$29' : '$19',
+      price: billingCycle === 'monthly' ? '₹1,999' : '₹1,499',
       period: '/mo',
+      subtext: billingCycle === 'monthly' ? 'Billed monthly' : '₹17,988 billed annually (Save 25%)',
       desc: 'For builders who need reliable production backend APIs.',
       features: [
         'Unlimited Project containers',
@@ -1403,6 +1450,7 @@ function PricingSection() {
       name: 'Enterprise',
       price: 'Custom',
       period: '',
+      subtext: 'Tailored for scale',
       desc: 'Dedicated infrastructure, compliance, and custom SLAs.',
       features: [
         'Unlimited Gateway requests',
@@ -1420,9 +1468,9 @@ function PricingSection() {
   ];
 
   return (
-    <section id="pricing" style={{ padding: '120px 32px', position: 'relative', background: '#020202' }}>
+    <section id="pricing" style={{ padding: '32px 32px 120px', position: 'relative', background: '#020202' }}>
       <SectionDivider />
-      <div style={{ maxWidth: 1280, margin: '64px auto 0', position: 'relative', zIndex: 5 }}>
+      <div style={{ maxWidth: 1280, margin: '24px auto 0', position: 'relative', zIndex: 5 }}>
         <Reveal direction="up">
           <div style={{ marginBottom: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h2 style={{ fontSize: 'clamp(36px, 4.5vw, 52px)', fontWeight: 900, letterSpacing: '-1.8px', fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff', lineHeight: 1.06, marginBottom: 12 }}>
@@ -1439,7 +1487,7 @@ function PricingSection() {
             }}>
               {['monthly', 'yearly'].map((cycle) => (
                 <button
-                  key={cycle}
+                   key={cycle}
                   onClick={() => setBillingCycle(cycle as any)}
                   style={{
                     flex: 1, padding: '6px 12px', border: 'none', borderRadius: 6, fontSize: 13,
@@ -1487,6 +1535,11 @@ function PricingSection() {
                       <span style={{ fontSize: 44, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-1.5px' }}>{p.price}</span>
                       <span style={{ fontSize: 14, color: '#475569' }}>{p.period}</span>
                     </div>
+                    {p.subtext && (
+                      <div style={{ fontSize: 11.5, color: isPro ? '#818cf8' : '#475569', marginTop: 4, fontWeight: 500 }}>
+                        {p.subtext}
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 28, marginBottom: 40, flex: 1 }}>
@@ -1526,7 +1579,113 @@ function PricingSection() {
 }
 
 /* ─── Footer ────────────────────────────────────── */
-function Footer() {
+interface FooterLink {
+  name: string;
+  action: 'scroll' | 'route' | 'external';
+  target: string | number;
+}
+
+interface FooterColumn {
+  title: string;
+  links: FooterLink[];
+}
+
+function Footer({ setActiveIdx }: { setActiveIdx?: React.Dispatch<React.SetStateAction<number>> }) {
+  const footerColumns: FooterColumn[] = [
+    {
+      title: 'Product',
+      links: [
+        { name: 'Features', action: 'scroll', target: 3 },
+        { name: 'How it Works', action: 'scroll', target: 4 },
+        { name: 'Pricing', action: 'scroll', target: 6 },
+        { name: 'Changelog', action: 'route', target: '/changelog' },
+      ],
+    },
+    {
+      title: 'Resources',
+      links: [
+        { name: 'Documentation', action: 'route', target: '/docs' },
+        { name: 'GitHub', action: 'external', target: 'https://github.com/Jinay-Bhatt/Backend-Api' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { name: 'About', action: 'route', target: '/about' },
+        { name: 'Contact', action: 'route', target: '/contact' },
+      ],
+    },
+  ];
+
+  const renderLink = (link: FooterLink) => {
+    const style: React.CSSProperties = {
+      fontSize: 13.5,
+      color: '#475569',
+      textDecoration: 'none',
+      transition: 'color 0.15s',
+      cursor: 'pointer',
+    };
+
+    const handleHover = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.currentTarget.style.color = '#94a3b8';
+    };
+
+    const handleLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.currentTarget.style.color = '#475569';
+    };
+
+    if (link.action === 'scroll') {
+      return (
+        <a
+          key={link.name}
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            if (setActiveIdx) {
+              const idx = link.target as number;
+              setActiveIdx(idx);
+              const el = document.getElementById(`slide-inner-${idx}`);
+              if (el) el.scrollTop = 0;
+            }
+          }}
+          style={style}
+          onMouseEnter={handleHover}
+          onMouseLeave={handleLeave}
+        >
+          {link.name}
+        </a>
+      );
+    }
+
+    if (link.action === 'route') {
+      return (
+        <Link
+          key={link.name}
+          href={link.target as string}
+          style={style}
+          onMouseEnter={handleHover}
+          onMouseLeave={handleLeave}
+        >
+          {link.name}
+        </Link>
+      );
+    }
+
+    return (
+      <a
+        key={link.name}
+        href={link.target as string}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={style}
+        onMouseEnter={handleHover}
+        onMouseLeave={handleLeave}
+      >
+        {link.name}
+      </a>
+    );
+  };
+
   return (
     <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '48px 32px 36px' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
@@ -1536,7 +1695,7 @@ function Footer() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
               <Logo size={24} />
               <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                Flow<span style={{ background: 'linear-gradient(135deg,#6366f1,#38bdf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+                Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
               </span>
             </div>
             <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, maxWidth: 280 }}>
@@ -1544,36 +1703,21 @@ function Footer() {
             </p>
           </div>
           {/* Links */}
-          {[
-            { title: 'Product', links: ['Features', 'How it Works', 'Pricing', 'Changelog'] },
-            { title: 'Developers', links: ['Documentation', 'API Reference', 'GitHub', 'Status'] },
-            { title: 'Company', links: ['About', 'Blog', 'Careers', 'Contact'] },
-          ].map(col => (
+          {footerColumns.map((col) => (
             <div key={col.title}>
-              <div style={{ fontSize: 11.5, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>{col.title}</div>
+              <div style={{ fontSize: 11.5, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
+                {col.title}
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {col.links.map(l => (
-                  <a key={l} href="#" style={{ fontSize: 13.5, color: '#475569', textDecoration: 'none', transition: 'color 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
-                    onMouseLeave={e => e.currentTarget.style.color = '#475569'}
-                  >{l}</a>
-                ))}
+                {col.links.map((link) => renderLink(link))}
               </div>
             </div>
           ))}
         </div>
 
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-          <div style={{ fontSize: 12.5, color: '#334155' }}>
-            © {new Date().getFullYear()} FlowForge. Built with <span style={{ color: '#ef4444' }}>♥</span> by the FlowForge team.
-          </div>
-          <div style={{ display: 'flex', gap: 20 }}>
-            {['Privacy', 'Terms', 'Security'].map(l => (
-              <a key={l} href="#" style={{ fontSize: 12.5, color: '#334155', textDecoration: 'none', transition: 'color 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#64748b'}
-                onMouseLeave={e => e.currentTarget.style.color = '#334155'}
-              >{l}</a>
-            ))}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ fontSize: 12.5, color: '#334155', textAlign: 'center' }}>
+            © {new Date().getFullYear()} FlowForge. All rights reserved.
           </div>
         </div>
       </div>
@@ -1622,8 +1766,16 @@ function ScrollDots({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveI
 /* ─── Landing Page Content (shared by /landing route) ─── */
 export function LandingPageContent() {
   const [activeIdx, setActiveIdx] = useState(0);
+  const [playDemoTrigger, setPlayDemoTrigger] = useState(0);
   const lastScrollTime = useRef(0);
   const touchStartY = useRef(0);
+
+  const handleWatchDemoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setActiveIdx(1);
+    setPlayDemoTrigger(prev => prev + 1);
+  };
+
 
   // Wheel listener
   const handleWheel = (e: React.WheelEvent) => {
@@ -1724,6 +1876,14 @@ export function LandingPageContent() {
     }
   };
 
+  // Reset scroll position to top whenever activeIdx changes (ensures starting from section top)
+  useEffect(() => {
+    const el = document.getElementById(`slide-inner-${activeIdx}`);
+    if (el) {
+      el.scrollTop = 0;
+    }
+  }, [activeIdx]);
+
   const getSlideStyle = (i: number) => {
     const isActive = activeIdx === i;
     const isPast = i < activeIdx;
@@ -1784,8 +1944,8 @@ export function LandingPageContent() {
         <ScrollDots activeIdx={activeIdx} setActiveIdx={setActiveIdx} />
 
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-          {renderSlide(0, <Hero />)}
-          {renderSlide(1, <WatchDemo />)}
+          {renderSlide(0, <Hero onWatchDemoClick={handleWatchDemoClick} />)}
+          {renderSlide(1, <WatchDemo playTrigger={playDemoTrigger} />)}
           {renderSlide(2, <StatsBar />)}
           {renderSlide(3, <Features />)}
           {renderSlide(4, <HowItWorks />)}
@@ -1793,7 +1953,7 @@ export function LandingPageContent() {
           {renderSlide(6, (
             <>
               <PricingSection />
-              <Footer />
+              <Footer setActiveIdx={setActiveIdx} />
             </>
           ))}
         </div>

@@ -440,14 +440,15 @@ export default function ServicesPage() {
                 </div>
               ))}
               <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                <button type="button" onClick={() => setShowAdd(false)} style={{ flex: 1, borderRadius: '6px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s' }}>Cancel</button>
+                <button type="button" onClick={() => setShowAdd(false)} style={{ flex: 1, height: 38, borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s' }}>Cancel</button>
                 <button type="submit" disabled={adding}
                   style={{
                     flex: 2,
+                    height: 38,
                     background: adding ? '#1e293b' : '#ffffff',
                     border: 'none',
                     color: adding ? '#475569' : '#000000',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     fontSize: 12.5,
                     fontWeight: 700,
                     textTransform: 'uppercase',

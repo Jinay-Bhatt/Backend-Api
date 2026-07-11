@@ -41,12 +41,43 @@ export default function SettingsPage() {
   const [gitSaved, setGitSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<'git' | 'profile' | 'export'>('profile');
   const [avatar, setAvatar] = useState<string | null>(null);
+  
+  // Profile form state and notifications
+  const [profileForm, setProfileForm] = useState({ username: '', email: '', oldPassword: '', newPassword: '' });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [profileError, setProfileError] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('ff_token');
     const u = localStorage.getItem('ff_user');
     if (!token) { router.replace('/login'); return; }
-    if (u) setUser(JSON.parse(u));
+    if (u) {
+      const parsed = JSON.parse(u);
+      setUser(parsed);
+      setProfileForm({
+        username: parsed.username || '',
+        email: parsed.email || '',
+        oldPassword: '',
+        newPassword: '',
+      });
+    }
+    
+    // Fetch fresh user details to populate createdAt and other missing attributes
+    api.auth.me()
+      .then((res) => {
+        if (res.user) {
+          setUser(res.user);
+          localStorage.setItem('ff_user', JSON.stringify(res.user));
+          setProfileForm(f => ({
+            ...f,
+            username: res.user.username || '',
+            email: res.user.email || '',
+          }));
+        }
+      })
+      .catch(() => {});
+
     loadGitConfig();
   }, []);
 
@@ -58,6 +89,40 @@ export default function SettingsPage() {
     syncAvatar();
     return () => window.removeEventListener('storage', syncAvatar);
   }, []);
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profileForm.username.trim() || !profileForm.email.trim()) return;
+    setSavingProfile(true);
+    setProfileError('');
+    try {
+      const updatePayload: any = {
+        username: profileForm.username,
+      };
+      
+      if (profileForm.newPassword.trim()) {
+        if (!profileForm.oldPassword.trim()) {
+          throw new Error('Current password is required to change to a new password.');
+        }
+        updatePayload.oldPassword = profileForm.oldPassword;
+        updatePayload.newPassword = profileForm.newPassword;
+      } else if (profileForm.oldPassword.trim()) {
+        throw new Error('New password is required when supplying your current password.');
+      }
+
+      const res = await api.auth.update(updatePayload);
+      setUser(res.user);
+      localStorage.setItem('ff_user', JSON.stringify(res.user));
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 2500);
+      setProfileForm(f => ({ ...f, oldPassword: '', newPassword: '' }));
+      window.dispatchEvent(new Event('storage')); // Notify layouts
+    } catch (err: any) {
+      setProfileError(err.message || 'Failed to update profile');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const loadGitConfig = async () => {
     try {
@@ -129,7 +194,9 @@ export default function SettingsPage() {
         <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: 'var(--text-secondary)' }}>
             <img src="/FlowForge.png" alt="FlowForge Logo" width="28" height="28" style={{ objectFit: 'contain' }} />
-            <span style={{ fontWeight: 800, fontSize: 14, fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff' }}>FlowForge</span>
+            <span style={{ fontWeight: 800, fontSize: 14, fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff' }}>
+              Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+            </span>
           </Link>
           <span style={{ color: 'var(--text-faint)' }}>/</span>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Settings</span>
@@ -209,13 +276,136 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {/* User credentials fields */}
-              {[{ label: 'Registered Username', value: user?.username }, { label: 'Primary Email address', value: user?.email }, { label: 'Account Created', value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' }) : '—' }].map(f => (
-                <div key={f.label} style={{ display: 'flex', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ width: 180, fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</span>
-                  <span style={{ fontSize: 13, color: '#ffffff', fontWeight: 500 }}>{f.value}</span>
+              {/* Profile Details Form */}
+              <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                {profileError && (
+                  <div style={{ padding: '10px 14px', borderRadius: '6px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#fca5a5', fontSize: 12.5 }}>
+                    {profileError}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Username</label>
+                  <input
+                    required
+                    value={profileForm.username}
+                    onChange={e => setProfileForm(f => ({ ...f, username: e.target.value }))}
+                    placeholder="Username"
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: '1px solid var(--border)',
+                      padding: '12px 14px',
+                      borderRadius: '6px',
+                      color: '#ffffff',
+                      fontSize: 13,
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocus={e => e.target.style.borderColor = 'rgba(255,255,255,0.25)'}
+                    onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                  />
                 </div>
-              ))}
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email Address</label>
+                  <input
+                    disabled
+                    type="email"
+                    value={profileForm.email}
+                    placeholder="email@example.com"
+                    style={{
+                      width: '100%',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid var(--border)',
+                      padding: '12px 14px',
+                      borderRadius: '6px',
+                      color: 'var(--text-muted)',
+                      fontSize: 13,
+                      outline: 'none',
+                      cursor: 'not-allowed',
+                    }}
+                  />
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Email address cannot be changed.</div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Current Password</label>
+                  <input
+                    type="password"
+                    value={profileForm.oldPassword}
+                    onChange={e => setProfileForm(f => ({ ...f, oldPassword: e.target.value }))}
+                    placeholder="••••••••••••"
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: '1px solid var(--border)',
+                      padding: '12px 14px',
+                      borderRadius: '6px',
+                      color: '#ffffff',
+                      fontSize: 13,
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocus={e => e.target.style.borderColor = 'rgba(255,255,255,0.25)'}
+                    onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                  />
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Required if you want to change your password.</div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>New Password</label>
+                  <input
+                    type="password"
+                    value={profileForm.newPassword}
+                    onChange={e => setProfileForm(f => ({ ...f, newPassword: e.target.value }))}
+                    placeholder="••••••••••••"
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: '1px solid var(--border)',
+                      padding: '12px 14px',
+                      borderRadius: '6px',
+                      color: '#ffffff',
+                      fontSize: 13,
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocus={e => e.target.style.borderColor = 'rgba(255,255,255,0.25)'}
+                    onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                  />
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Leave blank to keep current password.</div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', marginBottom: 8 }}>
+                  <span style={{ width: 180, fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Account Created</span>
+                  <span style={{ fontSize: 13, color: '#ffffff', fontWeight: 500 }}>
+                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' }) : '—'}
+                  </span>
+                </div>
+
+                <button type="submit" disabled={savingProfile}
+                  style={{
+                    padding: '14px',
+                    background: savingProfile ? 'transparent' : profileSaved ? 'rgba(16,185,129,0.1)' : '#ffffff',
+                    color: savingProfile ? 'var(--text-muted)' : profileSaved ? '#10b981' : '#000000',
+                    border: `1.5px solid ${profileSaved ? '#10b981' : 'transparent'}`,
+                    borderRadius: '6px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: savingProfile ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={e => { if (!savingProfile && !profileSaved) e.currentTarget.style.background = '#cbd5e1'; }}
+                  onMouseLeave={e => { if (!savingProfile && !profileSaved) e.currentTarget.style.background = '#ffffff'; }}
+                >
+                  {savingProfile ? 'Saving Profile...' : profileSaved ? '✓ Profile Saved' : 'Save Profile Details'}
+                </button>
+              </form>
             </div>
           </div>
         )}

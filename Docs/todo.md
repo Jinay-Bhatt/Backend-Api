@@ -103,6 +103,62 @@ This file tracks the implementation progress of the FlowForge backend server.
 - [x] All 12 custom node components in `customNodes.tsx` (including Switch Case & HTTP Client)
 - [x] Complete API client in `services/api.ts`
 
+### ✅ Phase 17: Layout Spacing, Logo Redesign & Branding
+- [x] Adjusted hero and section top padding/margin to reduce spacing by 128px for a tight, professional scroll experience.
+- [x] Standardized "FlowForge" logo rendering with silver gradient (`linear-gradient(135deg,#ffffff,#a1a1aa)`) across all layout headers and footer.
+- [x] Generated a new visual double-'F' high-tech logo (`FlowForge.png`) representing connected visual nodes.
+- [x] Cleaned up footer: removed non-functional mockup subdomains, removed duplicate API reference link, and centered the footer copyright text.
+
+### ✅ Phase 18: Profile Settings & User Validation
+- [x] Implemented `/auth/me` and `/auth/update` endpoints on the backend.
+- [x] Made user profile fields fully editable on Settings page, syncing updates back to local state and localStorage context.
+- [x] Secured email field on Settings (read-only / disabled).
+- [x] Implemented current password verification using bcrypt before accepting new password changes.
+- [x] Synchronized account creation date (fresh load from `/auth/me`) onto settings panel.
+
+### ✅ Phase 19: Real-time Telemetry Dashboard
+- [x] Integrated real-time Socket.IO logs aggregation directly into the dashboard console metrics stream.
+- [x] Fluctuated CPU, memory, throughput, and cache hit meters dynamically.
+- [x] Dynamically computed latency rolling average and active workers load on UI stats panels.
+
+### ✅ Phase 20: Performance Optimizations & Security Hardening
+- [x] Optimized topological node sorting algorithm (BFS Kahn's traversal) from O(N^2) to O(N) using pre-built Map lookups.
+- [x] Optimized route parameter matching by pre-splitting URL paths outside the routing loop.
+- [x] Hardened Node.js VM Sandbox by statically checking and blocking prototype escapes (restricted keywords: constructor, prototype, process, require, global, etc.).
+- [x] Added brute-force rate-limiting middleware to protect login/signup endpoints.
+- [x] Added global secure HTTP headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy, Content-Security-Policy).
+- [x] Created `Docs/testing_guide.md` covering all project features and workflow tests.
+- [x] Pre-checks Redis connectivity on startup via non-blocking TCP socket check (`src/queue/redisCheck.ts`), automatically falling back to Mock In-Memory Job Queue mode to run code compilations without error spam if Redis is offline.
+
+### ✅ Phase 21: UI/UX Refining & Live Telemetry
+- [x] Connected landing page's "Watch Demo" CTA button to scroll and auto-play visual simulation.
+- [x] Balanced the Capabilities bento grid section with responsive CSS templates to avoid empty slots.
+- [x] Integrated real-time Socket.IO global client listener on landing page to stream actual server connections and request latencies.
+- [x] Replaced the default Vercel favicon with the FlowForge brand logo (configured as icon.png in the app router and fallback favicon.ico in the public folder), ensuring the original FlowForge logo displays properly next to the title on all page tabs.
+- [x] Redesigned the authentication pages with high-tech glassmorphism, background glow mesh elements, interactive focus-triggered input highlighting, and Chrome autofill overrides to maintain sleek styling.
+- [x] Removed the noisy "Gateway Stream" live log panel from the global workspace console dashboard to declutter the interface, leaving latency and request aggregates consolidated in the System Health metrics.
+- [x] Fixed the dashboard stat counter bug where the AnimCounter component became stuck at 0. Refactored it to use requestAnimationFrame to respond dynamically when asynchronous data finishes loading.
+- [x] Updated the listProjects database query in the backend controller to eagerly load project workflows, allowing the frontend to calculate and display the true count of active pipelines and live endpoints.
+
+### ✅ Phase 22: Modal Button Size Consistency
+- [x] Increased height to `38px` and rounded border-radius to `8px` on all Cancel and primary action buttons inside modal dialogs across: Services page (Register Service), Builder page (Deploy Workflow), and Builder AI Synthesize modal.
+### ✅ Phase 23: Complete Testing Guide
+- [x] Created [TESTING_GUIDE.md](file:///c:/Users/bhavy/OneDrive/Documents/Backend-Api/Docs/TESTING_GUIDE.md), a comprehensive end-to-end testing reference outlining all 20 verification scopes (auth guards, gateway nodes, websocket metrics, rate limiting, layout configurations, and security headers) complete with sample API curls and verification checklists.
+
+### ✅ Phase 24: Codebase Export, Code Preview & Git Push
+- [x] Added `GET /projects/:projectId/export/preview` endpoint to backend exporter routes — runs `compileProject()` in-memory and returns the full generated file tree as JSON.
+- [x] Imported `compileProject` from `../services/compiler.js` into `backend/src/routes/exporter.ts`.
+- [x] Added `getPreview(projectId)` to the frontend `api.exporter` service namespace in `frontend/src/services/api.ts`.
+- [x] Added **Export** nav item (pink `#ec4899`, `Package` icon) to the project sidebar navigation in `frontend/src/app/projects/[id]/layout.tsx`.
+- [x] Created `frontend/src/app/projects/[id]/export/page.tsx` — a full-featured code workspace featuring:
+  - Left file-tree panel listing all generated source files (e.g., `package.json`, `tsconfig.json`, `prisma/schema.prisma`, `src/index.ts`, `src/swagger.ts`, `Dockerfile`).
+  - Right code viewer with monospace font, line numbers, and a **Copy Code** button.
+  - **Download ZIP Codebase** button — triggers compilation job, polls status, then downloads the ZIP archive.
+  - **Push to GitHub** button — triggers compilation with `pushToGit: true`, shows live job status. Falls back to Settings redirect if no Git config is linked.
+  - Polling loop monitors job status every 1.5 s and auto-triggers file download or shows success state on completion.
+- [x] Fixed TypeScript error (`textStyle` → `textAlign`). Frontend and backend TypeScript checks pass clean.
+- [x] Updated TESTING_GUIDE.md Section 14.4 (Export Tab) to reflect the new interactive Export page.
+
 ---
 
 ## Remaining Tasks

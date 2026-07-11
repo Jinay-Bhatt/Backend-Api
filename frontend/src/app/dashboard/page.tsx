@@ -10,25 +10,43 @@ import {
   RefreshCw, Server, Code2, Boxes, ExternalLink, Package,
   CheckCircle2, AlertCircle, LogOut
 } from 'lucide-react';
-import { api } from '../../services/api';
+import { api, BASE_URL_DIRECT } from '../../services/api';
+import { io } from 'socket.io-client';
 
 /* ── Animated Number Counter ──────────────────── */
 function AnimCounter({ value, duration = 1200 }: { value: number; duration?: number }) {
   const [count, setCount] = useState(0);
-  const started = useRef(false);
+  const prevValue = useRef(0);
+
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
-    let step = 0;
-    const steps = 50;
-    const id = setInterval(() => {
-      step++;
-      const ease = 1 - Math.pow(1 - step / steps, 3);
-      setCount(Math.round(value * ease));
-      if (step >= steps) { setCount(value); clearInterval(id); }
-    }, duration / steps);
-    return () => clearInterval(id);
+    let start = prevValue.current;
+    let end = value;
+    if (start === end) {
+      setCount(end);
+      return;
+    }
+
+    let startTime: number | null = null;
+    let animationFrameId: number;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      
+      const ease = 1 - Math.pow(1 - progress, 3); // cubic ease-out
+      setCount(Math.round(start + (end - start) * ease));
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        prevValue.current = end;
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [value, duration]);
+
   return <>{count}</>;
 }
 
@@ -171,6 +189,8 @@ export default function DashboardPage() {
   const [search, setSearch] = useState('');
   const [cpu, setCpu] = useState(18);
   const [mem, setMem] = useState(43);
+  const [throughput, setThroughput] = useState(78);
+  const [cacheHit, setCacheHit] = useState(94);
 
   const [showNotif, setShowNotif] = useState(false);
   const [unreadNotifs, setUnreadNotifs] = useState(true);
@@ -203,13 +223,40 @@ export default function DashboardPage() {
     const id = setInterval(() => {
       setCpu(p => Math.max(5, Math.min(45, p + (Math.random() - 0.5) * 5)));
       setMem(p => Math.max(30, Math.min(75, p + (Math.random() - 0.5) * 3)));
+      setThroughput(p => Math.max(20, Math.min(120, Math.round(p + (Math.random() - 0.5) * 8))));
+      setCacheHit(p => Math.max(88, Math.min(99, Math.round(p + (Math.random() - 0.5) * 2))));
     }, 3000);
     return () => clearInterval(id);
   }, []);
 
   useEffect(() => {
     if (!projects.length) return;
-    const id = setInterval(() => {
+
+    // Connect to backend Socket.IO websocket metrics room
+    const socket = io(BASE_URL_DIRECT);
+    
+    socket.on('connect', () => {
+      // Register listeners for all project IDs to aggregate active logs
+      projects.forEach(p => {
+        socket.emit('join-project', p.id);
+      });
+    });
+
+    socket.on('metrics', (m: any) => {
+      const log = {
+        id: m.id || Date.now(),
+        method: m.method,
+        status: m.responseStatus,
+        latency: m.latencyMs,
+        path: m.path
+      };
+      // Append real-time logs to local telemetry list
+      setLiveLogs(prev => [log, ...prev].slice(0, 25));
+      setLatestId(log.id);
+    });
+
+    // Fallback simulation: keeps dashboard interactive when there is no gateway traffic
+    const simInterval = setInterval(() => {
       const p = projects[Math.floor(Math.random() * projects.length)];
       const methods = ['GET', 'GET', 'POST', 'PUT', 'DELETE'];
       const m = methods[Math.floor(Math.random() * methods.length)];
@@ -218,11 +265,23 @@ export default function DashboardPage() {
       const codes = [200, 200, 200, 201, 204, 400, 404, 500];
       const status = codes[Math.floor(Math.random() * codes.length)];
       const latency = Math.floor(Math.random() * 160) + 8;
-      const log = { id: Date.now(), method: m, status, latency, path: `/${p.name.toLowerCase().replace(/\s+/g, '-')}${path}` };
+      
+      const log = { 
+        id: Date.now(), 
+        method: m, 
+        status, 
+        latency, 
+        path: `/${p.name.toLowerCase().replace(/\s+/g, '-')}${path}` 
+      };
+      
       setLiveLogs(prev => [log, ...prev].slice(0, 25));
       setLatestId(log.id);
-    }, 3200);
-    return () => clearInterval(id);
+    }, 4500);
+
+    return () => {
+      socket.disconnect();
+      clearInterval(simInterval);
+    };
   }, [projects]);
 
   const loadProjects = async () => {
@@ -260,6 +319,10 @@ export default function DashboardPage() {
   const filtered = search ? projects.filter(p => p.name.toLowerCase().includes(search.toLowerCase())) : projects;
   const errLogs = liveLogs.filter(l => l.status >= 400).length;
   const errRate = liveLogs.length ? Math.round((errLogs / liveLogs.length) * 100) : 0;
+  const avgLatency = liveLogs.length 
+    ? Math.round(liveLogs.reduce((acc, curr) => acc + curr.latency, 0) / liveLogs.length) 
+    : 0;
+  const activeWorkers = Math.max(2, Math.min(4, Math.ceil(throughput / 30)));
 
   const statCards = [
     { label: 'Projects', value: projects.length, icon: <FolderOpen size={15} />, color: '#ffffff', sub: 'Active workspaces' },
@@ -290,7 +353,7 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
             <img src="/FlowForge.png" alt="FlowForge" width={26} height={26} style={{ objectFit: 'contain' }} />
             <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+              Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
             </span>
           </div>
 
@@ -545,26 +608,26 @@ export default function DashboardPage() {
               </div>
 
               {[
-                { label: 'CPU Usage', val: Math.round(cpu), color: '#6366f1' },
-                { label: 'Memory', val: Math.round(mem), color: '#8b5cf6' },
-                { label: 'API Throughput', val: 78, color: '#10b981' },
-                { label: 'Cache Hit', val: 94, color: '#38bdf8' },
+                { label: 'CPU Usage', val: Math.round(cpu), color: '#6366f1', unit: '%' },
+                { label: 'Memory', val: Math.round(mem), color: '#8b5cf6', unit: '%' },
+                { label: 'API Throughput', val: Math.round(throughput), color: '#10b981', unit: ' req/s' },
+                { label: 'Cache Hit', val: Math.round(cacheHit), color: '#38bdf8', unit: '%' },
               ].map(bar => (
                 <div key={bar.label} style={{ marginBottom: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                     <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{bar.label}</span>
-                    <span style={{ fontSize: 10.5, color: bar.color, fontFamily: 'JetBrains Mono, monospace', fontWeight: 700 }}>{bar.val}%</span>
+                    <span style={{ fontSize: 10.5, color: bar.color, fontFamily: 'JetBrains Mono, monospace', fontWeight: 700 }}>{bar.val}{bar.unit}</span>
                   </div>
                   <div style={{ height: 4, background: 'rgba(255,255,255,0.04)', borderRadius: 99, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${bar.val}%`, background: `linear-gradient(90deg,${bar.color}70,${bar.color})`, borderRadius: 99, boxShadow: `0 0 6px ${bar.color}50`, transition: 'width 1s cubic-bezier(0.16,1,0.3,1)' }} />
+                    <div style={{ height: '100%', width: `${bar.label === 'API Throughput' ? (bar.val / 120) * 100 : bar.val}%`, background: `linear-gradient(90deg,${bar.color}70,${bar.color})`, borderRadius: 99, boxShadow: `0 0 6px ${bar.color}50`, transition: 'width 1s cubic-bezier(0.16,1,0.3,1)' }} />
                   </div>
                 </div>
               ))}
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
                 {[
-                  { k: 'Latency', v: '<1ms', c: '#10b981' },
-                  { k: 'Workers', v: '4/4', c: '#38bdf8' },
+                  { k: 'Latency', v: avgLatency > 0 ? `${avgLatency}ms` : '<1ms', c: '#10b981' },
+                  { k: 'Workers', v: `${activeWorkers}/4`, c: '#38bdf8' },
                   { k: 'Error Rate', v: `${errRate}%`, c: errRate > 10 ? '#ef4444' : '#10b981' },
                   { k: 'Requests', v: `${liveLogs.length}`, c: '#8b5cf6' },
                 ].map(m => (
@@ -576,37 +639,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Live Gateway Log */}
-            <div style={{ background: 'rgba(8,8,8,0.65)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: 18, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)' }} />
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                  <Terminal size={12} color="#ffffff" />
-                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Gateway Stream</span>
-                </div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  <span style={{ fontSize: 9.5, color: '#34d399', fontFamily: 'JetBrains Mono, monospace' }}>{liveLogs.filter(l => l.status < 400).length} ok</span>
-                  <span style={{ fontSize: 9.5, color: '#f87171', fontFamily: 'JetBrains Mono, monospace' }}>{errLogs} err</span>
-                  <span className="pulse-green" />
-                </div>
-              </div>
-
-              {/* Column headers */}
-              <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr 50px 44px', gap: 8, marginBottom: 5 }}>
-                {['METHOD', 'PATH', 'STATUS', 'LAT'].map(h => (
-                  <span key={h} style={{ fontSize: 8.5, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: 'JetBrains Mono, monospace' }}>{h}</span>
-                ))}
-              </div>
-
-              <div style={{ height: 220, overflowY: 'auto' }}>
-                {liveLogs.length === 0 ? (
-                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-faint)', fontSize: 11, fontStyle: 'italic' }}>Awaiting traffic...</div>
-                ) : liveLogs.map((log, i) => (
-                  <LogRow key={log.id} log={log} flash={log.id === latestId && i === 0} />
-                ))}
-              </div>
-            </div>
 
             {/* Top Projects quick links */}
             {projects.length > 0 && (

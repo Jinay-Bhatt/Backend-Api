@@ -50,6 +50,14 @@ export async function listProjects(
   try {
     const projects = await prisma.project.findMany({
       where: { ownerId: user.id },
+      include: {
+        workflows: {
+          select: {
+            id: true,
+            isPublished: true,
+          }
+        }
+      },
       orderBy: { createdAt: "desc" },
     });
 

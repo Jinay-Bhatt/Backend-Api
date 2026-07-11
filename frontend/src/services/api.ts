@@ -40,6 +40,8 @@ export const api = {
     register: (body: { username: string; email: string; password: string }) =>
       request('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
     me: () => request('/auth/me'),
+    update: (body: { username?: string; oldPassword?: string; newPassword?: string }) =>
+      request('/auth/update', { method: 'PUT', body: JSON.stringify(body) }),
   },
   projects: {
     list: () => request('/projects'),
@@ -93,6 +95,7 @@ export const api = {
     getJobStatus: (projectId: string, jobId: string) =>
       request(`/projects/${projectId}/export/status/${jobId}`),
     getDownloadUrl: (projectId: string) => `${BASE_URL}/api/projects/${projectId}/export/download`,
+    getPreview: (projectId: string) => request(`/projects/${projectId}/export/preview`),
   },
   git: {
     getConfig: () => request('/git-config'),

@@ -18,6 +18,19 @@ export async function registerUser(
     });
   }
 
+  if (password.length < 8) {
+    return reply.status(400).send({
+      error: "Bad Request: Password must be at least 8 characters long",
+    });
+  }
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return reply.status(400).send({
+      error: "Bad Request: Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
+    });
+  }
+
   try {
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -100,7 +113,101 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
         id: user.id,
         username: user.username,
         email: user.email,
+        createdAt: user.createdAt,
       },
+    });
+  } catch (error: any) {
+    request.log.error(error);
+    return reply.status(500).send({
+      error: "Internal Server Error",
+      details: error.message,
+    });
+  }
+}
+
+export async function getMe(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const userId = (request.user as any).id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      return reply.status(404).send({ error: "User not found" });
+    }
+
+    return reply.send({ user });
+  } catch (error: any) {
+    request.log.error(error);
+    return reply.status(500).send({
+      error: "Internal Server Error",
+      details: error.message,
+    });
+  }
+}
+
+export async function updateProfile(request: FastifyRequest, reply: FastifyReply) {
+  const { username, oldPassword, newPassword } = request.body as {
+    username?: string;
+    oldPassword?: string;
+    newPassword?: string;
+  };
+
+  const userId = (request.user as any).id;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return reply.status(404).send({ error: "User not found" });
+    }
+
+    const updateData: any = {};
+    if (username) updateData.username = username;
+
+    if (newPassword) {
+      if (!oldPassword) {
+        return reply.status(400).send({
+          error: "Current password is required to change to a new password",
+        });
+      }
+
+      const passwordMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+      if (!passwordMatch) {
+        return reply.status(400).send({
+          error: "The current password you entered is incorrect",
+        });
+      }
+
+      updateData.passwordHash = await bcrypt.hash(newPassword, 10);
+    } else if (oldPassword) {
+      return reply.status(400).send({
+        error: "New password is required when supplying your current password",
+      });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        createdAt: true,
+      },
+    });
+
+    return reply.send({
+      message: "Profile updated successfully",
+      user: updatedUser,
     });
   } catch (error: any) {
     request.log.error(error);

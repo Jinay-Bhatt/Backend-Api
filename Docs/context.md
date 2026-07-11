@@ -24,7 +24,7 @@ FlowForge is a **Visual No-Code API Builder + API Gateway Platform**. Non-coders
 * **Backend**: Node.js, Fastify 5, TypeScript, Prisma ORM 7, Socket.IO, BullMQ
 * **Database**: PostgreSQL (Neon) — 9 tables
 * **AI**: Groq API / Ollama Local LLM
-* **Queue**: BullMQ + Redis (Upstash)
+* **Queue**: BullMQ + Redis (Upstash) — Falls back to in-memory mock queue when Redis is offline to allow local development and compilation without error spam.
 * **Hosting**: Vercel (Frontend), Railway / Render (Backend)
 
 ---
@@ -34,31 +34,31 @@ FlowForge is a **Visual No-Code API Builder + API Gateway Platform**. Non-coders
 ### Backend ✅ All routes operational & optimized
 | Route Group | Status |
 |---|---|
-| Auth (register, login) | ✅ Done |
+| Auth (register, login, me, update) | ✅ Done (with strict password strength constraints, disabled email modifications, and bcrypt credentials updates) |
 | Projects CRUD | ✅ Done |
 | Workflows CRUD + versioning + publish | ✅ Done |
-| API Gateway (caching, API key, CORS, VM sandbox) | ✅ Done (In-Memory Caching <1ms, CORS preflight, Async logging) |
+| API Gateway (caching, API key, CORS, VM sandbox) | ✅ Done (In-Memory Caching <1ms, CORS preflight, Async logging, VM keyword whitelist verification) |
 | Analytics (daily trend, hourly, top routes) | ✅ Done |
 | Logs (paginated, filtered) | ✅ Done |
 | Services CRUD + routes | ✅ Done |
 | Gateway Config (per workflow) | ✅ Done |
 | AI Generate Workflow (Groq/Ollama) | ✅ Done |
 | Code Export + ZIP + Git Push | ✅ Done (with OpenAPI/Swagger Spec dynamic bundling) |
-| WebSocket metrics stream | ✅ Done |
+| WebSocket metrics stream | ✅ Done (Socket.IO client dynamically tracks logs, updates dashboard stats, and streams global telemetry/connections to landing page) |
 
 ### Frontend ✅ All pages built
 | Page | Route | Status |
 |---|---|---|
-| Landing | /landing | ✅ Done (Particle field, Mouse parallax, Scroll-triggered Pipeline Map) |
+| Landing | / or /landing | ✅ Done (Particle field, Mouse parallax, Scroll-triggered Pipeline Map, spaced by 32px top/120px bottom padding. Watch Demo CTA triggers auto-play simulation. Viewport-aware bento grid for platform capabilities. Real-time active socket connections & global gateway telemetry feed via WebSockets.) |
 | Login | /login | ✅ Done (Glass pipeline mesh style, float animations) |
 | Register | /register | ✅ Done (Glass pipeline mesh style) |
-| Dashboard | /dashboard | ✅ Done (API Constellation Orbit map, no cards, animated stat counters) |
+| Dashboard | /dashboard | ✅ Done (Constellation Orbit Map, Socket.IO live stream logs telemetry, fluctuated throughput/cache rates, dynamic workers load calculation) |
 | Builder | /projects/[id]/builder | ✅ Done (Direct database AI saves, config terminal panels) |
 | Monitor | /projects/[id]/monitor | ✅ Done (Live pulse shimmer, new row flashing, animated counters) |
 | Analytics | /projects/[id]/analytics | ✅ Done (Glow breath cards, animated numeric loaders) |
 | Gateway Config | /projects/[id]/gateway | ✅ Done (Glassmorphic HUD controls, spring switches) |
 | Service Mesh | /projects/[id]/services | ✅ Done (Glass service cards, dynamic mesh visualization) |
-| Settings | /settings | ✅ Done (Glass integration pipeline, tabbed configs) |
+| Settings | /settings | ✅ Done (Glass integration pipeline, fully editable user profile, disabled email input, bcrypt password changes, synced registration date) |
 
 ### Database & Performance ✅ Synced to Neon with Indexes
 * **Table Sync**: All 9 tables synced: `User`, `Project`, `Workflow`, `WorkflowVersion`, `GitConfiguration`, `GatewayConfig`, `ExecutionLog`, `Analytics`, `Service`, `ServiceRoute`
@@ -68,6 +68,14 @@ FlowForge is a **Visual No-Code API Builder + API Gateway Platform**. Non-coders
   * `ServiceRoute(serviceId)`
   * `WorkflowVersion(workflowId)`
 * **Latency Optimization Layer**: Thread-safe cache maps projects' published workflows in Node process memory, reducing wildcard route path-matching lookup times from ~150ms to **under 1ms**. Audit logging is handled asynchronously in the background. The sequential execution engine handles branching pathways (If/Else nodes) using handle-based visual DAG skip propagation, preventing non-selected routes from executing.
+* **Topological Sort Optimization**: Sorts the visual node list (Kahn's BFS traversal) in linear **O(N)** time complexity using a pre-constructed Map lookup index instead of quadratic O(N^2) search.
+* **Gateway Route Resolution Optimization**: Splits incoming dynamic paths once outside candidate matching loop, reducing string memory allocations.
+
+### Security Hardening layer ✅ OWASP & Sandbox Hardened
+* **V8 VM Sandbox Hardening**: Code containing restricted system/prototype keywords (`['constructor', 'prototype', '__proto__', 'process', 'global', 'require', 'import']`) is blocked before reaching compile steps to prevent prototype pollution breakouts.
+* **Brute-Force Rate Limiter**: Authenticators (`/auth/login`, `/auth/register`) limit client requests to **15 attempts per minute** using a custom in-memory rate-limiter.
+* **OWASP Secure HTTP Headers**: Set secure response headers (`X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`, and `Content-Security-Policy`) globally on Fastify.
+* **Prisma SQL Parameterization**: Raw visual database nodes parameterize variables dynamically to protect against SQL injections.
 
 ---
 

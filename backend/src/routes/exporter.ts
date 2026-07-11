@@ -4,6 +4,7 @@ import path from "node:path";
 import { exportQueue } from "../queue/exportQueue.js";
 import { authenticate } from "../middlewares/auth.js";
 import { prisma } from "../services/db.js";
+import { compileProject } from "../services/compiler.js";
 
 interface AuthUserPayload {
   id: string;
@@ -135,6 +136,41 @@ export async function exportRoutes(fastify: FastifyInstance) {
           .type("application/zip")
           .header("Content-Disposition", `attachment; filename="${project.name.toLowerCase().replace(/[^a-z0-9]/g, "")}-backend.zip"`)
           .send(zipStream);
+      } catch (error: any) {
+        request.log.error(error);
+        return reply.status(500).send({
+          error: "Internal Server Error",
+          details: error.message,
+        });
+      }
+    }
+  );
+
+  // In-memory codebase compilation preview endpoint
+  fastify.get(
+    "/projects/:projectId/export/preview",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { projectId } = request.params as { projectId: string };
+      const user = request.user as AuthUserPayload;
+
+      try {
+        const project = await prisma.project.findFirst({
+          where: { id: projectId, ownerId: user.id },
+          include: { workflows: true },
+        });
+
+        if (!project) {
+          return reply.status(404).send({
+            error: "Not Found: Project not found or unauthorized",
+          });
+        }
+
+        const fileTree = compileProject(project.name, project.workflows);
+        return reply.send({
+          success: true,
+          projectName: project.name,
+          files: fileTree,
+        });
       } catch (error: any) {
         request.log.error(error);
         return reply.status(500).send({
