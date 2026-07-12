@@ -8,7 +8,7 @@ import {
   Link2, FolderOpen, ArrowUpRight, TrendingUp, Shield,
   Clock, BarChart3, Layers, Sparkles, Bell, Search,
   RefreshCw, Server, Code2, Boxes, ExternalLink, Package,
-  CheckCircle2, AlertCircle, LogOut
+  CheckCircle2, AlertCircle, LogOut, X
 } from 'lucide-react';
 import { api, BASE_URL_DIRECT } from '../../services/api';
 import { io } from 'socket.io-client';
@@ -686,7 +686,9 @@ export default function DashboardPage() {
                 <h2 style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.3px' }}>Create New Project</h2>
                 <p style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 2 }}>Set up your API workspace</p>
               </div>
-              <button onClick={() => setShowCreate(false)} style={{ marginLeft: 'auto', width: 26, height: 26, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+              <button onClick={() => setShowCreate(false)} style={{ marginLeft: 'auto', width: 26, height: 26, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X size={12} />
+              </button>
             </div>
             <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>

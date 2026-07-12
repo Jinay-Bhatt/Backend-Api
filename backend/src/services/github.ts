@@ -18,21 +18,69 @@ export async function pushToGithub(
   // Initialize Octokit client with user credential token
   const octokit = new Octokit({ auth: accessToken });
 
-  // 1. Fetch reference for the target branch
-  const { data: refData } = await octokit.git.getRef({
-    owner,
-    repo,
-    ref: `heads/${branch}`,
-  });
-  const lastCommitSha = refData.object.sha;
+  let lastCommitSha: string | null = null;
+  let baseTreeSha: string | undefined = undefined;
+  let isNewBranch = false;
 
-  // 2. Fetch the commit details to retrieve the base tree SHA
-  const { data: commitData } = await octokit.git.getCommit({
-    owner,
-    repo,
-    commit_sha: lastCommitSha,
-  });
-  const baseTreeSha = commitData.tree.sha;
+  try {
+    // 1. Fetch reference for the target branch
+    const { data: refData } = await octokit.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${branch}`,
+    });
+    lastCommitSha = refData.object.sha;
+
+    // 2. Fetch the commit details to retrieve the base tree SHA
+    const { data: commitData } = await octokit.git.getCommit({
+      owner,
+      repo,
+      commit_sha: lastCommitSha,
+    });
+    baseTreeSha = commitData.tree.sha;
+  } catch (err: any) {
+    // If the branch or repository is empty/doesn't exist, we will create a fresh root commit
+    if (err.status === 404 || err.message?.includes("Not Found") || err.message?.includes("empty")) {
+      isNewBranch = true;
+    } else {
+      throw err;
+    }
+  }
+
+  // If the branch is new or the repository is completely empty, initialize it first
+  if (isNewBranch) {
+    const files = Object.keys(fileTree);
+    if (files.length > 0) {
+      const firstFileKey = files[0];
+      const firstFileContent = fileTree[firstFileKey];
+
+      // Create the first file to initialize the branch and repository
+      await octokit.repos.createOrUpdateFileContents({
+        owner,
+        repo,
+        path: firstFileKey,
+        message: "🌱 Initialize repository with FlowForge backend codebase",
+        content: Buffer.from(firstFileContent).toString("base64"),
+        branch,
+      });
+
+      // Refetch the newly created reference to get SHAs
+      const { data: refData } = await octokit.git.getRef({
+        owner,
+        repo,
+        ref: `heads/${branch}`,
+      });
+      lastCommitSha = refData.object.sha;
+
+      const { data: commitData } = await octokit.git.getCommit({
+        owner,
+        repo,
+        commit_sha: lastCommitSha,
+      });
+      baseTreeSha = commitData.tree.sha;
+      isNewBranch = false; // Reset flag as branch now exists
+    }
+  }
 
   // 3. Construct tree nodes
   const treeNodes = Object.entries(fileTree).map(([path, content]) => ({
@@ -56,16 +104,25 @@ export async function pushToGithub(
     repo,
     message: "🚀 Deploy compiled FlowForge visual backend updates",
     tree: treeData.sha,
-    parents: [lastCommitSha],
+    parents: lastCommitSha ? [lastCommitSha] : [],
   });
 
-  // 6. Update reference pointer on remote branch
-  await octokit.git.updateRef({
-    owner,
-    repo,
-    ref: `heads/${branch}`,
-    sha: newCommitData.sha,
-  });
+  // 6. Update or create reference pointer on remote branch
+  if (isNewBranch) {
+    await octokit.git.createRef({
+      owner,
+      repo,
+      ref: `refs/heads/${branch}`,
+      sha: newCommitData.sha,
+    });
+  } else {
+    await octokit.git.updateRef({
+      owner,
+      repo,
+      ref: `heads/${branch}`,
+      sha: newCommitData.sha,
+    });
+  }
 
   return newCommitData.sha;
 }

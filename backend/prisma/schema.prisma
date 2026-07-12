@@ -27,6 +27,8 @@ model Project {
   services    Service[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+
+  @@index([ownerId])
 }
 
 model Workflow {
@@ -74,6 +76,8 @@ model GitConfiguration {
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model GatewayConfig {

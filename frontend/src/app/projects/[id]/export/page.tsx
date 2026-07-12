@@ -19,6 +19,7 @@ export default function ExportPage() {
   // Compilation and Git states
   const [compiling, setCompiling] = useState(false);
   const [compileStatus, setCompileStatus] = useState<string>('');
+  const [statusLevel, setStatusLevel] = useState<'info' | 'success' | 'error'>('info');
   const [jobId, setJobId] = useState<string | null>(null);
   const [gitConfig, setGitConfig] = useState<any>(null);
   const [copied, setCopied] = useState(false);
@@ -41,25 +42,29 @@ export default function ExportPage() {
           clearInterval(interval);
           setCompiling(false);
           setJobId(null);
-          setCompileStatus('✓ Codebase successfully compiled!');
+          setCompileStatus('Codebase successfully compiled!');
+          setStatusLevel('success');
           
           // If we compiled for local download, trigger the file download
           if (res.returnValue && !res.returnValue.pushedToGit) {
             triggerFileDownload();
           } else if (res.returnValue?.pushedToGit) {
-            setCompileStatus('✓ Codebase compiled and pushed to Git repo successfully!');
+            setCompileStatus('Codebase compiled and pushed to Git repo successfully!');
+            setStatusLevel('success');
           }
         } else if (res.state === 'failed') {
           clearInterval(interval);
           setCompiling(false);
           setJobId(null);
-          setCompileStatus(`✕ Error: ${res.failedReason || 'Job failed'}`);
+          setCompileStatus(`Error: ${res.failedReason || 'Job failed'}`);
+          setStatusLevel('error');
         }
       } catch (err: any) {
         clearInterval(interval);
         setCompiling(false);
         setJobId(null);
-        setCompileStatus(`✕ Status check failed: ${err.message}`);
+        setCompileStatus(`Status check failed: ${err.message}`);
+        setStatusLevel('error');
       }
     }, 1500);
 
@@ -93,7 +98,10 @@ export default function ExportPage() {
   };
 
   const triggerFileDownload = () => {
-    const url = api.exporter.getDownloadUrl(projectId);
+    const baseUrl = api.exporter.getDownloadUrl(projectId);
+    const token = typeof window !== 'undefined' ? localStorage.getItem('ff_token') : null;
+    const url = token ? `${baseUrl}?token=${encodeURIComponent(token)}` : baseUrl;
+    
     // Open in a new hidden iframe or window location to trigger binary stream download
     const link = document.createElement('a');
     link.href = url;
@@ -108,17 +116,20 @@ export default function ExportPage() {
     if (compiling) return;
     setCompiling(true);
     setCompileStatus('Queuing compilation task on server...');
+    setStatusLevel('info');
     try {
       const res = await api.exporter.exportProject(projectId, false);
       if (res.jobId) {
         setJobId(res.jobId);
         setCompileStatus('Compiling source files, configurations, and schemas...');
+        setStatusLevel('info');
       } else {
         throw new Error('No jobId received from queue manager');
       }
     } catch (err: any) {
       setCompiling(false);
-      setCompileStatus(`✕ Failed to queue compiler: ${err.message}`);
+      setCompileStatus(`Failed to queue compiler: ${err.message}`);
+      setStatusLevel('error');
     }
   };
 
@@ -131,17 +142,20 @@ export default function ExportPage() {
     if (compiling) return;
     setCompiling(true);
     setCompileStatus('Initializing secure repository connection...');
+    setStatusLevel('info');
     try {
       const res = await api.exporter.exportProject(projectId, true);
       if (res.jobId) {
         setJobId(res.jobId);
         setCompileStatus('Compiling and preparing repository commit payload...');
+        setStatusLevel('info');
       } else {
         throw new Error('No jobId received from queue manager');
       }
     } catch (err: any) {
       setCompiling(false);
-      setCompileStatus(`✕ Failed to queue sync task: ${err.message}`);
+      setCompileStatus(`Failed to queue sync task: ${err.message}`);
+      setStatusLevel('error');
     }
   };
 
@@ -175,10 +189,12 @@ export default function ExportPage() {
               border: '1px solid var(--border)',
               borderRadius: '8px',
               fontSize: 11,
-              color: compileStatus.startsWith('✕') ? '#fca5a5' : compileStatus.startsWith('✓') ? '#a7f3d0' : 'var(--text-muted)',
+              color: statusLevel === 'error' ? '#fca5a5' : statusLevel === 'success' ? '#a7f3d0' : 'var(--text-muted)',
               fontFamily: "'JetBrains Mono', monospace"
             }}>
               {compiling && <Loader2 size={12} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />}
+              {!compiling && statusLevel === 'success' && <CheckCircle2 size={12} style={{ color: '#10b981' }} />}
+              {!compiling && statusLevel === 'error' && <AlertCircle size={12} style={{ color: '#ef4444' }} />}
               {compileStatus}
             </div>
           )}

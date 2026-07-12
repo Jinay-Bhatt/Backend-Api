@@ -325,69 +325,748 @@ Authorization: Bearer <token>
 
 **URL**: `http://localhost:3000/projects/[id]/builder`
 
+> **Overview**: The Workflow Builder is a visual, node-based API pipeline editor.
+> Each workflow = one HTTP route. Nodes are connected left-to-right as a Directed Acyclic Graph (DAG).
+> The execution engine traverses the DAG in topological order at runtime.
+
+---
+
 ### 7.1 Canvas Load
-- [ ] Builder page loads without errors
-- [ ] Visual node canvas renders
-- [ ] Existing workflows (if any) appear in the left sidebar list
 
-### 7.2 Create New Workflow (Modal)
-- [ ] Click **+ New Workflow** button
-- [ ] Modal opens with fields: Name, Route (e.g. `/users`), REST Method
-- [ ] **Cancel** button has `height: 38px` and `border-radius: 8px`
-- [ ] **Deploy Workflow** button has `height: 38px` and `border-radius: 8px`
-- [ ] Leave name empty → button should be disabled / show validation
-- [ ] Fill: Name `Get Users`, Route `/users`, Method `GET`
+- [ ] Navigate to `http://localhost:3000/projects/[id]/builder`
+- [ ] The React Flow canvas renders with a dark background grid
+- [ ] Left sidebar shows a list of existing workflows (empty on first visit)
+- [ ] Node palette panel is visible (left side or collapsible panel)
+- [ ] Top bar shows: **+ New Workflow**, **✨ AI Generate**, **Save**, **Publish**, **Test** buttons
+
+---
+
+### 7.2 Create a New Workflow (Manual)
+
+- [ ] Click **+ New Workflow**
+- [ ] Modal appears with 3 fields:
+  - **Name**: `User Profile API`
+  - **Route**: `/profile`
+  - **Method**: `GET`
 - [ ] Click **Deploy Workflow**
-- [ ] **Expected**: Workflow appears in sidebar, modal closes
+- [ ] **Expected**: Workflow `User Profile API` appears in sidebar list
+- [ ] Canvas clears, ready for nodes to be added
+- [ ] API call: `POST /api/projects/:id/workflows`
 
-### 7.3 Node Palette (Adding Nodes)
-Test adding each available node type to the canvas:
+---
 
-| Node Type | Expected Behavior |
-|-----------|-------------------|
-| HTTP Request | Adds HTTP step with URL/method config |
-| Transform (JS) | Adds JS transform step with code editor |
-| SQL Query | Adds SQL node with connection string fields |
-| Condition (If/Else) | Adds branching node |
-| Response | Adds terminal response node |
-| Rate Limiter | Adds rate-limit config node |
+### 7.3 Complete Workflow A — "Secure User Lookup" (Covers 9 Node Types)
 
-- [ ] Each node type can be dragged or clicked to add to canvas
-- [ ] Node appears on canvas with its label and icon
-- [ ] Node is selectable (click highlights it)
+This is the **primary end-to-end workflow test**. Build it from scratch using every available node.
 
-### 7.4 Node Configuration Panel
-- [ ] Click a node → config panel appears on the right sidebar
-- [ ] Changing a field value updates the node's `data` in the canvas
-- [ ] **HTTP Request node**: Fields `url`, `method`, `headers`, `body` editable
-- [ ] **Transform node**: Code editor accepts JavaScript
-- [ ] **SQL node**: `connectionString` and `query` fields editable
+> **Workflow Name**: `Secure User Lookup`
+> **Route**: `/users/:id`
+> **Method**: `GET`
+> **Goal**: Validate JWT → Check API Key → Query DB → Transform result → Respond
 
-### 7.5 Connecting Nodes (Edges)
-- [ ] Drag from one node's output handle → connect to another node's input handle
-- [ ] Edge (arrow) appears between nodes
-- [ ] Can create multi-step DAG: HTTP → Transform → Response
+#### Step 1 — Create the Workflow
 
-### 7.6 Save Workflow
-- [ ] After adding/modifying nodes and edges, click **Save** (or equivalent)
-- [ ] **Expected**: Node layout persists on page refresh
-- [ ] API call made to `PUT /api/workflows/:id`
+- [ ] Click **+ New Workflow**
+- [ ] Name: `Secure User Lookup`
+- [ ] Route: `/users`
+- [ ] Method: `GET`
+- [ ] Click **Deploy Workflow**
 
-### 7.7 Publish Workflow
-- [ ] Click **Publish** on an existing workflow
-- [ ] **Expected**: Workflow `isPublished` flag becomes `true`
-- [ ] API call: `POST /api/workflows/:id/publish`
-- [ ] Only published workflows are reachable via the gateway
+---
 
-### 7.8 Delete Workflow
-- [ ] Delete a workflow from the sidebar
-- [ ] **Expected**: Workflow removed from sidebar
-- [ ] **Expected**: API call `DELETE /api/workflows/:id`
+#### Step 2 — Add: HTTP Trigger Node (triggerNode)
 
-### 7.9 Version Snapshot
-- [ ] Click **Create Version** (if available in UI)
-- [ ] **Expected**: API call `POST /api/workflows/:id/version`
-- [ ] Version saved with current node/edge layout as a snapshot
+**Category**: Triggers → **HTTP Trigger**
+
+- [ ] In the node palette, under **Triggers**, click **HTTP Trigger**
+- [ ] Node appears on canvas labelled `HTTP Trigger`
+- [ ] Click the node to select it → config panel opens on the right
+- [ ] Set the following fields in the config panel:
+
+| Field | Value |
+|-------|-------|
+| `method` | `GET` |
+| `path` | `/users` |
+
+- [ ] **Expected**: Node preview in canvas updates to show `GET /users`
+- [ ] Node has one **output handle** on its right side (no input handle — it is the start)
+
+> ✅ **Rule**: Only one `triggerNode` is allowed per workflow. Adding a second triggers an alert.
+
+---
+
+#### Step 3 — Add: JWT Validate Node (jwtValidateNode)
+
+**Category**: Security → **JWT Validate**
+
+- [ ] Click **JWT Validate** in the node palette
+- [ ] Node appears on canvas labelled `JWT Validate`
+- [ ] Select it → config panel opens
+- [ ] Set the following fields:
+
+| Field | Value |
+|-------|-------|
+| `secret` | *(leave blank — uses `env.JWT_SECRET` automatically)* |
+
+- [ ] **Expected**: Node preview shows `Secret: env.JWT_SECRET`
+- [ ] Node has: **input handle** (left) + **output handle** (right)
+
+**Connect**: Drag from `HTTP Trigger` output → `JWT Validate` input
+
+- [ ] A cyan animated edge appears between the two nodes
+- [ ] **Expected**: Arrow points HTTP Trigger → JWT Validate
+
+---
+
+#### Step 4 — Add: API Key Node (apiKeyNode)
+
+**Category**: Security → **API Key**
+
+- [ ] Click **API Key** in the node palette
+- [ ] Node appears labelled `API Key`
+- [ ] Select it → config panel opens
+- [ ] Set the following fields:
+
+| Field | Value |
+|-------|-------|
+| `headerName` | `x-api-key` |
+
+- [ ] **Expected**: Node preview shows `Header: x-api-key`
+
+**Connect**: Drag from `JWT Validate` output → `API Key` input
+
+---
+
+#### Step 5 — Add: Database Node (databaseNode)
+
+**Category**: Data → **Database**
+
+- [ ] Click **Database** in the node palette
+- [ ] Node appears labelled `Database`
+- [ ] Select it → config panel opens
+- [ ] Set the following fields:
+
+| Field | Value |
+|-------|-------|
+| `query` | `SELECT id, name, email, created_at FROM users WHERE id = $request.params.id;` |
+
+> **Note on variable interpolation**: `$request.params.id` is automatically resolved from the incoming request at runtime. You can also use `$request.body.field`, `$request.query.field`, and `$steps.nodeId.field`.
+
+- [ ] **Expected**: Node preview shows the SQL query truncated
+
+**Connect**: Drag from `API Key` output → `Database` input
+
+---
+
+#### Step 6 — Add: Transform Node (transformNode)
+
+**Category**: Logic → **Transform**
+
+- [ ] Click **Transform** in the node palette
+- [ ] Node appears labelled `Transform`
+- [ ] Select it → config panel opens
+- [ ] Set the following fields:
+
+| Field | Value |
+|-------|-------|
+| `mapping` | `({ id: steps['node_DB'].id, name: steps['node_DB'].name, email: steps['node_DB'].email })` |
+
+> **Note**: To find the actual Database node ID, click on the **Database** node on the canvas and look at the right-side configuration panel (`⚙️ NODE CONFIG`) under the box labeled **`NODE TELEMETRY KEY`** (e.g., `node_1783858654585`). Copy that ID and replace `node_DB` with it in the Transform mapping code. The transform expression is evaluated inside a secure JS sandbox. `steps` refers to `context.steps`.
+
+- [ ] **Expected**: Node preview shows the mapping expression
+
+**Connect**: Drag from `Database` output → `Transform` input
+
+---
+
+#### Step 7 — Add: Response Node (responseNode)
+
+**Category**: Response → **Response**
+
+- [ ] Click **Response** in the node palette
+- [ ] Node appears labelled `Response`
+- [ ] Select it → config panel opens
+- [ ] Set the following fields:
+
+| Field | Value |
+|-------|-------|
+| `statusCode` | `200` |
+| `body` | `$steps.TRANSFORM_NODE_ID` |
+
+> Replace `TRANSFORM_NODE_ID` with the actual node ID of the Transform node (visible in the config panel header or node label).
+
+- [ ] **Expected**: Node preview shows `Status: 200` and `Body: $steps.…`
+- [ ] This node has **input handle only** (no output — it terminates the workflow)
+
+**Connect**: Drag from `Transform` output → `Response` input
+
+---
+
+#### Step 8 — Full Workflow Canvas State
+
+After all 6 nodes are connected, verify:
+
+```
+[HTTP Trigger] → [JWT Validate] → [API Key] → [Database] → [Transform] → [Response]
+```
+
+- [ ] All 5 edges (arrows) are visible and animated (cyan color)
+- [ ] No disconnected/orphaned nodes exist
+- [ ] Node count in canvas: **6 nodes**
+- [ ] Edge count: **5 edges**
+
+---
+
+#### Step 9 — Save the Workflow
+
+- [ ] Click the **Save** button in the top toolbar
+- [ ] **Expected**: Button shows a loading spinner briefly, then reverts to `Save`
+- [ ] API call: `PUT /api/workflows/:id` with `{ nodes: [...], edges: [...] }`
+- [ ] Refresh the page → workflow reloads with the same nodes and edges intact
+
+---
+
+#### Step 10 — Publish the Workflow
+
+- [ ] Click **Publish** button
+- [ ] **Expected**: Button label changes to **Unpublish** (or toggle state)
+- [ ] API call: `POST /api/workflows/:id/publish` with `{ isPublished: true }`
+- [ ] Sidebar shows a green **●** published indicator next to `Secure User Lookup`
+
+---
+
+#### Step 11 — Test Execution via Built-in API Sandbox
+
+- [ ] Click the **Test** (⚡ or terminal) button in the top toolbar
+- [ ] Test panel slides open with:
+  - **Query String** field
+  - **Headers** field (JSON)
+  - **Body** field (JSON, disabled for GET)
+**Before filling the headers, you need two values:**
+
+**1. Getting your `<your_jwt_token>`:**
+> - Open your browser's **DevTools** → **Application** tab → **Local Storage** → `http://localhost:3000`
+> - Look for the key `ff_token` — copy its value. This is your JWT token, generated automatically when you logged in or registered.
+> - Alternatively, call the login API directly:
+>   ```bash
+>   curl -X POST http://localhost:5000/api/auth/login \
+>     -H "Content-Type: application/json" \
+>     -d '{"email": "testuser@flowforge.dev", "password": "SecurePass123!"}'
+>   ```
+>   Copy the `token` value from the response.
+
+**2. Getting your `<your_api_key>`:**
+> - Navigate to `http://localhost:3000/projects/[id]/gateway`
+> - Find the **Secure User Lookup** workflow in the dropdown
+> - Toggle **Require API Key** → ON
+> - Type any key you want in the **API Key** field (e.g. `myapikey123`) and click **Save Config**
+> - Use that exact same value in the header below
+
+| Field | Value |
+|-------|-------|
+| Query String | *(leave blank)* |
+| Headers | `{ "Authorization": "Bearer <paste_ff_token_here>", "x-api-key": "myapikey123" }` |
+| Body | *(disabled — GET request)* |
+
+- [ ] Click **Run Test**
+- [ ] **Expected**: Response panel shows:
+  - Status: `200 OK`
+  - Latency: `< 500ms`
+  - Body: `{ "id": "...", "name": "...", "email": "..." }`
+- [ ] In the **Live Logs** section of the builder, a new log entry appears with `200` status
+
+---
+
+### 7.4 Complete Workflow B — "Order Processing" (Covers If/Else + Switch Case + HTTP Client)
+
+> **Workflow Name**: `Order Processor`
+> **Route**: `/orders`
+> **Method**: `POST`
+> **Goal**: Receive order → Check status → Route to payment/fulfillment → Call external API → Respond
+
+#### Step 1 — Create the Workflow
+
+- [ ] Click **+ New Workflow**
+- [ ] Name: `Order Processor`
+- [ ] Route: `/orders`
+- [ ] Method: `POST`
+
+---
+
+#### Step 2 — Add: HTTP Trigger Node
+
+**Category**: Triggers → **HTTP Trigger**
+
+| Field | Value |
+|-------|-------|
+| `method` | `POST` |
+| `path` | `/orders` |
+
+---
+
+#### Step 3 — Add: If / Else Node (ifElseNode)
+
+**Category**: Logic → **If / Else**
+
+- [ ] Click **If / Else** in the palette
+- [ ] Select → config panel opens
+- [ ] Set:
+
+| Field | Value |
+|-------|-------|
+| `condition` | `context.request.body.active === true` |
+
+- [ ] **Expected**: Node shows two output handles:
+  - **`true` handle** (top-right) — executes when condition is `true`
+  - **`false` handle** (bottom-right) — executes when condition is `false`
+
+**Connect**: HTTP Trigger → If/Else
+
+---
+
+#### Step 4 — Add: Switch Case Node (switchCaseNode)
+
+**Category**: Logic → **Switch Case**
+
+- [ ] Click **Switch Case** in the palette
+- [ ] Select → config panel opens
+- [ ] Set:
+
+| Field | Value |
+|-------|-------|
+| `expression` | `context.request.body.status` |
+| `cases` | `paid, pending, default` |
+
+- [ ] **Expected**: Node shows output handles for each case: `paid`, `pending`, `default`
+
+**Connect**: If/Else `true` handle → Switch Case
+
+---
+
+#### Step 5 — Add: HTTP Client Node (httpClientNode)
+
+**Category**: Integrations → **HTTP Client**
+
+- [ ] Click **HTTP Client** in the palette
+- [ ] Select → config panel opens
+- [ ] Set:
+
+| Field | Value |
+|-------|-------|
+| `method` | `POST` |
+| `url` | `https://httpbin.org/post` |
+| `headers` | `{ "Content-Type": "application/json", "User-Agent": "FlowForge-Platform" }` |
+| `body` | `$request.body` |
+
+> **Variable interpolation**: `$request.body` passes the entire incoming request body to the external API. `$steps.nodeId.field` passes data from a previous step.
+
+**Connect**: Switch Case `paid` handle → HTTP Client
+
+---
+
+#### Step 6 — Add: JavaScript Node (customCodeNode)
+
+**Category**: Custom → **JavaScript**
+
+- [ ] Click **JavaScript** in the palette
+- [ ] Select → config panel opens
+- [ ] Set the code editor to:
+
+```javascript
+// Access context
+const { body } = context.request;
+const orderId = body.orderId || 'unknown';
+const amount = body.amount || 0;
+
+// Business logic
+const tax = amount * 0.18;
+const total = amount + tax;
+
+// Return output (accessible as $steps.<nodeId> in subsequent nodes)
+return {
+  orderId,
+  amount,
+  tax: Math.round(tax * 100) / 100,
+  total: Math.round(total * 100) / 100,
+  processedAt: new Date().toISOString()
+};
+```
+
+- [ ] **Expected**: Code editor accepts multiline JS with syntax highlighting
+- [ ] Node preview shows `⚡ JavaScript`
+
+**Connect**: Switch Case `pending` handle → JavaScript
+
+---
+
+#### Step 7 — Add Two Response Nodes
+
+Add one `Response` node for the `paid` branch and one for the `pending` branch.
+
+**Response Node A (for paid branch)**:
+
+| Field | Value |
+|-------|-------|
+| `statusCode` | `200` |
+| `body` | `$steps.HTTP_CLIENT_NODE_ID` |
+
+**Connect**: HTTP Client → Response A
+
+**Response Node B (for pending branch)**:
+
+| Field | Value |
+|-------|-------|
+| `statusCode` | `202` |
+| `body` | `$steps.JS_NODE_ID` |
+
+**Connect**: JavaScript → Response B
+
+**Response Node C (for false/inactive branch)**:
+
+| Field | Value |
+|-------|-------|
+| `statusCode` | `400` |
+| `body` | `{ "error": "Order is not active" }` |
+
+**Connect**: If/Else `false` handle → Response C
+
+---
+
+#### Step 8 — Full Canvas Layout
+
+```
+                                    ┌─[HTTP Client]──→[Response A: 200]
+[HTTP Trigger]→[If/Else]→[Switch]──┤
+                    │               └─[JavaScript]───→[Response B: 202]
+                    │
+                    └──→[Response C: 400]
+```
+
+- [ ] Canvas shows **8 nodes**, **7 edges**
+- [ ] All Switch Case branches have edges
+- [ ] If/Else has both `true` and `false` handles connected
+
+---
+
+#### Step 9 — Save & Test Execution
+
+- [ ] Save the workflow
+- [ ] Publish the workflow
+- [ ] Open the Test panel
+
+**Test 1 — Active order, paid status (hits HTTP Client → Response 200)**:
+
+| Field | Value |
+|-------|-------|
+| Headers | `{ "Content-Type": "application/json" }` |
+| Body | `{ "active": true, "status": "paid", "orderId": "ORD-001", "amount": 500 }` |
+
+- [ ] **Expected**: `200 OK`, response body from `httpbin.org/post`
+
+**Test 2 — Active order, pending status (hits JavaScript → Response 202)**:
+
+| Field | Value |
+|-------|-------|
+| Body | `{ "active": true, "status": "pending", "orderId": "ORD-002", "amount": 300 }` |
+
+- [ ] **Expected**: `202 Accepted`, body with `{ "orderId": "ORD-002", "total": 354, ... }`
+
+**Test 3 — Inactive order (hits If/Else false → Response 400)**:
+
+| Field | Value |
+|-------|-------|
+| Body | `{ "active": false, "orderId": "ORD-003" }` |
+
+- [ ] **Expected**: `400 Bad Request`, body `{ "error": "Order is not active" }`
+
+---
+
+### 7.5 Complete Workflow C — "Scheduled Health Check" (Covers Scheduled + Webhook Nodes)
+
+> **Workflow Name**: `Health Monitor`
+> **Method**: `GET`
+> **Goal**: Test Scheduled and Webhook trigger node types
+
+#### Scheduled Node
+
+- [ ] Click **+ New Workflow** → Name: `Health Monitor`, Route: `/health-check`, Method: `GET`
+- [ ] In palette → **Triggers** → click **Scheduled**
+- [ ] Config panel:
+
+| Field | Value |
+|-------|-------|
+| `cron` | `0 * * * *` *(every hour)* |
+| `timezone` | `UTC` |
+
+- [ ] Add a **Response** node → `{ "status": "healthy" }` → status `200`
+- [ ] Connect: Scheduled → Response
+- [ ] Save
+
+#### Webhook Node
+
+- [ ] Click **+ New Workflow** → Name: `GitHub Webhook`, Route: `/github-webhook`, Method: `POST`
+- [ ] In palette → **Triggers** → click **Webhook**
+- [ ] Config panel:
+
+| Field | Value |
+|-------|-------|
+| `path` | `/github-webhook` |
+| `secret` | `my-webhook-secret` *(optional HMAC validation)* |
+
+- [ ] Add a **JavaScript** node with:
+```javascript
+const { body } = context.request;
+return {
+  event: body.action || 'unknown',
+  repo: body.repository?.name || 'unknown',
+  receivedAt: new Date().toISOString()
+};
+```
+- [ ] Add a **Response** node → `$steps.JS_NODE_ID` → status `200`
+- [ ] Connect: Webhook → JavaScript → Response
+- [ ] Save & Publish
+
+---
+
+### 7.6 AI Workflow Generation
+
+> The **✨ AI Generate** button sends a natural language prompt to the backend AI service (`GROQ_API_KEY` required), which returns a complete workflow with nodes and edges already configured.
+
+#### 7.6.1 Basic AI Generation
+
+- [ ] Click the **✨ AI Generate** (Sparkles icon) button in the top toolbar
+- [ ] AI panel slides open with a text input
+- [ ] Enter the following prompt:
+
+```
+Create a workflow that validates a JWT token, fetches a user from the database
+by ID from the request params, and returns the user profile as a JSON response
+```
+
+- [ ] Click **Generate**
+- [ ] **Expected**: Loading spinner appears
+- [ ] **Expected** (within 5–15 seconds): Canvas populates with auto-generated nodes:
+  - `triggerNode` with `method: GET, path: /users/:id`
+  - `jwtValidateNode`
+  - `databaseNode` with a `SELECT` query using `$request.params.id`
+  - `responseNode` pointing to the DB result
+- [ ] **Expected**: Workflow automatically appears in the sidebar list with the AI-generated name
+- [ ] AI panel closes automatically on success
+
+#### 7.6.2 AI Generation — Complex Prompt
+
+- [ ] Open AI panel again
+- [ ] Enter:
+
+```
+Build a payment processing workflow with POST /payments route.
+It should check an API key header, validate the payment amount is greater
+than 0 using an if/else condition, call an external payment gateway at
+https://api.stripe.com/v1/charges with the amount in the body,
+and return 200 with the charge ID or 400 if amount is invalid.
+```
+
+- [ ] Click **Generate**
+- [ ] **Expected**: Canvas shows:
+  - `triggerNode (POST /payments)`
+  - `apiKeyNode`
+  - `ifElseNode` (condition: `context.request.body.amount > 0`)
+  - `httpClientNode` (url: `https://api.stripe.com/v1/charges`)
+  - `responseNode` (200) on true branch
+  - `responseNode` (400) on false branch
+
+#### 7.6.3 AI Generation — Error Cases
+
+- [ ] Clear the prompt and click **Generate** with empty input
+- [ ] **Expected**: Nothing happens (button disabled or validation message)
+- [ ] Enter a nonsensical prompt: `asdfghjkl xyz`
+- [ ] **Expected**: Either a graceful error message or a minimal workflow is generated
+
+#### 7.6.4 AI Generation — No API Key (Edge Case)
+
+- [ ] Remove `GROQ_API_KEY` from `.env` temporarily and restart backend
+- [ ] Attempt to generate a workflow
+- [ ] **Expected**: Error message: `AI service not configured` or `500` response
+- [ ] Restore `GROQ_API_KEY` before continuing
+
+---
+
+### 7.7 Individual Node Config Validation
+
+Test that every node field is correctly editable and saved:
+
+#### triggerNode
+- [ ] Click node → panel shows `method` dropdown and `path` text input
+- [ ] Change `method` to `POST` → canvas node preview updates
+- [ ] Change `path` to `/new-path` → preview updates
+
+#### webhookNode
+- [ ] Panel shows `path` and `secret` fields
+- [ ] Enter `secret: abc123` → preview shows `Secret: ••••••••` (masked)
+
+#### scheduledNode
+- [ ] Panel shows `cron` and `timezone` fields
+- [ ] Enter `cron: */5 * * * *` → preview updates
+
+#### databaseNode
+- [ ] Panel shows `query` textarea (multi-line)
+- [ ] Enter SQL with variables: `SELECT * FROM orders WHERE user_id = $request.body.userId;`
+- [ ] Preview shows truncated query
+
+#### customCodeNode (JavaScript)
+- [ ] Panel shows a code editor
+- [ ] Enter multiline JS — editor accepts tabs and newlines
+- [ ] Syntax errors do not crash the UI (they error at execution time only)
+
+#### ifElseNode
+- [ ] Panel shows `condition` text input
+- [ ] Enter: `context.request.body.age >= 18`
+- [ ] Node on canvas shows **two output handles** (true/false)
+
+#### switchCaseNode
+- [ ] Panel shows `expression` and `cases` fields
+- [ ] `cases` is a comma-separated list: `active, inactive, pending, default`
+- [ ] Node shows one output handle per case
+
+#### httpClientNode
+- [ ] Panel shows: `method` (dropdown), `url`, `headers` (JSON), `body`
+- [ ] Enter URL with variable: `https://api.github.com/users/$request.body.username`
+- [ ] Headers: `{ "Accept": "application/vnd.github.v3+json" }`
+
+#### transformNode
+- [ ] Panel shows `mapping` field (JS expression)
+- [ ] Enter: `({ userId: steps['db_node'].id, fullName: steps['db_node'].name })`
+
+#### jwtValidateNode
+- [ ] Panel shows `secret` field
+- [ ] Leave blank → uses `env.JWT_SECRET`
+- [ ] Enter custom secret → preview shows `Secret: ••••••••`
+
+#### apiKeyNode
+- [ ] Panel shows `headerName` field
+- [ ] Change to `Authorization` → preview updates
+- [ ] Change back to `x-api-key`
+
+#### responseNode
+- [ ] Panel shows `statusCode`, `body`, `headers`, `redirectUrl` fields
+- [ ] Set `statusCode: 201`, `body: { "created": true }` → preview shows green `201`
+- [ ] Set `statusCode: 404` → preview shows red `404`
+- [ ] Set `redirectUrl: https://example.com` → preview shows `Redirect: https://example.com`
+
+---
+
+### 7.8 Edge / Connection Behavior
+
+- [ ] Drag from a node's **output handle** (right side) to another node's **input handle** (left side)
+- [ ] A cyan animated edge with an arrowhead appears
+- [ ] **Cannot** connect a node's output to its own input (self-loop)
+- [ ] Clicking an existing edge selects it (highlighted)
+- [ ] Press **Delete** or **Backspace** key to remove a selected edge
+- [ ] After edge deletion, clicking **Save** persists the removal
+
+**If/Else specific**:
+- [ ] `ifElseNode` has **two named output handles**: `true` (top) and `false` (bottom)
+- [ ] Connect `true` handle to one node and `false` handle to another
+- [ ] Both edges appear with correct labels
+
+**Switch Case specific**:
+- [ ] `switchCaseNode` has one output handle per case (including `default`)
+- [ ] Each handle can connect to a different downstream node
+
+---
+
+### 7.9 Save, Publish & Delete
+
+#### Save
+- [ ] After building any workflow, click **Save**
+- [ ] API call: `PUT /api/workflows/:id` with `{ nodes, edges, method, path }`
+- [ ] **Expected**: `200 OK` from backend
+- [ ] Refresh the page → workflow reloads with the same layout
+
+#### Publish / Unpublish
+- [ ] Click **Publish** (workflow must be saved first)
+- [ ] API call: `POST /api/workflows/:id/publish` with `{ isPublished: true }`
+- [ ] Sidebar indicator turns green (**●**)
+- [ ] Click **Unpublish** → `{ isPublished: false }` → indicator disappears
+- [ ] An unpublished workflow returns `404` when called via the gateway
+
+#### Delete Workflow
+- [ ] Right-click a workflow in sidebar, or click the trash icon
+- [ ] Confirmation dialog appears: `"Delete 'WorkflowName'? This cannot be undone."`
+- [ ] Click **Confirm** → API call: `DELETE /api/workflows/:id`
+- [ ] Workflow removed from sidebar
+- [ ] If deleted workflow was active → canvas clears
+
+---
+
+### 7.10 Live Logs Panel (Real-Time WebSocket Metrics)
+
+- [ ] Builder page connects to Socket.IO room: `join-project` event with `projectId`
+- [ ] Execute a published workflow via the Test panel or `curl`
+- [ ] **Expected**: A log entry appears in the **Live Logs** section within the builder **without page refresh**
+- [ ] Log entry shows: `method`, `path`, `status`, `latencyMs`, `timestamp`
+- [ ] Up to 50 log entries are retained (oldest are removed automatically)
+- [ ] Disconnect test: Stop backend → reconnect after restart → logs resume streaming
+
+---
+
+### 7.11 Gateway API Execution Tests (All Nodes End-to-End via curl)
+
+After publishing `Secure User Lookup` (`GET /users`), execute it via the gateway:
+
+**Test — No Auth (JWT required)**:
+```bash
+curl http://localhost:5000/api/<projectId>/users
+```
+- [ ] **Expected**: `500` — `Missing or invalid Authorization Bearer header`
+
+**Test — Invalid JWT**:
+```bash
+curl -H "Authorization: Bearer invalid.token.here" \
+     http://localhost:5000/api/<projectId>/users
+```
+- [ ] **Expected**: `500` — `JWT node validation failed: ...`
+
+**Test — Valid JWT, No API Key**:
+```bash
+curl -H "Authorization: Bearer <valid_token>" \
+     http://localhost:5000/api/<projectId>/users
+```
+- [ ] **Expected**: `500` — `Missing required API Key header 'x-api-key'`
+
+**Test — Full valid request**:
+```bash
+curl -H "Authorization: Bearer <valid_token>" \
+     -H "x-api-key: <your_key>" \
+     http://localhost:5000/api/<projectId>/users
+```
+- [ ] **Expected**: `200 OK` with user data from DB
+
+---
+
+### 7.12 Node Palette UI Tests
+
+- [ ] Node palette is grouped by category: **Triggers**, **Logic**, **Data**, **Integrations**, **Security**, **Custom**, **Response**
+- [ ] Each category has a colored header matching its node accent color
+- [ ] Hovering a palette item shows a tooltip or description
+- [ ] Clicking a palette item adds the node to canvas at a cascaded position (no overlap)
+- [ ] Attempting to add a second `triggerNode` shows: `"Only one trigger node per workflow"`
+- [ ] All 12 node types are present:
+
+| # | Node | Type Key | Category |
+|---|------|----------|----------|
+| 1 | HTTP Trigger | `triggerNode` | Triggers |
+| 2 | Webhook | `webhookNode` | Triggers |
+| 3 | Scheduled | `scheduledNode` | Triggers |
+| 4 | If / Else | `ifElseNode` | Logic |
+| 5 | Switch Case | `switchCaseNode` | Logic |
+| 6 | Transform | `transformNode` | Logic |
+| 7 | Database | `databaseNode` | Data |
+| 8 | HTTP Client | `httpClientNode` | Integrations |
+| 9 | JWT Validate | `jwtValidateNode` | Security |
+| 10 | API Key | `apiKeyNode` | Security |
+| 11 | JavaScript | `customCodeNode` | Custom |
+| 12 | Response | `responseNode` | Response |
 
 ---
 
@@ -890,14 +1569,41 @@ Authorization: Bearer <token>
 
 ### 14.3 Git Integration Tab
 
-- [ ] Switch to **Git** tab
-- [ ] Fill: Repository Name `Jinay-Bhatt/Backend-Api`, Access Token `<PAT>`, Provider `GITHUB`
-- [ ] Click **Save Git Config**
-- [ ] **Expected**: Success message
-- [ ] API call: `POST /api/git-config`
-- [ ] Reload page → config pre-loaded (provider + repo name shown, token hidden)
+> **Connection between Settings and Export**: 
+> - **Settings tab** is the control panel where you securely configure and store your GitHub credentials (your repository name and access token).
+> - **Export page** is where you run the compiler and choose to **Push to GitHub**. When you push from the Export page, it uses the configuration stored here in Settings. If you haven't linked a repository in Settings, clicking Push on the Export page will automatically redirect you here.
 
-#### 14.3.1 Fetch Git Config
+#### 14.3.1 How to get your GitHub Personal Access Token (PAT)
+To securely connect FlowForge to your GitHub repository, you need to generate a Personal Access Token (Classic). Follow these steps:
+1. Log in to your account on [GitHub](https://github.com).
+2. Click your profile picture in the top-right corner → select **Settings**.
+3. In the left sidebar, scroll to the bottom and click **Developer settings**.
+4. Click **Personal access tokens** → select **Tokens (classic)**.
+5. Click the **Generate new token** dropdown → select **Generate new token (classic)**.
+6. **Note**: Give it a descriptive name (e.g. `FlowForge Exporter Dev`).
+7. **Expiration**: Select your preferred expiration (e.g. `30 days` or `No expiration` for dev).
+8. **Select Scopes**: Check the following permissions:
+   - [x] **`repo`** (Full control of private and public repositories - *this is required so the backend can push your compiled branch/files*).
+9. Scroll to the bottom and click **Generate token**.
+10. **CRITICAL**: Copy the generated token immediately. GitHub will never show it to you again.
+
+---
+
+#### 14.3.2 Testing Git Integration Setup
+- [ ] Switch to **Git** tab in Settings (`http://localhost:3000/settings`)
+- [ ] Fill in the fields:
+  - **Repository Name**: Use the pattern `<username_or_org>/<repo_name>` (e.g., `Jinay-Bhatt/Backend-Api` or your own test repository)
+  - **Access Token**: Paste your copied GitHub Personal Access Token (PAT)
+  - **Provider**: Select `GITHUB` from the dropdown
+- [ ] Click **Save Git Config**
+- [ ] **Expected**: Success alert message appears
+- [ ] API call triggered: `POST /api/git-config`
+- [ ] Reload/Refresh the page:
+  - [ ] **Expected**: Git settings are preloaded
+  - [ ] The **Repository Name** and **Provider** are correctly shown
+  - [ ] The **Access Token** field is masked or blank for security (it is encrypted at rest in the DB and never returned back to the client)
+
+#### 14.3.3 Fetch Git Config
 
 ```
 GET http://localhost:5000/api/git-config
@@ -906,7 +1612,7 @@ Authorization: Bearer <token>
 - [ ] **Expected**: `{ config: { provider, repositoryName, repositoryUrl, isActive } }`
 - [ ] Access token is **not** returned (encrypted at rest)
 
-#### 14.3.2 Missing Fields
+#### 14.3.4 Missing Fields
 
 ```
 POST http://localhost:5000/api/git-config
@@ -1262,6 +1968,44 @@ Before declaring the platform ready:
 - [ ] Security headers are present on all API responses
 - [ ] All modal buttons have proper height and are not too small
 - [ ] All footer links resolve to correct destinations
+
+---
+
+## 21. Dynamic API Testing Sandbox
+
+**URL**: `http://localhost:3000/projects/[id]/builder` → Select any workflow
+
+### 21.1 Canvas Test Button Trigger
+- [ ] Click on any active workflow from the **ACTIVE ROUTES** sidebar.
+- [ ] Observe the toolbar header next to the **✨ AI SYNTHESIZE** button.
+- [ ] **Expected**: A blue **⚡ TEST API** button appears.
+- [ ] Click the **⚡ TEST API** button.
+- [ ] **Expected**: The **⚡ API Sandbox Test Runner** modal window fades into view with a blurred backdrop.
+
+### 21.2 Warning Banner Validation
+- [ ] Select a workflow that is **unpublished** (doesn't have the green `● LIVE` badge on the canvas toolbar).
+- [ ] Open the Test Sandbox.
+- [ ] **Expected**: A yellow warning banner is visible: `"Workflow is suspended/unpublished. Please click Initialize on the canvas toolbar to publish the route..."`.
+- [ ] Close the sandbox, click **Initialize** (button changes to **SUSPEND** and shows `● LIVE`).
+- [ ] Open the Test Sandbox again.
+- [ ] **Expected**: The yellow warning banner is no longer visible.
+
+### 21.3 Dynamic Gateway Request Execution
+1. Select a published workflow (e.g. `/products` GET).
+2. Open the Test Sandbox.
+3. Observe the Request Parameters panel:
+   - Displays correct method (e.g. `GET`) and relative gateway path (e.g., `/api/[projectId]/products`).
+4. **Query Params**: Enter `?limit=1` in the Query Params input.
+5. **Headers**: Enter standard JSON headers (e.g. `{"Content-Type": "application/json"}`).
+6. Click **Execute Gateway Request**.
+7. **Expected**:
+   - The button enters a loading state displaying `Executing Request...` with a loading spinner.
+   - The sandbox executes the query directly against the live Fastify gateway endpoint.
+   - The **RESPONSE CONSOLE** updates displaying:
+     - `STATUS: 200 OK` (Green badge)
+     - `LATENCY: <duration> ms` (Amber badge)
+     - `RESPONSE BODY (JSON)` showing the returned JSON array (e.g. list of products).
+8. Close the sandbox.
 
 ---
 

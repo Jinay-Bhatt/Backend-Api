@@ -234,7 +234,7 @@ export default function GatewayPage() {
               onMouseEnter={e => { if (!saving) { e.currentTarget.style.background = saved ? 'rgba(16,185,129,0.15)' : '#cbd5e1'; }}}
               onMouseLeave={e => { e.currentTarget.style.background = saving ? '#1e293b' : saved ? 'rgba(16,185,129,0.1)' : '#ffffff'; }}
             >
-              {saving ? 'COMMITTING CONFIGURATION...' : saved ? '✓ GATEWAY CONFIGURATION COMMITTED SUCCESS' : 'SAVE GATEWAY CONFIG'}
+              {saving ? 'COMMITTING CONFIGURATION...' : saved ? 'GATEWAY CONFIGURATION COMMITTED SUCCESS' : 'SAVE GATEWAY CONFIG'}
             </button>
           </>
         )}

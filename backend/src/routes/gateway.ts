@@ -8,9 +8,20 @@ import {
 } from "../services/dag.js";
 import { getCachedWorkflows } from "../services/cache.js";
 import { decrypt } from "../services/crypto.js";
+import { queueExecutionLog } from "../services/logger.js";
 
 // In-memory rate limiting store (key: IP + workflowId)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+// Periodically GC expired entries from the rateLimitStore map to prevent memory leaks under user load
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of rateLimitStore.entries()) {
+    if (now > value.resetTime) {
+      rateLimitStore.delete(key);
+    }
+  }
+}, 120000); // Clean up every 2 minutes
 
 /**
  * Checks and enforces rate limits for incoming gateway requests.
@@ -26,6 +37,9 @@ function checkRateLimit(
   const record = rateLimitStore.get(key);
 
   if (!record || now > record.resetTime) {
+    if (record) {
+      rateLimitStore.delete(key); // Actively cleanup expired item
+    }
     rateLimitStore.set(key, {
       count: 1,
       resetTime: now + windowSecs * 1000,
@@ -519,21 +533,17 @@ export async function gatewayRoutes(fastify: FastifyInstance) {
 
             const latency = Date.now() - startTime;
 
-            // Log successful execution audit trail asynchronously (non-blocking)
-            prisma.executionLog.create({
-              data: {
-                workflowId: workflow.id,
-                method,
-                path: wildPath,
-                responseStatus: redirectUrl ? (status === 200 ? 302 : status) : status,
-                latencyMs: latency,
-                requestPayload: JSON.stringify({
-                  query: request.query,
-                  body: request.body || {},
-                }),
-              },
-            }).catch(logErr => {
-              request.log.error(logErr, "Failed to write success execution log to DB asynchronously");
+            // Log successful execution audit trail using optimized batched queuing
+            queueExecutionLog({
+              workflowId: workflow.id,
+              method,
+              path: wildPath,
+              responseStatus: redirectUrl ? (status === 200 ? 302 : status) : status,
+              latencyMs: latency,
+              requestPayload: JSON.stringify({
+                query: request.query,
+                body: request.body || {},
+              }),
             });
 
             // Stream metrics via WebSockets in real-time
@@ -580,23 +590,19 @@ export async function gatewayRoutes(fastify: FastifyInstance) {
 
         request.log.error(err);
 
-        // Audit log database failure asynchronously (non-blocking)
+        // Audit log database failure using optimized batched queuing
         if (matchedWorkflow) {
-          prisma.executionLog.create({
-            data: {
-              workflowId: matchedWorkflow.id,
-              method,
-              path: wildPath,
-              responseStatus: 500,
-              latencyMs: latency,
-              errorDetails: err.message || "Unknown error during execution",
-              requestPayload: JSON.stringify({
-                query: request.query,
-                body: request.body || {},
-              }),
-            },
-          }).catch(logErr => {
-            request.log.error(logErr, "Failed to write error execution log to DB asynchronously");
+          queueExecutionLog({
+            workflowId: matchedWorkflow.id,
+            method,
+            path: wildPath,
+            responseStatus: 500,
+            latencyMs: latency,
+            errorDetails: err.message || "Unknown error during execution",
+            requestPayload: JSON.stringify({
+              query: request.query,
+              body: request.body || {},
+            }),
           });
         }
 

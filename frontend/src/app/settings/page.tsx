@@ -403,7 +403,7 @@ export default function SettingsPage() {
                   onMouseEnter={e => { if (!savingProfile && !profileSaved) e.currentTarget.style.background = '#cbd5e1'; }}
                   onMouseLeave={e => { if (!savingProfile && !profileSaved) e.currentTarget.style.background = '#ffffff'; }}
                 >
-                  {savingProfile ? 'Saving Profile...' : profileSaved ? '✓ Profile Saved' : 'Save Profile Details'}
+                  {savingProfile ? 'Saving Profile...' : profileSaved ? 'Profile Saved Successfully' : 'Save Profile Details'}
                 </button>
               </form>
             </div>
@@ -525,7 +525,7 @@ export default function SettingsPage() {
                   onMouseEnter={e => { if (!savingGit && !gitSaved) e.currentTarget.style.background = '#cbd5e1'; }}
                   onMouseLeave={e => { if (!savingGit && !gitSaved) e.currentTarget.style.background = '#ffffff'; }}
                 >
-                  {savingGit ? 'Saving Connection...' : gitSaved ? '✓ Connection Successful' : 'Save Connection'}
+                  {savingGit ? 'Saving Connection...' : gitSaved ? 'Connection Successful' : 'Save Connection'}
                 </button>
               </form>
             </div>

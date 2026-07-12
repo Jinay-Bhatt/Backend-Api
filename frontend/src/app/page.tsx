@@ -9,7 +9,7 @@ import {
   ArrowRight, Terminal, Layers, GitBranch, Activity, Code2,
   Cpu, Sparkles, Play, TrendingUp, Server, Clock, Star, Users,
   ArrowUpRight, ChevronRight, Package, Box, Wifi, BarChart2,
-  Eye, Sliders, AlertCircle, RefreshCw, Volume2, VolumeX
+  Eye, Sliders, AlertCircle, RefreshCw, Volume2, VolumeX, Brain, Settings, Download, Bell
 } from 'lucide-react';
 
 /* ─── Logo ──────────────────────────────────── */
@@ -872,24 +872,24 @@ const FEATURES = [
 /* ─── Mini Canvas Demo (for featured card) ─────── */
 function MiniCanvasDemo() {
   return (
-    <div style={{ marginTop: 24, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.4)' }}>
-      <div style={{ position: 'relative', height: 140, background: 'radial-gradient(circle, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '20px 20px', overflow: 'hidden' }}>
+    <div style={{ width: '100%', marginTop: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.4)' }}>
+      <div style={{ position: 'relative', height: 220, background: 'radial-gradient(circle, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '20px 20px', overflow: 'hidden' }}>
         <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-          <path d="M 84 70 C 92 70 92 35 100 35" fill="none" stroke="#6366f1" strokeWidth="1.5" opacity="0.7" strokeDasharray="4 3" />
-          <path d="M 176 35 C 215 35 215 105 255 105" fill="none" stroke="#a5b4fc" strokeWidth="1.5" opacity="0.7" />
-          <path d="M 331 105 C 370 105 370 70 410 70" fill="none" stroke="#10b981" strokeWidth="1.5" opacity="0.7" />
+          <path d="M 84 110 C 92 110 92 50 100 50" fill="none" stroke="#6366f1" strokeWidth="1.5" opacity="0.7" strokeDasharray="4 3" />
+          <path d="M 176 50 C 215 50 215 170 255 170" fill="none" stroke="#a5b4fc" strokeWidth="1.5" opacity="0.7" />
+          <path d="M 331 170 C 370 170 370 110 410 110" fill="none" stroke="#10b981" strokeWidth="1.5" opacity="0.7" />
           <circle r="3" fill="#6366f1">
-            <animateMotion dur="2s" repeatCount="indefinite" path="M 84 70 C 92 70 92 35 100 35" />
+            <animateMotion dur="2s" repeatCount="indefinite" path="M 84 110 C 92 110 92 50 100 50" />
           </circle>
           <circle r="3" fill="#10b981">
-            <animateMotion dur="2.3s" repeatCount="indefinite" begin="0.6s" path="M 331 105 C 370 105 370 70 410 70" />
+            <animateMotion dur="2.3s" repeatCount="indefinite" begin="0.6s" path="M 331 170 C 370 170 370 110 410 110" />
           </circle>
         </svg>
         {[
-          { l: 'Trigger', c: '#6366f1', x: 8, y: 55 },
-          { l: 'Auth', c: '#a5b4fc', x: 100, y: 20 },
-          { l: 'DB Query', c: '#38bdf8', x: 255, y: 90 },
-          { l: 'Response', c: '#10b981', x: 410, y: 55 },
+          { l: 'Trigger', c: '#6366f1', x: 8, y: 95 },
+          { l: 'Auth', c: '#a5b4fc', x: 100, y: 35 },
+          { l: 'DB Query', c: '#38bdf8', x: 255, y: 155 },
+          { l: 'Response', c: '#10b981', x: 410, y: 95 },
         ].map((n, i) => (
           <div key={i} style={{
             position: 'absolute', left: n.x, top: n.y,
@@ -924,7 +924,7 @@ function MiniAnalyticsDemo() {
     socket.on("global-metrics", (m: any) => {
       lastRealMetricTime.current = Date.now();
       const latency = m.latencyMs || 0;
-      const heightPercent = Math.max(15, Math.min(Math.round((latency / 400) * 80) + 15, 95));
+      const heightPercent = Math.max(15, Math.min(Math.round((latency / 400) * 110) + 15, 95));
       
       setData(prev => {
         const next = [...prev.slice(1)];
@@ -939,7 +939,7 @@ function MiniAnalyticsDemo() {
       if (isIdle) {
         setData(prev => {
           const next = [...prev.slice(1)];
-          const val = Math.floor(Math.random() * 55) + 20; // 20% to 75%
+          const val = Math.floor(Math.random() * 85) + 20; // 20% to 105%
           next.push(val);
           return next;
         });
@@ -955,7 +955,7 @@ function MiniAnalyticsDemo() {
   return (
     <div style={{
       background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)',
-      borderRadius: 12, padding: 18, width: '100%', minHeight: 120,
+      borderRadius: 12, padding: 18, width: '100%', minHeight: 220,
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       flex: 1
     }}>
@@ -966,7 +966,7 @@ function MiniAnalyticsDemo() {
         </div>
         <div style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8', fontFamily: 'monospace' }}>{activeSockets} active sockets</div>
       </div>
-      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', height: 60, paddingBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', height: 140, paddingBottom: 4 }}>
         {data.map((val, idx) => (
           <div key={idx} style={{
             flex: 1, background: 'linear-gradient(to top, rgba(236,72,153,0.05), rgba(236,72,153,0.35))',
@@ -980,88 +980,498 @@ function MiniAnalyticsDemo() {
   );
 }
 
-function Features() {
+/* ─── Interactive Feature Bullet Sets ─────────── */
+
+const BULLET_SETS = [
+  // 0. Visual Canvas
+  [
+    "Drag and drop trigger nodes, database queries, and custom script blocks.",
+    "Link nodes with visual edges to establish synchronous execution paths.",
+    "Verify node structures in real time to form valid execution trees."
+  ],
+  // 1. Enterprise Gateway
+  [
+    "Configure JWT check barriers on HTTP trigger endpoint pathways.",
+    "Enforce global rate limiting rules to block client request floods.",
+    "Whitelist gateway access with custom cross-origin header rules."
+  ],
+  // 2. Secure VM Sandbox
+  [
+    "Execute custom business logic inside isolated Node.js containers.",
+    "Prevent memory leaks and CPU hangs with strict 200ms processing timeouts.",
+    "Run clean script executions with complete environment isolation."
+  ],
+  // 3. TypeScript Export
+  [
+    "Compile visual schemas into modular Fastify router files instantly.",
+    "Output type-safe database queries via automated Prisma model schema generation.",
+    "Build fully decoupled server packages ready for Fly.io, Railway, or VPS."
+  ],
+  // 4. AI Workflow Generator
+  [
+    "Translate raw English instructions into visual workflow structures.",
+    "Instantly map query variables, endpoints, and method routes.",
+    "Iterate and refine generated pipeline node settings dynamically."
+  ],
+  // 5. Real-Time Analytics
+  [
+    "Trace execution latencies, gateway status codes, and trace logs.",
+    "Track active WebSocket connections and network throughput spikes.",
+    "Pinpoint performance issues and slow database queries dynamically."
+  ]
+];
+
+/* ─── Interactive Showcase Visualizers ─────────── */
+
+function VisualizerGateway() {
+  const [pulseStage, setPulseStage] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulseStage(p => (p + 1) % 4);
+    }, 1800);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section id="features" style={{ padding: '32px 32px 120px', background: '#020202' }}>
+    <div style={{ position: 'relative', height: 160, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '0 20px', overflow: 'hidden', width: '100%' }}>
+      <div style={{ position: 'absolute', left: 40, right: 40, height: 1.5, background: 'rgba(255,255,255,0.06)', zIndex: 1 }} />
+      
+      <div style={{
+        position: 'absolute',
+        left: 40,
+        width: `${(pulseStage + 1) * 25}%`,
+        height: 1.5,
+        background: 'linear-gradient(to right, transparent, #10b981)',
+        zIndex: 1,
+        transition: 'all 0.5s ease-out'
+      }} />
+
+      <div style={{
+        zIndex: 2,
+        padding: '6px 12px',
+        background: pulseStage === 0 ? 'rgba(16,185,129,0.15)' : '#050508',
+        border: `1px solid ${pulseStage === 0 ? '#10b981' : 'rgba(255,255,255,0.06)'}`,
+        borderRadius: 6,
+        fontSize: 10,
+        fontFamily: 'monospace',
+        color: pulseStage === 0 ? '#10b981' : '#64748b',
+        transition: 'all 0.3s'
+      }}>
+        GET /products
+      </div>
+
+      <div style={{
+        zIndex: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 4,
+        padding: '8px 10px',
+        background: pulseStage === 1 ? 'rgba(16,185,129,0.1)' : '#050508',
+        border: `1px solid ${pulseStage === 1 ? '#10b981' : 'rgba(255,255,255,0.06)'}`,
+        borderRadius: 6,
+        fontSize: 10,
+        color: pulseStage === 1 ? '#10b981' : '#94a3b8',
+        transition: 'all 0.3s'
+      }}>
+        <Shield size={14} style={{ color: pulseStage === 1 ? '#10b981' : '#475569' }} />
+        <span>Rate Limit OK</span>
+      </div>
+
+      <div style={{
+        zIndex: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 4,
+        padding: '8px 10px',
+        background: pulseStage === 2 ? 'rgba(16,185,129,0.1)' : '#050508',
+        border: `1px solid ${pulseStage === 2 ? '#10b981' : 'rgba(255,255,255,0.06)'}`,
+        borderRadius: 6,
+        fontSize: 10,
+        color: pulseStage === 2 ? '#10b981' : '#94a3b8',
+        transition: 'all 0.3s'
+      }}>
+        <Lock size={14} style={{ color: pulseStage === 2 ? '#10b981' : '#475569' }} />
+        <span>JWT Valid</span>
+      </div>
+
+      <div style={{
+        zIndex: 2,
+        padding: '6px 12px',
+        background: pulseStage === 3 ? 'rgba(16,185,129,0.2)' : '#050508',
+        border: `1px solid ${pulseStage === 3 ? '#10b981' : 'rgba(255,255,255,0.06)'}`,
+        borderRadius: 6,
+        fontSize: 10,
+        fontFamily: 'monospace',
+        color: pulseStage === 3 ? '#10b981' : '#64748b',
+        fontWeight: 700,
+        transition: 'all 0.3s'
+      }}>
+        200 OK
+      </div>
+    </div>
+  );
+}
+
+function VisualizerSandbox() {
+  const [logs, setLogs] = useState<string[]>([
+    "[System] Spawning isolated NodeVM context...",
+    "[Sandbox] CPU limit set to 200ms, Memory 128MB max.",
+    "[Sandbox] Sandbox execution initialized."
+  ]);
+  
+  useEffect(() => {
+    const logsList = [
+      "[Sandbox] Incoming payload parsed successfully.",
+      "[Sandbox] Running custom customCodeNode transform functions...",
+      "[Sandbox] Filtering sensitive response user metadata fields.",
+      "[Sandbox] Garbage collection executed.",
+      "[Sandbox] VM session disposed safely (took 2.4ms)."
+    ];
+    let counter = 0;
+    const interval = setInterval(() => {
+      if (counter < logsList.length) {
+        setLogs(prev => [...prev, logsList[counter]]);
+        counter++;
+      } else {
+        setLogs([
+          "[System] Spawning isolated NodeVM context...",
+          "[Sandbox] CPU limit set to 200ms, Memory 128MB max.",
+          "[Sandbox] Sandbox execution initialized."
+        ]);
+        counter = 0;
+      }
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div style={{ border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden', background: '#030305', width: '100%' }}>
+      <div style={{ padding: '6px 12px', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.015)', fontSize: 9.5, color: '#64748b', fontFamily: 'monospace', textAlign: 'left' }}>
+        vm_isolated_worker.js
+      </div>
+      <pre style={{ margin: 0, padding: 12, fontSize: 11, fontFamily: 'monospace', color: '#38bdf8', lineHeight: 1.4, overflowX: 'auto', textAlign: 'left' }}>
+{`// Secure sandbox logic
+const payload = context.request.body;
+const cleanData = payload.map(u => ({
+  id: u.id,
+  email: u.email.toLowerCase()
+}));
+return { count: cleanData.length, cleanData };`}
+      </pre>
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', background: '#020202', padding: 10, maxHeight: 90, overflowY: 'hidden', fontSize: 10, fontFamily: 'monospace', color: '#a78bfa', textAlign: 'left' }}>
+        {logs.slice(-3).map((l, idx) => <div key={idx}>{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+function VisualizerExport() {
+  return (
+    <div style={{ border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden', background: '#030305', width: '100%' }}>
+      <div style={{ padding: '6px 12px', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.015)', fontSize: 9.5, color: '#64748b', fontFamily: 'monospace', display: 'flex', justifyContent: 'space-between' }}>
+        <span>src/routes/api.ts</span>
+        <span style={{ color: '#10b981', fontWeight: 700 }}>Compiled TS</span>
+      </div>
+      <pre style={{ margin: 0, padding: 12, fontSize: 10.5, fontFamily: 'monospace', color: '#a78bfa', lineHeight: 1.4, overflowX: 'auto', textAlign: 'left' }}>
+{`import { FastifyInstance } from 'fastify';
+import { PrismaClient } from '@prisma/client';
+
+export async function apiRoutes(fastify: FastifyInstance) {
+  const prisma = new PrismaClient();
+  
+  fastify.post('/products', async (request, reply) => {
+    const data = request.body;
+    return await prisma.product.create({ data });
+  });
+}`}
+      </pre>
+    </div>
+  );
+}
+
+function VisualizerAi() {
+  const [promptText, setPromptText] = useState("");
+  const [status, setStatus] = useState("idle");
+
+  useEffect(() => {
+    const text = "Create a database API endpoint to retrieve users filtered by country.";
+    let timer: any;
+    let charIdx = 0;
+    
+    const runAnimation = () => {
+      setStatus("typing");
+      setPromptText("");
+      charIdx = 0;
+      
+      const type = () => {
+        if (charIdx < text.length) {
+          setPromptText(prev => prev + text[charIdx]);
+          charIdx++;
+          timer = setTimeout(type, 45);
+        } else {
+          setStatus("compiling");
+          timer = setTimeout(() => {
+            setStatus("done");
+            timer = setTimeout(runAnimation, 4500);
+          }, 1500);
+        }
+      };
+      
+      timer = setTimeout(type, 500);
+    };
+
+    runAnimation();
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div style={{ border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden', background: '#030305', padding: 14, width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontFamily: 'monospace', color: '#64748b', marginBottom: 8 }}>
+        <Sparkles size={11} style={{ color: '#f59e0b' }} /> AI PROMPT INJECTOR
+      </div>
+      <div style={{
+        background: '#0a0a0f',
+        border: '1px solid rgba(255,255,255,0.04)',
+        borderRadius: 6,
+        padding: '8px 12px',
+        fontFamily: 'monospace',
+        fontSize: 11.5,
+        color: '#ffffff',
+        minHeight: 36,
+        display: 'flex',
+        alignItems: 'center',
+        textAlign: 'left'
+      }}>
+        {promptText}
+        {status === 'typing' && <span style={{ width: 1.5, height: 13, background: '#f59e0b', marginLeft: 2, display: 'inline-block', animation: 'pulse 1s infinite' }} />}
+      </div>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 12 }}>
+        <div style={{
+          fontSize: 10,
+          fontFamily: 'monospace',
+          padding: '3px 8px',
+          borderRadius: 4,
+          background: status === 'typing' ? 'rgba(255,255,255,0.04)' : (status === 'compiling' ? 'rgba(245,158,11,0.08)' : 'rgba(16,185,129,0.08)'),
+          border: `1px solid ${status === 'typing' ? 'rgba(255,255,255,0.08)' : (status === 'compiling' ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)')}`,
+          color: status === 'typing' ? '#64748b' : (status === 'compiling' ? '#f59e0b' : '#10b981'),
+          fontWeight: 700,
+          transition: 'all 0.3s'
+        }}>
+          {status === 'typing' ? 'WAITING FOR PROMPT...' : (status === 'compiling' ? 'SYNTHESIZING DAG...' : 'WORKFLOW SYNTHESIZED')}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Features() {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [scale, setScale] = useState(0.76);
+  const [cardSize, setCardSize] = useState(400);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 480) {
+        setScale(0.5);
+        setCardSize(280);
+      } else if (window.innerWidth < 640) {
+        setScale(0.6);
+        setCardSize(320);
+      } else if (window.innerWidth < 900) {
+        setScale(0.7);
+        setCardSize(400);
+      } else {
+        setScale(0.76);
+        setCardSize(400);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <section id="features" style={{ padding: '80px 32px 140px', background: '#020202', overflow: 'hidden' }}>
       <SectionDivider />
-      <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
+
+      <div style={{ maxWidth: 1280, margin: '24px auto 0', textAlign: 'center' }}>
         <Reveal direction="up" threshold={0.1}>
-          <div style={{ marginBottom: 56 }}>
-            <h2 style={{ fontSize: 'clamp(36px, 4.5vw, 52px)', fontWeight: 900, letterSpacing: '-1.8px', fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff', lineHeight: 1.06, marginBottom: 12 }}>
-              Platform Capabilities
+          <div>
+            <h2 style={{ fontSize: 'clamp(36px, 4.5vw, 52px)', fontWeight: 900, letterSpacing: '-1.8px', fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff', lineHeight: 1.06, marginBottom: 16 }}>
+              Our Advanced <span style={{ background: 'linear-gradient(135deg, #05ffc4 0%, #00b887 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>features</span>
             </h2>
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 32, flexWrap: 'wrap' }}>
-              <h3 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.5px', color: '#6366f1', margin: 0, maxWidth: 520 }}>
-                Everything you need to build, secure, and deploy custom API integrations.
-              </h3>
-              <p style={{ fontSize: 16, color: '#64748b', maxWidth: 420, lineHeight: 1.6, margin: 0 }}>
-                From visual design to production deployment — FlowForge handles the full lifecycle of your backend.
-              </p>
+            <p style={{ fontSize: 15, color: '#64748b', maxWidth: 640, lineHeight: 1.6, margin: '0 auto 40px auto' }}>
+              Compile pipelines visually, enforce API gateway policies, run custom scripts inside isolated containers, and monitor execution metrics in real-time.
+            </p>
+          </div>
+        </Reveal>
+
+        {/* Tab Bar Header (Top Navigation Capsule) */}
+        <Reveal direction="up" delay={50}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 56 }}>
+            <div style={{
+              background: '#07070a',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              padding: '6px',
+              borderRadius: '99px',
+              display: 'inline-flex',
+              gap: '6px',
+              maxWidth: '100%',
+              overflowX: 'auto',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+              scrollbarWidth: 'none',
+            }} className="scroll-clean">
+              {FEATURES.map((f, idx) => {
+                const isActive = activeIdx === idx;
+                return (
+                  <button
+                    key={f.title}
+                    onClick={() => setActiveIdx(idx)}
+                    style={{
+                      all: 'unset',
+                      padding: '8px 24px',
+                      borderRadius: '99px',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: isActive ? '#ffffff' : '#94a3b8',
+                      cursor: 'pointer',
+                      background: isActive ? 'linear-gradient(135deg, #05ffc4 0%, #00b887 100%)' : 'transparent',
+                      boxShadow: isActive ? '0 4px 16px rgba(5,255,196,0.1)' : 'none',
+                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {f.title}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </Reveal>
- 
-        {/* Bento grid — featured wide card top-left */}
-        <div className="bento-grid">
-          {FEATURES.map((f, i) => {
-            const [hov, setHov] = useState(false);
-            const isWide = f.wide;
-            const isFullWidth = f.fullWidth;
-            return (
-              <Reveal
-                key={f.title}
-                delay={i * 70}
-                direction="up"
-                threshold={0.08}
-                className={isFullWidth ? 'bento-card-full' : (isWide ? 'bento-card-wide' : 'bento-card-normal')}
-              >
-                <div
-                  onMouseEnter={() => setHov(true)}
-                  onMouseLeave={() => setHov(false)}
-                  style={{
-                    padding: '28px 28px 30px',
-                    background: hov ? 'rgba(255,255,255,0.015)' : 'rgba(8,8,10,0.4)',
-                    border: `1px solid ${hov ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)'}`,
-                    borderRadius: 18, position: 'relative', overflow: 'hidden',
-                    transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
-                    transform: hov ? 'translateY(-3px)' : 'none',
-                    boxShadow: hov ? '0 16px 32px rgba(0,0,0,0.4)' : '0 2px 8px rgba(0,0,0,0.2)',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between'
-                  }}
-                >
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: isFullWidth ? 'row' : 'column',
-                    gap: isFullWidth ? 48 : 0,
-                    alignItems: isFullWidth ? 'center' : 'stretch',
-                    flexWrap: 'wrap',
-                    flex: 1
-                  }}>
-                    <div style={{ flex: 1, minWidth: 280 }}>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
-                        <div style={{
-                          width: 46, height: 46, borderRadius: 13,
-                          background: 'rgba(255,255,255,0.03)', border: '1.5px solid rgba(255,255,255,0.06)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          color: '#cbd5e1', transition: 'all 0.3s',
-                        }}>
-                          {f.icon}
-                        </div>
-                      </div>
-                      <h3 style={{ fontSize: isWide ? 20 : 16, fontWeight: 800, marginBottom: 10, letterSpacing: '-0.4px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{f.title}</h3>
-                      <p style={{ fontSize: isWide ? 14.5 : 13.5, color: '#64748b', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
-                    </div>
 
-                    {isWide && <MiniCanvasDemo />}
-                    {isFullWidth && <MiniAnalyticsDemo />}
+        {/* Split Content Area (Bottom) */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 64, alignItems: 'center', justifyContent: 'center', marginTop: 12 }}>
+          
+          {/* Left Side: Squircle Gravity Container with Interactive Visualizers */}
+          <Reveal direction="left" delay={100}>
+            <div style={{
+              width: cardSize,
+              height: cardSize,
+              borderRadius: 48,
+              background: '#040406',
+              border: `2px solid rgba(255,255,255,0.06)`,
+              boxShadow: `0 24px 64px rgba(0,0,0,0.7), inset 0 0 40px ${FEATURES[activeIdx].color}08`,
+              position: 'relative',
+              overflow: 'hidden',
+              transition: 'all 0.4s ease-out, box-shadow 0.4s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxSizing: 'border-box'
+            }}>
+              {/* Colored light glow emanating from top-left */}
+              <div style={{
+                position: 'absolute',
+                top: -30,
+                left: -30,
+                width: 140,
+                height: 140,
+                borderRadius: '50%',
+                background: FEATURES[activeIdx].color,
+                opacity: 0.12,
+                filter: 'blur(40px)',
+                transition: 'background 0.4s',
+                pointerEvents: 'none'
+              }} />
+
+              {/* Grid dots overlay */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundImage: 'radial-gradient(rgba(255,255,255,0.015) 1px, transparent 1px)',
+                backgroundSize: '24px 24px',
+                pointerEvents: 'none'
+              }} />
+
+              {/* Interactive Visualizer scaled down to fit */}
+              <div style={{
+                position: 'absolute',
+                width: 500,
+                top: '50%',
+                left: '50%',
+                transform: `translate(-50%, -50%) scale(${scale})`,
+                transformOrigin: 'center center',
+                flexShrink: 0,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                zIndex: 2
+              }}>
+                {activeIdx === 0 && <MiniCanvasDemo />}
+                {activeIdx === 1 && <VisualizerGateway />}
+                {activeIdx === 2 && <VisualizerSandbox />}
+                {activeIdx === 3 && <VisualizerExport />}
+                {activeIdx === 4 && <VisualizerAi />}
+                {activeIdx === 5 && <MiniAnalyticsDemo />}
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Right Side: Feature Details with custom Check Circle Bullets */}
+          <Reveal direction="right" delay={150}>
+            <div style={{ flex: '1 1 420px', maxWidth: 480, textAlign: 'left' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                color: FEATURES[activeIdx].color,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                fontFamily: "'JetBrains Mono', monospace",
+                transition: 'color 0.4s'
+              }}>
+                CAPABILITY OVERVIEW
+              </span>
+              
+              <h3 style={{
+                fontSize: 28,
+                fontWeight: 800,
+                color: '#ffffff',
+                margin: '12px 0 20px 0',
+                letterSpacing: '-0.8px',
+                fontFamily: "'Plus Jakarta Sans', sans-serif"
+              }}>
+                {FEATURES[activeIdx].title}
+              </h3>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {BULLET_SETS[activeIdx].map((bullet, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 14 }}>
+                    <div style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: '50%',
+                      background: 'rgba(16,185,129,0.08)',
+                      border: '1.5px solid rgba(16,185,129,0.25)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      marginTop: 3
+                    }}>
+                      <CheckCircle size={11} style={{ color: '#10b981' }} />
+                    </div>
+                    <span style={{ fontSize: 14.5, color: '#cbd5e1', lineHeight: 1.6 }}>
+                      {bullet}
+                    </span>
                   </div>
-                </div>
-              </Reveal>
-            );
-          })}
+                ))}
+              </div>
+            </div>
+          </Reveal>
+
         </div>
       </div>
     </section>

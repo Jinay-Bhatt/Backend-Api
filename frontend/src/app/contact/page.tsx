@@ -35,7 +35,7 @@ export default function ContactPage() {
         
         {sent ? (
           <div style={{ padding: '24px 20px', borderRadius: 12, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', fontSize: 15, lineHeight: 1.6 }}>
-            ✓ Message received successfully. One of our engineers will reply shortly to {email}.
+            Message received successfully. One of our engineers will reply shortly to {email}.
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

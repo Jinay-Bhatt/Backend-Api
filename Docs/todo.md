@@ -159,6 +159,18 @@ This file tracks the implementation progress of the FlowForge backend server.
 - [x] Fixed TypeScript error (`textStyle` → `textAlign`). Frontend and backend TypeScript checks pass clean.
 - [x] Updated TESTING_GUIDE.md Section 14.4 (Export Tab) to reflect the new interactive Export page.
 
+### ✅ Phase 25: Interactive API Testing Sandbox
+- [x] Created `handleTestExecute` request dispatcher inside `builder/page.tsx` that maps parameters, query strings, headers, and request body before firing `fetch()` directly at the active workspace gateway.
+- [x] Added `renderConsole` helper method to simplify template rendering and prevent nested conditional brackets syntax errors.
+- [x] Added **⚡ TEST API** action trigger button (cyan border/glow, Play icon) to the main builder canvas header toolbar.
+- [x] Created a high-end glassmorphic modal layout **⚡ API Sandbox Test Runner**:
+  - Displays relative sandbox route path (`/api/:projectId/:workflowPath`) dynamically resolved.
+  - Warns the developer with a yellow banner if the active route is not initialized/published.
+  - Features dedicated text inputs for custom Query Params, Header JSON, and Body JSON properties.
+  - Features real-time Response Console displaying returning Status Code (green/red badge), Latency speed (amber badge), and fully formatted response body plaintext/JSON array stream.
+- [x] Confirmed TypeScript builds (`npx tsc --noEmit`) complete with zero errors.
+- [x] Documented Test Sandbox procedures inside Section 21 of TESTING_GUIDE.md.
+
 ---
 
 ## Remaining Tasks

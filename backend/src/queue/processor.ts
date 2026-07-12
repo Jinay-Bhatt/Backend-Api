@@ -1,5 +1,4 @@
-import * as _archiver from "archiver";
-const archiver = (_archiver as any).default || _archiver;
+import { ZipArchive } from "archiver";
 import fs from "node:fs";
 import path from "node:path";
 import { prisma } from "../services/db.js";
@@ -39,7 +38,7 @@ export async function processCompilation(data: CompilationJobData) {
 
   const zipPath = path.join(exportsDir, `${projectId}.zip`);
   const outputStream = fs.createWriteStream(zipPath);
-  const archive = archiver("zip", { zlib: { level: 9 } });
+  const archive = new ZipArchive({ zlib: { level: 9 } });
 
   await new Promise<void>((resolve, reject) => {
     outputStream.on("close", () => resolve());

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Google Fonts loaded optimized via next/font in layout.tsx */
 
 /* ─────────────────────────────────────────────────────
    DESIGN TOKENS
@@ -112,7 +112,7 @@
 html { scroll-behavior: smooth; text-size-adjust: 100%; }
 
 body {
-  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-inter), var(--font-plus-jakarta-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-base);
   color: var(--text-primary);
   line-height: 1.6;

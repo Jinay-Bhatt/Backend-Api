@@ -15,7 +15,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { api } from '../../../../services/api';
-import { Link2, Network, Play, Pause, Trash2 } from 'lucide-react';
+import { Link2, Network, Play, Pause, Trash2, X } from 'lucide-react';
 
 
 const ServiceNode = ({ data }: any) => {
@@ -83,7 +83,10 @@ const ServiceNode = ({ data }: any) => {
           paddingTop: 6,
           fontWeight: 600,
         }}>
-          ● {routesCount} ACTIVE PATHS
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+            {routesCount} ACTIVE PATHS
+          </span>
         </div>
       )}
 
@@ -119,6 +122,9 @@ export default function ServicesPage() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [isMinimapVisible, setIsMinimapVisible] = useState(false);
+  const [showAddRouteSvcId, setShowAddRouteSvcId] = useState<string | null>(null);
+  const [routeForm, setRouteForm] = useState({ path: '', method: 'GET', targetService: '', description: '' });
+  const [addingRoute, setAddingRoute] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const lastZoomRef = useRef<number | null>(null);
 
@@ -216,6 +222,26 @@ export default function ServicesPage() {
   const handleToggleActive = async (svc: any) => {
     await api.services.update(projectId, svc.id, { isActive: !svc.isActive });
     await loadServices();
+  };
+
+  const handleAddRoute = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!showAddRouteSvcId) return;
+    setAddingRoute(true);
+    try {
+      await api.services.createRoute(projectId, showAddRouteSvcId, routeForm);
+      await loadServices();
+      setShowAddRouteSvcId(null);
+    } catch (err: any) { alert(err.message); }
+    finally { setAddingRoute(false); }
+  };
+
+  const handleDeleteRoute = async (serviceId: string, routeId: string) => {
+    if (!confirm('Are you sure you want to delete this route?')) return;
+    try {
+      await api.services.deleteRoute(projectId, serviceId, routeId);
+      await loadServices();
+    } catch (err: any) { alert(err.message); }
   };
 
   return (
@@ -319,15 +345,59 @@ export default function ServicesPage() {
                 <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{svc.baseUrl}</div>
                 {svc.description && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{svc.description}</div>}
                 
-                {(svc.routes?.length > 0) && (
-                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                    {svc.routes.slice(0, 3).map((r: any, i: number) => (
-                      <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 5 }}>
-                        <span className={`method-${r.method}`} style={{ fontSize: 8, padding: '1px 4px', borderRadius: 3 }}>{r.method}</span>
-                        <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }}>{r.path}</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12, borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: 10 }}>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--text-muted)' }}>REGISTERED ROUTES</span>
+                  <button
+                    onClick={() => {
+                      const otherSvcs = services.filter(s => s.id !== svc.id);
+                      setRouteForm({
+                        path: '',
+                        method: 'GET',
+                        targetService: otherSvcs[0]?.name || svc.name,
+                        description: ''
+                      });
+                      setShowAddRouteSvcId(svc.id);
+                    }}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#00f2fe',
+                      fontSize: 10,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      fontFamily: "'JetBrains Mono', monospace",
+                    }}
+                  >+ ADD ROUTE</button>
+                </div>
+
+                {(svc.routes && svc.routes.length > 0) ? (
+                  <div style={{ marginTop: 8 }}>
+                    {svc.routes.map((r: any) => (
+                      <div key={r.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '4px', marginTop: 6 }}>
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center', overflow: 'hidden' }}>
+                          <span className={`method-${r.method}`} style={{ fontSize: 8, padding: '2px 5px', borderRadius: 3, fontWeight: 700, background: r.method === 'GET' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(99, 102, 241, 0.15)', color: r.method === 'GET' ? '#10b981' : '#6366f1' }}>{r.method}</span>
+                          <span style={{ fontSize: 10, color: 'var(--text-secondary)', fontFamily: "'JetBrains Mono', monospace", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }} title={r.path}>{r.path}</span>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteRoute(svc.id, r.id)}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#ef4444',
+                            cursor: 'pointer',
+                            padding: '2px 4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                          }}
+                          title="Delete route"
+                        >
+                          <X size={10} />
+                        </button>
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <div style={{ fontSize: 10, color: 'var(--text-faint)', fontStyle: 'italic', marginTop: 6 }}>No routes registered.</div>
                 )}
               </div>
             );
@@ -408,7 +478,9 @@ export default function ServicesPage() {
                 <h2 style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.04em', color: '#fff', textTransform: 'uppercase' }}>REGISTER NODE</h2>
                 <p style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>ESTABLISHING NEW MESH NAMESPACE</p>
               </div>
-              <button onClick={() => setShowAdd(false)} style={{ marginLeft: 'auto', width: 24, height: 24, border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+              <button onClick={() => setShowAdd(false)} style={{ marginLeft: 'auto', width: 24, height: 24, border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X size={12} />
+              </button>
             </div>
             
             <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
@@ -463,6 +535,151 @@ export default function ServicesPage() {
                   {adding ? 'Registering...' : (
                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                       <Link2 size={14} /> Register Service
+                    </span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── ADD ROUTE MODAL ────────────────────────────── */}
+      {showAddRouteSvcId && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }} onClick={e => { if (e.target === e.currentTarget) setShowAddRouteSvcId(null); }}>
+          <div style={{ maxWidth: 460, width: '100%', padding: 28, background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+              <div style={{ width: 38, height: 38, border: '1px solid var(--border)', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                <Network size={18} />
+              </div>
+              <div>
+                <h2 style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.04em', color: '#fff', textTransform: 'uppercase' }}>ADD SERVICE ROUTE</h2>
+                <p style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>DEFINING ROUTE PATH AND MESH CONNECTION</p>
+              </div>
+              <button onClick={() => setShowAddRouteSvcId(null)} style={{ marginLeft: 'auto', width: 24, height: 24, border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X size={12} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddRoute} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+              <div>
+                <label style={{ color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>HTTP Method</label>
+                <select
+                  value={routeForm.method}
+                  onChange={e => setRouteForm(p => ({ ...p, method: e.target.value }))}
+                  required
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    background: '#030303',
+                    border: '1px solid var(--border)',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontSize: 12.5,
+                    padding: '8px 12px',
+                    outline: 'none',
+                    fontFamily: "'JetBrains Mono', monospace",
+                  }}
+                >
+                  {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(m => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Route Path</label>
+                <input
+                  type="text"
+                  value={routeForm.path}
+                  onChange={e => setRouteForm(p => ({ ...p, path: e.target.value }))}
+                  placeholder="/users"
+                  required
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    background: '#030303',
+                    border: '1px solid var(--border)',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontSize: 12.5,
+                    fontFamily: "'JetBrains Mono', monospace",
+                    padding: '8px 12px',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Target Service Node</label>
+                <select
+                  value={routeForm.targetService}
+                  onChange={e => setRouteForm(p => ({ ...p, targetService: e.target.value }))}
+                  required
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    background: '#030303',
+                    border: '1px solid var(--border)',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontSize: 12.5,
+                    padding: '8px 12px',
+                    outline: 'none',
+                    fontFamily: "'JetBrains Mono', monospace",
+                  }}
+                >
+                  {services.map(s => (
+                    <option key={s.id} value={s.name}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Route Description</label>
+                <input
+                  type="text"
+                  value={routeForm.description}
+                  onChange={e => setRouteForm(p => ({ ...p, description: e.target.value }))}
+                  placeholder="Fetches list of registered users"
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    background: '#030303',
+                    border: '1px solid var(--border)',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontSize: 12.5,
+                    padding: '8px 12px',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+                <button type="button" onClick={() => setShowAddRouteSvcId(null)} style={{ flex: 1, height: 38, borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s' }}>Cancel</button>
+                <button type="submit" disabled={addingRoute}
+                  style={{
+                    flex: 2,
+                    height: 38,
+                    background: addingRoute ? '#1e293b' : '#ffffff',
+                    border: 'none',
+                    color: addingRoute ? '#475569' : '#000000',
+                    borderRadius: '8px',
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    cursor: addingRoute ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.15s'
+                  }}
+                  onMouseEnter={e => { if(!addingRoute) e.currentTarget.style.background = '#cbd5e1'; }}
+                  onMouseLeave={e => { if(!addingRoute) e.currentTarget.style.background = '#ffffff'; }}
+                >
+                  {addingRoute ? 'Adding...' : (
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <Network size={14} /> Add Route
                     </span>
                   )}
                 </button>

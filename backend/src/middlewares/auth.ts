@@ -5,6 +5,14 @@ export async function authenticate(
   reply: FastifyReply
 ) {
   try {
+    // Check if token is passed in query parameters (used by browser for direct ZIP downloads)
+    const query = request.query as { token?: string };
+    if (query && query.token) {
+      const decoded = request.server.jwt.verify(query.token);
+      request.user = decoded;
+      return;
+    }
+
     await request.jwtVerify();
   } catch (err) {
     return reply

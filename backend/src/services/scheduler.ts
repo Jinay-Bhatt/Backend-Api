@@ -2,6 +2,7 @@ import { prisma } from "./db.js";
 import { runInSandbox } from "./sandbox.js";
 import { orderNodes, resolveVariable, parameterizeSqlQuery } from "./dag.js";
 import { decrypt } from "./crypto.js";
+import { queueExecutionLog } from "./logger.js";
 
 /**
  * Checks if a given Date matches a standard 5-field cron expression.
@@ -278,17 +279,15 @@ async function executeScheduledWorkflow(workflow: any, triggerNodeId: string, fa
         const status = node.data?.statusCode || 200;
         const latency = Date.now() - startTime;
 
-        // Async log database insert
-        prisma.executionLog.create({
-          data: {
-            workflowId: workflow.id,
-            method,
-            path,
-            responseStatus: status,
-            latencyMs: latency,
-            requestPayload: JSON.stringify({ cronTriggered: true })
-          }
-        }).catch(() => {});
+        // Queue execution log to db (batched)
+        queueExecutionLog({
+          workflowId: workflow.id,
+          method,
+          path,
+          responseStatus: status,
+          latencyMs: latency,
+          requestPayload: JSON.stringify({ cronTriggered: true })
+        });
 
         // Broadcast stats via Websockets
         if (fastify.io) {
@@ -305,18 +304,16 @@ async function executeScheduledWorkflow(workflow: any, triggerNodeId: string, fa
       }
     }
 
-    // Default successful complete logging
+    // Queue execution log to db (batched)
     const latency = Date.now() - startTime;
-    prisma.executionLog.create({
-      data: {
-        workflowId: workflow.id,
-        method,
-        path,
-        responseStatus: 200,
-        latencyMs: latency,
-        requestPayload: JSON.stringify({ cronTriggered: true })
-      }
-    }).catch(() => {});
+    queueExecutionLog({
+      workflowId: workflow.id,
+      method,
+      path,
+      responseStatus: 200,
+      latencyMs: latency,
+      requestPayload: JSON.stringify({ cronTriggered: true })
+    });
 
     if (fastify.io) {
       fastify.io.to(projectId).emit("metrics", {
@@ -332,17 +329,15 @@ async function executeScheduledWorkflow(workflow: any, triggerNodeId: string, fa
     const latency = Date.now() - startTime;
     console.error(`❌ Cron Execution failed for "${workflow.name}":`, err.message);
 
-    prisma.executionLog.create({
-      data: {
-        workflowId: workflow.id,
-        method,
-        path,
-        responseStatus: 500,
-        latencyMs: latency,
-        errorDetails: err.message || "Cron job execution failed",
-        requestPayload: JSON.stringify({ cronTriggered: true })
-      }
-    }).catch(() => {});
+    queueExecutionLog({
+      workflowId: workflow.id,
+      method,
+      path,
+      responseStatus: 500,
+      latencyMs: latency,
+      errorDetails: err.message || "Cron job execution failed",
+      requestPayload: JSON.stringify({ cronTriggered: true })
+    });
 
     if (fastify.io) {
       fastify.io.to(projectId).emit("metrics", {
