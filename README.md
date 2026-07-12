@@ -39,10 +39,10 @@ FlowForge solves this by providing a visual, drag-and-drop builder to design API
 ## 🧠 Team & Approach
 
 ### Team Name:  
-`FlowForge Core Team`
+`QuadSquad`
 
 ### Team Members:  
-- **Bhavya** (GitHub: [@bhavy](https://github.com/bhavy) / Full-Stack Engineer)  
+- **Bhavya Durgani** (GitHub: https://github.com/BhavyaDurgani) 
 
 ### Your Approach:
 - **Why we chose this**: We wanted to combine the visual developer experience of workflow builders with the absolute freedom of open-source. Code should belong to the creator, not the tool.
