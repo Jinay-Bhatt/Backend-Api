@@ -101,6 +101,7 @@ export function runInSandbox(
     const sandbox = {
       context: clonedContext,
       result:  undefined as any,
+      error:   undefined as string | undefined,
       require: createSafeRequire(),
       fetch,  // Node 18+ global fetch also available directly
       console: {
@@ -115,17 +116,39 @@ export function runInSandbox(
     const stepsKeys = clonedContext?.steps
       ? Object.keys(clonedContext.steps).filter((k) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k))
       : [];
+    
+    // Extract properties of objects returned by preceding steps so they are also available as local variables
+    const stepProps: string[] = [];
+    if (clonedContext?.steps) {
+      for (const stepKey of stepsKeys) {
+        const stepVal = clonedContext.steps[stepKey];
+        if (stepVal && typeof stepVal === "object" && !Array.isArray(stepVal)) {
+          for (const propKey of Object.keys(stepVal)) {
+            if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(propKey)) {
+              stepProps.push(`const ${propKey} = steps.${stepKey}.${propKey};`);
+            }
+          }
+        }
+      }
+    }
+    
     const destructureStepsLine = stepsKeys.length > 0 ? `const { ${stepsKeys.join(", ")} } = steps;` : "";
+    const stepPropsLines = stepProps.join("\n");
 
     const wrappedCode = `
       (async function() {
-        const fnResult = await (async function(context) {
-          const { steps = {}, request = {} } = context || {};
-          ${destructureStepsLine}
-          ${code}
-        })(context);
-        if (fnResult !== undefined) {
-          result = fnResult;
+        try {
+          const fnResult = await (async function(context) {
+            const { steps = {}, request = {} } = context || {};
+            ${destructureStepsLine}
+            ${stepPropsLines}
+            ${code}
+          })(context);
+          if (fnResult !== undefined) {
+            result = fnResult;
+          }
+        } catch (err) {
+          error = err.message || String(err);
         }
       })();
     `;
@@ -143,7 +166,20 @@ export function runInSandbox(
     if (maybePromise && typeof (maybePromise as any).then === "function") {
       return {
         success: true,
-        data: (maybePromise as Promise<void>).then(() => vmContext.result),
+        data: (maybePromise as Promise<void>).then(() => {
+          if (vmContext.error) {
+            throw new Error(vmContext.error);
+          }
+          return vmContext.result;
+        }),
+      };
+    }
+
+    if (vmContext.error) {
+      return {
+        success: false,
+        data: null,
+        error: vmContext.error,
       };
     }
 
