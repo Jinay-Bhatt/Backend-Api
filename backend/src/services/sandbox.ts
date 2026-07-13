@@ -112,10 +112,16 @@ export function runInSandbox(
     const vmContext = vm.createContext(sandbox);
 
     // Wrap the user's code in an async IIFE so they can use await and top-level return.
+    const stepsKeys = clonedContext?.steps
+      ? Object.keys(clonedContext.steps).filter((k) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k))
+      : [];
+    const destructureStepsLine = stepsKeys.length > 0 ? `const { ${stepsKeys.join(", ")} } = steps;` : "";
+
     const wrappedCode = `
       (async function() {
         const fnResult = await (async function(context) {
           const { steps = {}, request = {} } = context || {};
+          ${destructureStepsLine}
           ${code}
         })(context);
         if (fnResult !== undefined) {
