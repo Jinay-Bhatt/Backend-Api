@@ -1,7 +1,7 @@
 <img width="4320" height="1440" alt="hh26 main poster 2 with sponsors 3x1 (4320 x 1440 px) (2)" src="https://github.com/user-attachments/assets/c698b2cd-da84-4cb0-9276-125c6a7244aa" />
 
 
-# 🚀 FlowForge
+# 🚀 JBSnap
 
 > An open-source visual workflow builder and execution engine for compiling modular backend pipelines into production-ready codebases.
 
@@ -11,7 +11,7 @@
 
 Developing and deploying backend workflows is often slow, repetitive, and plagued by boilerplates (routing, authorization, database connections, and middleware checks). While low-code platforms exist, they lock developers in and add runtime execution overhead. 
 
-FlowForge solves this by providing a visual, drag-and-drop builder to design API pipelines. Workflows can be tested in real-time, monitored dynamically via WebSockets, and compiled directly into standalone, production-grade Fastify/TypeScript projects without vendor lock-in.
+JBSnap solves this by providing a visual, drag-and-drop builder to design API pipelines. Workflows can be tested in real-time, monitored dynamically via WebSockets, and compiled directly into standalone, production-grade Fastify/TypeScript projects without vendor lock-in.
 
 **Themes Selected (at least one):**
 - [ ] Human Experience & Productivity  
@@ -29,7 +29,7 @@ FlowForge solves this by providing a visual, drag-and-drop builder to design API
 
 ## 🎯 Objective
 
-**FlowForge** serves backend developers, prototype engineers, and system architects.
+**JBSnap** serves backend developers, prototype engineers, and system architects.
 * **Target Users**: Developers looking to accelerate API prototyping, design visual logic chains, or generate clean backend microservices.
 * **The Pain Point**: High time-to-market for simple APIs, complex boilerplate management, difficulty in mapping service-to-service communication, and platform lock-in of traditional backend workflow builders.
 * **The Value**: A zero-lock-in visual workspace. Build visually, test dynamically, monitor execution, and download standard TypeScript source code ready for Docker deployment.
@@ -185,6 +185,6 @@ Provide a short note on how you used the partner technology:
 
 ## 🏁 Final Words
 
-FlowForge represents a developer-first take on visual scripting: zero restrictions, zero lock-in, and pure TypeScript exports. Happy building!
+JBSnap represents a developer-first take on visual scripting: zero restrictions, zero lock-in, and pure TypeScript exports. Happy building!
 
 ---

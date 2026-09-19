@@ -1,5 +1,5 @@
 {
-  "name": "flowforge-workspace",
+  "name": "jbsnap-workspace",
   "private": true,
   "scripts": {
     "dev:backend": "npm run dev --prefix backend",

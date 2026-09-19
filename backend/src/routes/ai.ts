@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { authenticate } from "../middlewares/auth.js";
+import { rateLimitAI } from "../middlewares/rateLimit.js";
 import { generateWorkflowFromPrompt } from "../services/ai.js";
 
 export async function aiRoutes(fastify: FastifyInstance) {
@@ -7,6 +8,7 @@ export async function aiRoutes(fastify: FastifyInstance) {
 
   fastify.post(
     "/ai/generate-workflow",
+    { preHandler: [rateLimitAI] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const { prompt } = request.body as { prompt?: string };
 

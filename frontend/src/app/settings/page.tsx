@@ -43,7 +43,7 @@ export default function SettingsPage() {
   const [avatar, setAvatar] = useState<string | null>(null);
   
   // Profile form state and notifications
-  const [profileForm, setProfileForm] = useState({ username: '', email: '', oldPassword: '', newPassword: '' });
+  const [profileForm, setProfileForm] = useState({ username: '', email: '', gender: 'Prefer not to say', oldPassword: '', newPassword: '' });
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [profileError, setProfileError] = useState('');
@@ -58,6 +58,7 @@ export default function SettingsPage() {
       setProfileForm({
         username: parsed.username || '',
         email: parsed.email || '',
+        gender: parsed.gender || 'Prefer not to say',
         oldPassword: '',
         newPassword: '',
       });
@@ -73,6 +74,7 @@ export default function SettingsPage() {
             ...f,
             username: res.user.username || '',
             email: res.user.email || '',
+            gender: res.user.gender || 'Prefer not to say',
           }));
         }
       })
@@ -98,6 +100,7 @@ export default function SettingsPage() {
     try {
       const updatePayload: any = {
         username: profileForm.username,
+        gender: profileForm.gender,
       };
       
       if (profileForm.newPassword.trim()) {
@@ -193,9 +196,9 @@ export default function SettingsPage() {
       <nav style={{ background: '#09090b', borderBottom: '1px solid var(--border)', backdropFilter: 'blur(20px)', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: 'var(--text-secondary)' }}>
-            <img src="/FlowForge.png" alt="FlowForge Logo" width="28" height="28" style={{ objectFit: 'contain' }} />
+            <img src="/logo.jpg" alt="JBSnap Logo" width="28" height="28" style={{ objectFit: 'cover', borderRadius: '50%' }} />
             <span style={{ fontWeight: 800, fontSize: 14, fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff' }}>
-              Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+              JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
             </span>
           </Link>
           <span style={{ color: 'var(--text-faint)' }}>/</span>
@@ -327,6 +330,33 @@ export default function SettingsPage() {
                     }}
                   />
                   <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Email address cannot be changed.</div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Gender Identity</label>
+                  <select
+                    value={profileForm.gender}
+                    onChange={e => setProfileForm(f => ({ ...f, gender: e.target.value }))}
+                    style={{
+                      width: '100%',
+                      background: '#09090b',
+                      border: '1px solid var(--border)',
+                      padding: '12px 14px',
+                      borderRadius: '6px',
+                      color: '#ffffff',
+                      fontSize: 13,
+                      outline: 'none',
+                      cursor: 'pointer',
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocus={e => e.target.style.borderColor = 'rgba(255,255,255,0.25)'}
+                    onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                  >
+                    <option value="Male" style={{ background: '#09090b', color: '#ffffff' }}>Male</option>
+                    <option value="Female" style={{ background: '#09090b', color: '#ffffff' }}>Female</option>
+                    <option value="Other" style={{ background: '#09090b', color: '#ffffff' }}>Other</option>
+                    <option value="Prefer not to say" style={{ background: '#09090b', color: '#ffffff' }}>Prefer not to say</option>
+                  </select>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -464,7 +494,7 @@ export default function SettingsPage() {
                   <input
                     required value={gitForm.repositoryName}
                     onChange={e => setGitForm(f => ({ ...f, repositoryName: e.target.value }))}
-                    placeholder="username/my-flowforge-api"
+                    placeholder="username/my-jbsnap-api"
                     style={{
                       width: '100%',
                       background: 'transparent',
@@ -537,7 +567,7 @@ export default function SettingsPage() {
           <div>
             <div style={{ padding: 28, background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px' }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: '#ffffff', marginBottom: 6 }}>Export Codebase Details</div>
-              <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>When exporting workflows, FlowForge packages a production codebase built on standard enterprise software:</div>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>When exporting workflows, JBSnap packages a production codebase built on standard enterprise software:</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {[
                   { icon: Cpu, text: 'Fastify Node.js HTTP server routing' },

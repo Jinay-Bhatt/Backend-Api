@@ -179,15 +179,15 @@ const DOC_CONTENT: Record<string, React.ReactNode> = {
     <>
       <span style={{ fontSize: 11, fontWeight: 800, color: '#6366f1', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>Getting Started</span>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Introduction</h1>
-      <P>FlowForge is a visual API builder that transforms the way you design, secure, and deploy backend services. Instead of writing boilerplate Express or Fastify routes from scratch, you drag-and-drop nodes onto a canvas, wire them together, and FlowForge compiles them into clean, production-ready TypeScript code.</P>
-      <P>Whether you are a solo developer prototyping quickly or a team deploying enterprise-grade APIs, FlowForge adapts to your workflow with zero vendor lock-in.</P>
-      <InfoBox type="tip">New to FlowForge? Jump straight to the Quickstart Guide to have your first API live in under 5 minutes.</InfoBox>
+      <P>JBSnap is a visual API builder that transforms the way you design, secure, and deploy backend services. Instead of writing boilerplate Express or Fastify routes from scratch, you drag-and-drop nodes onto a canvas, wire them together, and JBSnap compiles them into clean, production-ready TypeScript code.</P>
+      <P>Whether you are a solo developer prototyping quickly or a team deploying enterprise-grade APIs, JBSnap adapts to your workflow with zero vendor lock-in.</P>
+      <InfoBox type="tip">New to JBSnap? Jump straight to the Quickstart Guide to have your first API live in under 5 minutes.</InfoBox>
       <H2>Core Pillars</H2>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
         {[
           { icon: 'V', title: 'Visual Canvas', desc: 'Drag-and-drop 12+ node types — triggers, DB queries, auth guards, custom code, conditionals, cron schedulers.' },
           { icon: 'S', title: 'Secure Execution', desc: 'Custom JS runs inside isolated Node.js VMs with a hard 200ms CPU timeout. No process, no require.' },
-          { icon: 'D', title: 'Zero Config Deploy', desc: 'One-click publish to the FlowForge gateway. No build step, no Dockerfile, no server config required.' },
+          { icon: 'D', title: 'Zero Config Deploy', desc: 'One-click publish to the JBSnap gateway. No build step, no Dockerfile, no server config required.' },
           { icon: 'E', title: 'TypeScript Export', desc: 'Export clean Fastify + Prisma + TypeScript. Push to GitHub. Run on any cloud, zero runtime dependency.' },
         ].map(c => (
           <div key={c.title} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '18px 20px' }}>
@@ -196,12 +196,12 @@ const DOC_CONTENT: Record<string, React.ReactNode> = {
           </div>
         ))}
       </div>
-      <H2>How FlowForge Fits Your Stack</H2>
-      <P>FlowForge acts as the API layer sitting between your clients and your data sources. It provides authentication, rate limiting, transformation, and routing out of the box, all configurable visually.</P>
+      <H2>How JBSnap Fits Your Stack</H2>
+      <P>JBSnap acts as the API layer sitting between your clients and your data sources. It provides authentication, rate limiting, transformation, and routing out of the box, all configurable visually.</P>
       <Code lang="Architecture">{`Client (Browser / SDK)
        |
        v
-FlowForge Edge Gateway  <-- JWT Auth, Rate Limiting, CORS
+JBSnap Edge Gateway  <-- JWT Auth, Rate Limiting, CORS
        |
        |-->  Visual Workflow Engine  <-- Your canvas pipeline
        |         |
@@ -226,10 +226,10 @@ FlowForge Edge Gateway  <-- JWT Auth, Rate Limiting, CORS
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Quickstart Guide</h1>
       <P>Get your first API endpoint live in under 5 minutes. No terminal required for the core workflow, everything runs visually in your browser.</P>
       <H2>Step 1 - Create an Account</H2>
-      <P>Visit flowforge.app and click Get Started Free. Sign up with email. No credit card required for the Hobby plan.</P>
+      <P>Visit jbsnap.app and click Get Started Free. Sign up with email. No credit card required for the Hobby plan.</P>
       <H2>Step 2 - Create a New Project</H2>
       <P>From your Dashboard, click + New Project. Give it a name and a description. Your project gets a unique gateway URL.</P>
-      <Code lang="">{`https://api.flowforge.app/u/my-first-api`}</Code>
+      <Code lang="">{`https://api.jbsnap.app/u/my-first-api`}</Code>
       <H2>Step 3 - Open the Visual Builder</H2>
       <P>Click into your project and then Open Builder. You will see the canvas, an infinite dark grid where you build your API pipeline.</P>
       <H2>Step 4 - Drag Your First Node</H2>
@@ -244,13 +244,13 @@ FlowForge Edge Gateway  <-- JWT Auth, Rate Limiting, CORS
       <Code lang="JSON">{`{
   "statusCode": 200,
   "body": {
-    "message": "Hello from FlowForge!"
+    "message": "Hello from JBSnap!"
   }
 }`}</Code>
       <H2>Step 6 - Publish</H2>
       <P>Click Publish in the top-right. Your endpoint goes live instantly. Test it:</P>
-      <Code lang="Shell">{`$ curl https://api.flowforge.app/u/my-first-api/users
-{ "message": "Hello from FlowForge!" }`}</Code>
+      <Code lang="Shell">{`$ curl https://api.jbsnap.app/u/my-first-api/users
+{ "message": "Hello from JBSnap!" }`}</Code>
       <InfoBox type="tip">Use the Monitor tab to see real-time request logs, latency, and error rates for your live endpoint.</InfoBox>
     </>
   ),
@@ -258,7 +258,7 @@ FlowForge Edge Gateway  <-- JWT Auth, Rate Limiting, CORS
     <>
       <span style={{ fontSize: 11, fontWeight: 800, color: '#6366f1', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>Getting Started</span>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Visual Editor Basics</h1>
-      <P>The FlowForge Visual Editor is a React-Flow-powered canvas where you design your API pipelines by connecting nodes.</P>
+      <P>The JBSnap Visual Editor is a React-Flow-powered canvas where you design your API pipelines by connecting nodes.</P>
       <H2>Canvas Navigation</H2>
       <PropTable rows={[
         ['Scroll', 'Mouse wheel', 'Zoom in / out'],
@@ -301,10 +301,10 @@ FlowForge Edge Gateway  <-- JWT Auth, Rate Limiting, CORS
     <>
       <span style={{ fontSize: 11, fontWeight: 800, color: '#6366f1', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>Getting Started</span>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Architecture Overview</h1>
-      <P>FlowForge is composed of four primary layers: the Frontend Canvas, the API Gateway, the Workflow Engine, and the Export Compiler.</P>
+      <P>JBSnap is composed of four primary layers: the Frontend Canvas, the API Gateway, the Workflow Engine, and the Export Compiler.</P>
       <H2>System Layers</H2>
       <Code lang="Architecture">{`+--------------------------------------------------+
-|              FlowForge Platform                  |
+|               JBSnap Platform                    |
 |                                                  |
 |  +--------------+    +--------------------+     |
 |  | Visual Canvas|    |   REST Admin API   |     |
@@ -332,7 +332,7 @@ FlowForge Edge Gateway  <-- JWT Auth, Rate Limiting, CORS
 |  +---------------------------------------------+|
 +--------------------------------------------------+`}</Code>
       <H2>Request Lifecycle</H2>
-      <P>When a client hits your FlowForge gateway URL, here is the exact sequence of events:</P>
+      <P>When a client hits your JBSnap gateway URL, here is the exact sequence of events:</P>
       {[
         ['1', 'Gateway receives HTTP request', 'The Fastify-based gateway receives the request and matches it to a published workflow by project slug + path.'],
         ['2', 'Auth middleware runs', 'If the workflow has an Auth Guard node configured, the JWT is validated here. A 401 is returned immediately on failure.'],
@@ -413,7 +413,7 @@ interface Node {
     <>
       <span style={{ fontSize: 11, fontWeight: 800, color: '#6366f1', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>Nodes Reference</span>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Auth Guards</h1>
-      <P>Auth Guard nodes protect your API endpoints by validating tokens before executing any downstream logic. FlowForge supports JWT (RS256 and HS256) and API Key strategies out of the box.</P>
+      <P>Auth Guard nodes protect your API endpoints by validating tokens before executing any downstream logic. JBSnap supports JWT (RS256 and HS256) and API Key strategies out of the box.</P>
       <H2>JWT Auth Guard</H2>
       <PropTable rows={[
         ['algorithm', 'RS256 | HS256', 'JWT signing algorithm (default: RS256)'],
@@ -545,13 +545,13 @@ context.request.body.price > 0`}</Code>
     <>
       <span style={{ fontSize: 11, fontWeight: 800, color: '#6366f1', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>Deployment & SDK</span>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Production Gateway</h1>
-      <P>Every FlowForge project has a dedicated Edge Gateway URL. Once you publish a workflow, it is live at that URL instantly, no redeployment pipeline, no CI/CD wait.</P>
+      <P>Every JBSnap project has a dedicated Edge Gateway URL. Once you publish a workflow, it is live at that URL instantly, no redeployment pipeline, no CI/CD wait.</P>
       <H2>Gateway URL Structure</H2>
-      <Code lang="">{`https://api.flowforge.app/u/{project-slug}/{workflow-path}
+      <Code lang="">{`https://api.jbsnap.app/u/{project-slug}/{workflow-path}
 
-https://api.flowforge.app/u/my-startup/users
-https://api.flowforge.app/u/my-startup/users/42
-https://api.flowforge.app/u/my-startup/auth/login`}</Code>
+https://api.jbsnap.app/u/my-startup/users
+https://api.jbsnap.app/u/my-startup/users/42
+https://api.jbsnap.app/u/my-startup/auth/login`}</Code>
       <H2>Gateway Features</H2>
       {[
         ['JWT Authentication', 'Per-endpoint RS256 / HS256 token validation with configurable claims.'],
@@ -582,7 +582,7 @@ https://api.flowforge.app/u/my-startup/auth/login`}</Code>
     <>
       <span style={{ fontSize: 11, fontWeight: 800, color: '#6366f1', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>Deployment & SDK</span>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Exporting TypeScript</h1>
-      <P>Export any FlowForge workflow as a clean, dependency-free Fastify + Prisma + TypeScript project. The generated code is human-readable, extensible, and deployable to any Node.js hosting environment.</P>
+      <P>Export any JBSnap workflow as a clean, dependency-free Fastify + Prisma + TypeScript project. The generated code is human-readable, extensible, and deployable to any Node.js hosting environment.</P>
       <H2>File Structure</H2>
       <Code lang="File Structure">{`my-project/
 +-- src/
@@ -627,9 +627,9 @@ npm run dev`}</Code>
     <>
       <span style={{ fontSize: 11, fontWeight: 800, color: '#6366f1', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>Deployment & SDK</span>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CI/CD GitHub Sync</h1>
-      <P>FlowForge can push your exported TypeScript project directly to a GitHub repository using the Octokit SDK. Once pushed, you can connect GitHub Actions, Railway, Render, or any other CD platform for automatic deployments.</P>
+      <P>JBSnap can push your exported TypeScript project directly to a GitHub repository using the Octokit SDK. Once pushed, you can connect GitHub Actions, Railway, Render, or any other CD platform for automatic deployments.</P>
       <H2>Connecting GitHub</H2>
-      <P>Go to Project Settings, then Integrations, then GitHub, and click Connect GitHub. Authorize FlowForge to access your repositories.</P>
+      <P>Go to Project Settings, then Integrations, then GitHub, and click Connect GitHub. Authorize JBSnap to access your repositories.</P>
       <H2>Configuration</H2>
       <PropTable rows={[
         ['repository', 'owner/repo', 'Target GitHub repository, e.g. yourname/my-api'],
@@ -657,7 +657,7 @@ jobs:
       - run: railway up
         env:
           RAILWAY_TOKEN: \${{ secrets.RAILWAY_TOKEN }}`}</Code>
-      <InfoBox type="tip">Use Railway GitHub deploy triggers to auto-deploy every time FlowForge pushes to your repo.</InfoBox>
+      <InfoBox type="tip">Use Railway GitHub deploy triggers to auto-deploy every time JBSnap pushes to your repo.</InfoBox>
     </>
   ),
   'env-secrets': (
@@ -716,8 +716,8 @@ export default function DocsPage() {
       <header style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(2,2,2,0.95)', backdropFilter: 'blur(24px)' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', gap: 24 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <img src="/FlowForge.png" alt="FlowForge" width={22} height={22} style={{ objectFit: 'contain' }} />
-            <span style={{ fontSize: 15.5, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span></span>
+            <img src="/logo.jpg" alt="JBSnap" width={22} height={22} style={{ objectFit: 'cover', borderRadius: '50%' }} />
+            <span style={{ fontSize: 15.5, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span></span>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#475569', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', padding: '2px 7px', borderRadius: 4, letterSpacing: '0.06em', textTransform: 'uppercase' as const, marginLeft: 4 }}>Docs</span>
           </Link>
           <div style={{ flex: 1, maxWidth: 360, marginLeft: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, height: 36, display: 'flex', alignItems: 'center', padding: '0 14px', gap: 10 }}>

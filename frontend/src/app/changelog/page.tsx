@@ -29,9 +29,9 @@ export default function ChangelogPage() {
       <header style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '20px 32px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: '#ffffff' }}>
-            <img src="/FlowForge.png" alt="FlowForge" width={24} height={24} />
+            <img src="/logo.jpg" alt="JBSnap" width={24} height={24} style={{ borderRadius: '50%', objectFit: 'cover' }} />
             <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span><span style={{ color: '#94a3b8', marginLeft: 6, fontWeight: 500, fontSize: 13.5 }}>Changelog</span>
+              JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span><span style={{ color: '#94a3b8', marginLeft: 6, fontWeight: 500, fontSize: 13.5 }}>Changelog</span>
             </span>
           </Link>
           <Link href="/" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Back to Home</Link>

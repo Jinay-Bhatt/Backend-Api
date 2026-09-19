@@ -6,10 +6,11 @@ export async function registerUser(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const { username, email, password } = request.body as {
+  const { username, email, password, gender } = request.body as {
     username?: string;
     email?: string;
     password?: string;
+    gender?: string;
   };
 
   if (!username || !email || !password) {
@@ -49,6 +50,7 @@ export async function registerUser(
         username,
         email,
         passwordHash,
+        gender: gender || "Prefer not to say",
       },
     });
 
@@ -58,6 +60,7 @@ export async function registerUser(
         id: user.id,
         username: user.username,
         email: user.email,
+        gender: user.gender,
         createdAt: user.createdAt,
       },
     });
@@ -87,7 +90,7 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
       where: { email },
     });
 
-    if (!user) {
+    if (!user || !user.passwordHash) {
       return reply.status(401).send({
         error: "Unauthorized: Invalid email or password",
       });
@@ -113,6 +116,63 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
         id: user.id,
         username: user.username,
         email: user.email,
+        gender: user.gender || "Prefer not to say",
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error: any) {
+    request.log.error(error);
+    return reply.status(500).send({
+      error: "Internal Server Error",
+      details: error.message,
+    });
+  }
+}
+
+export async function googleLogin(request: FastifyRequest, reply: FastifyReply) {
+  const { email, name, picture, gender } = request.body as {
+    email?: string;
+    name?: string;
+    picture?: string;
+    gender?: string;
+  };
+
+  if (!email) {
+    return reply.status(400).send({
+      error: "Bad Request: email is required for Google login",
+    });
+  }
+
+  try {
+    let user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      const username = name || email.split("@")[0] || "Google User";
+      user = await prisma.user.create({
+        data: {
+          username,
+          email,
+          passwordHash: null,
+          gender: gender || "Prefer not to say",
+        },
+      });
+    }
+
+    const token = await reply.jwtSign({
+      id: user.id,
+      email: user.email,
+    });
+
+    return reply.send({
+      message: "Google authentication successful",
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        gender: user.gender || "Prefer not to say",
         createdAt: user.createdAt,
       },
     });
@@ -134,6 +194,7 @@ export async function getMe(request: FastifyRequest, reply: FastifyReply) {
         id: true,
         username: true,
         email: true,
+        gender: true,
         createdAt: true,
       },
     });
@@ -153,8 +214,9 @@ export async function getMe(request: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function updateProfile(request: FastifyRequest, reply: FastifyReply) {
-  const { username, oldPassword, newPassword } = request.body as {
+  const { username, gender, oldPassword, newPassword } = request.body as {
     username?: string;
+    gender?: string;
     oldPassword?: string;
     newPassword?: string;
   };
@@ -171,20 +233,23 @@ export async function updateProfile(request: FastifyRequest, reply: FastifyReply
     }
 
     const updateData: any = {};
-    if (username) updateData.username = username;
+    if (username !== undefined) updateData.username = username;
+    if (gender !== undefined) updateData.gender = gender;
 
     if (newPassword) {
-      if (!oldPassword) {
-        return reply.status(400).send({
-          error: "Current password is required to change to a new password",
-        });
-      }
+      if (user.passwordHash) {
+        if (!oldPassword) {
+          return reply.status(400).send({
+            error: "Current password is required to change to a new password",
+          });
+        }
 
-      const passwordMatch = await bcrypt.compare(oldPassword, user.passwordHash);
-      if (!passwordMatch) {
-        return reply.status(400).send({
-          error: "The current password you entered is incorrect",
-        });
+        const passwordMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+        if (!passwordMatch) {
+          return reply.status(400).send({
+            error: "The current password you entered is incorrect",
+          });
+        }
       }
 
       updateData.passwordHash = await bcrypt.hash(newPassword, 10);
@@ -201,6 +266,7 @@ export async function updateProfile(request: FastifyRequest, reply: FastifyReply
         id: true,
         username: true,
         email: true,
+        gender: true,
         createdAt: true,
       },
     });

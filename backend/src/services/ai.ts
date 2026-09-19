@@ -23,7 +23,7 @@ interface GeneratedWorkflow {
   description: string;
 }
 
-const systemPrompt = `You are a backend API workflow generator for the FlowForge platform.
+const systemPrompt = `You are a backend API workflow generator for the JBSnap platform.
 Given a user's description, generate a complete workflow JSON with nodes and edges for a visual API builder.
 
 Node types available:

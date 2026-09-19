@@ -1,9 +1,10 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock } from 'lucide-react';
 import { api } from '../../services/api';
+import GoogleSignInButton from '../../components/GoogleSignInButton';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -34,6 +35,12 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = (res: any) => {
+    localStorage.setItem('ff_token', res.token);
+    localStorage.setItem('ff_user', JSON.stringify(res.user));
+    router.replace('/dashboard');
   };
 
   return (
@@ -89,7 +96,7 @@ export default function LoginPage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             marginBottom: 20, boxShadow: '0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)'
           }}>
-            <img src="/FlowForge.png" alt="FlowForge Logo" width="34" height="34" style={{ objectFit: 'contain' }} />
+            <img src="/logo.jpg" alt="JBSnap Logo" width="38" height="38" style={{ objectFit: 'cover', borderRadius: '50%' }} />
             <div style={{
               position: 'absolute', inset: -4, borderRadius: 24,
               border: '1.5px dashed rgba(255,255,255,0.04)', pointerEvents: 'none'
@@ -99,7 +106,7 @@ export default function LoginPage() {
             fontSize: 28, fontWeight: 900, color: '#ffffff', letterSpacing: '-1px',
             fontFamily: "'Plus Jakarta Sans', Inter, sans-serif", lineHeight: 1.1
           }}>
-            Flow<span style={{ background: 'linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+            JB<span style={{ background: 'linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
           </h1>
           <p style={{ fontSize: 13.5, color: '#64748b', marginTop: 8 }}>Sign in to your dashboard</p>
         </div>
@@ -269,6 +276,20 @@ export default function LoginPage() {
                 'Sign in'
               )}
             </button>
+
+            {/* Divider */}
+            <div style={{ display: 'flex', alignItems: 'center', margin: '4px 0', gap: 12 }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+              <span style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>OR</span>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+            </div>
+
+            {/* 1 Single Google OAuth Sign-In Button */}
+            <GoogleSignInButton
+              text="Sign in with Google"
+              onSuccess={handleGoogleSuccess}
+              disabled={loading}
+            />
           </div>
         </form>
 
@@ -288,3 +309,4 @@ export default function LoginPage() {
     </main>
   );
 }
+

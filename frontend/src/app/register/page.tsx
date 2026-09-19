@@ -2,12 +2,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { User, Mail, Lock } from 'lucide-react';
+import { User, Mail, Lock, Users } from 'lucide-react';
 import { api } from '../../services/api';
+import GoogleSignInButton from '../../components/GoogleSignInButton';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ username: '', email: '', password: '' });
+  const [form, setForm] = useState({ username: '', email: '', password: '', gender: 'Prefer not to say' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -16,6 +17,7 @@ export default function RegisterPage() {
   const [usernameFocused, setUsernameFocused] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  const [genderFocused, setGenderFocused] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -40,6 +42,12 @@ export default function RegisterPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = (res: any) => {
+    localStorage.setItem('ff_token', res.token);
+    localStorage.setItem('ff_user', JSON.stringify(res.user));
+    router.replace('/dashboard');
   };
 
   return (
@@ -95,7 +103,7 @@ export default function RegisterPage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             marginBottom: 20, boxShadow: '0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)'
           }}>
-            <img src="/FlowForge.png" alt="FlowForge Logo" width="34" height="34" style={{ objectFit: 'contain' }} />
+            <img src="/logo.jpg" alt="JBSnap Logo" width="38" height="38" style={{ objectFit: 'cover', borderRadius: '50%' }} />
             <div style={{
               position: 'absolute', inset: -4, borderRadius: 24,
               border: '1.5px dashed rgba(255,255,255,0.04)', pointerEvents: 'none'
@@ -105,9 +113,9 @@ export default function RegisterPage() {
             fontSize: 28, fontWeight: 900, color: '#ffffff', letterSpacing: '-1px',
             fontFamily: "'Plus Jakarta Sans', Inter, sans-serif", lineHeight: 1.1
           }}>
-            Flow<span style={{ background: 'linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+            JB<span style={{ background: 'linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
           </h1>
-          <p style={{ fontSize: 13.5, color: '#64748b', marginTop: 8 }}>Create your FlowForge account</p>
+          <p style={{ fontSize: 13.5, color: '#64748b', marginTop: 8 }}>Create your JBSnap account</p>
         </div>
 
         {error && (
@@ -138,7 +146,7 @@ export default function RegisterPage() {
             borderRadius: 24,
             display: 'flex',
             flexDirection: 'column',
-            gap: 24,
+            gap: 20,
             boxShadow: '0 24px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
             position: 'relative',
             overflow: 'hidden'
@@ -150,7 +158,7 @@ export default function RegisterPage() {
             }} />
 
             {/* Username Field */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <label style={{
                 fontSize: 11, fontWeight: 700, color: '#94a3b8',
                 textTransform: 'uppercase', letterSpacing: '0.08em'
@@ -180,7 +188,7 @@ export default function RegisterPage() {
                     fontFamily: 'inherit',
                     fontSize: 14,
                     outline: 'none',
-                    height: 48,
+                    height: 46,
                     boxShadow: usernameFocused ? '0 0 0 3px rgba(99, 102, 241, 0.12)' : 'none',
                     transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                     boxSizing: 'border-box'
@@ -190,7 +198,7 @@ export default function RegisterPage() {
             </div>
 
             {/* Email Field */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <label style={{
                 fontSize: 11, fontWeight: 700, color: '#94a3b8',
                 textTransform: 'uppercase', letterSpacing: '0.08em'
@@ -220,7 +228,7 @@ export default function RegisterPage() {
                     fontFamily: 'inherit',
                     fontSize: 14,
                     outline: 'none',
-                    height: 48,
+                    height: 46,
                     boxShadow: emailFocused ? '0 0 0 3px rgba(99, 102, 241, 0.12)' : 'none',
                     transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                     boxSizing: 'border-box'
@@ -229,8 +237,52 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Gender Selection Field (including 3rd Gender) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <label style={{
+                fontSize: 11, fontWeight: 700, color: '#94a3b8',
+                textTransform: 'uppercase', letterSpacing: '0.08em'
+              }}>Gender</label>
+              <div style={{ position: 'relative' }}>
+                <span style={{
+                  position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)',
+                  color: genderFocused ? '#818cf8' : '#475569', display: 'flex', alignItems: 'center',
+                  transition: 'color 0.25s ease'
+                }}>
+                  <Users size={16} />
+                </span>
+                <select
+                  value={form.gender}
+                  onChange={e => setForm(p => ({ ...p, gender: e.target.value }))}
+                  onFocus={() => setGenderFocused(true)}
+                  onBlur={() => setGenderFocused(false)}
+                  style={{
+                    width: '100%',
+                    background: '#040406',
+                    border: `1px solid ${genderFocused ? 'rgba(99, 102, 241, 0.35)' : 'rgba(255, 255, 255, 0.08)'}`,
+                    borderRadius: 12,
+                    padding: '12px 16px 12px 46px',
+                    color: '#ffffff',
+                    fontFamily: 'inherit',
+                    fontSize: 14,
+                    outline: 'none',
+                    height: 46,
+                    boxShadow: genderFocused ? '0 0 0 3px rgba(99, 102, 241, 0.12)' : 'none',
+                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="Male" style={{ background: '#09090b', color: '#ffffff' }}>Male</option>
+                  <option value="Female" style={{ background: '#09090b', color: '#ffffff' }}>Female</option>
+                  <option value="Other" style={{ background: '#09090b', color: '#ffffff' }}>Other</option>
+                  <option value="Prefer not to say" style={{ background: '#09090b', color: '#ffffff' }}>Prefer not to say</option>
+                </select>
+              </div>
+            </div>
+
             {/* Password Field */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <label style={{
                 fontSize: 11, fontWeight: 700, color: '#94a3b8',
                 textTransform: 'uppercase', letterSpacing: '0.08em'
@@ -260,7 +312,7 @@ export default function RegisterPage() {
                     fontFamily: 'inherit',
                     fontSize: 14,
                     outline: 'none',
-                    height: 48,
+                    height: 46,
                     boxShadow: passwordFocused ? '0 0 0 3px rgba(99, 102, 241, 0.12)' : 'none',
                     transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                     boxSizing: 'border-box'
@@ -275,7 +327,7 @@ export default function RegisterPage() {
               disabled={loading}
               style={{
                 width: '100%',
-                height: 48,
+                height: 46,
                 background: loading ? 'rgba(255, 255, 255, 0.08)' : 'linear-gradient(135deg, #ffffff 0%, #d1d5db 100%)',
                 color: loading ? '#64748b' : '#000000',
                 border: 'none',
@@ -291,7 +343,7 @@ export default function RegisterPage() {
                 transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                 boxShadow: loading ? 'none' : '0 8px 24px rgba(255,255,255,0.06)',
                 letterSpacing: '-0.01em',
-                marginTop: 8
+                marginTop: 4
               }}
               onMouseEnter={e => {
                 if (!loading) {
@@ -315,6 +367,21 @@ export default function RegisterPage() {
                 'Create Account'
               )}
             </button>
+
+            {/* Divider */}
+            <div style={{ display: 'flex', alignItems: 'center', margin: '2px 0', gap: 12 }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+              <span style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>OR</span>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+            </div>
+
+            {/* 1 Single Google OAuth Sign-Up Button */}
+            <GoogleSignInButton
+              text="Sign up with Google"
+              onSuccess={handleGoogleSuccess}
+              gender={form.gender}
+              disabled={loading}
+            />
           </div>
         </form>
 
@@ -334,3 +401,4 @@ export default function RegisterPage() {
     </main>
   );
 }
+

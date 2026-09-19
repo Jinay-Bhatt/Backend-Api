@@ -1265,6 +1265,60 @@ function NodeConfigPanel({ node, onChange }: { node: Node; onChange: (k: string,
     ),
     jwtValidateNode: <Field label="JWT Secret (optional override)" fieldKey="secret" type="password" placeholder="uses env.JWT_SECRET if empty" />,
     apiKeyNode: <Field label="Header Name" fieldKey="headerName" placeholder="x-api-key" />,
+    gmailNode: (
+      <>
+        <Field label="Recipient Email (To)" fieldKey="to" placeholder="$request.body.email or user@example.com" />
+        <Field label="Email Subject" fieldKey="subject" placeholder="Workflow Notification" />
+        <Field label="Email Body / HTML" fieldKey="body" type="textarea" placeholder="Hello $request.body.name,\nYour workflow executed successfully." />
+        <Field label="OAuth Access Token / App Password" fieldKey="accessToken" type="password" placeholder="ya29.a0..." />
+      </>
+    ),
+    googleSheetsNode: (
+      <>
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>Action</label>
+          <CustomSelect
+            value={data.action || 'APPEND_ROW'}
+            onChange={(val) => onChange('action', val)}
+            options={['APPEND_ROW', 'READ_ROWS']}
+          />
+        </div>
+        <Field label="Spreadsheet ID" fieldKey="spreadsheetId" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms" />
+        <Field label="Range" fieldKey="range" placeholder="Sheet1!A1" />
+        <Field label="Row Data (JSON Array or $request reference)" fieldKey="rowData" type="textarea" placeholder='["$request.body.name", "$request.body.email"]' />
+        <Field label="API Key / Access Token" fieldKey="apiKey" type="password" placeholder="AIzaSy..." />
+      </>
+    ),
+    txtFileNode: (
+      <>
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>Action</label>
+          <CustomSelect
+            value={data.action || 'WRITE_FILE'}
+            onChange={(val) => onChange('action', val)}
+            options={['READ_FILE', 'WRITE_FILE', 'APPEND_FILE']}
+          />
+        </div>
+        <Field label="File Path" fieldKey="filePath" placeholder="./data/output.txt" />
+        <Field label="Content (for Write/Append)" fieldKey="content" type="textarea" placeholder="$request.body.text or Static Log String" />
+      </>
+    ),
+    aiNode: (
+      <>
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>AI Provider</label>
+          <CustomSelect
+            value={data.provider || 'groq'}
+            onChange={(val) => onChange('provider', val)}
+            options={['groq', 'gemini', 'claude', 'openai']}
+          />
+        </div>
+        <Field label="Model Name" fieldKey="model" placeholder={data.provider === 'gemini' ? 'gemini-1.5-flash' : data.provider === 'claude' ? 'claude-3-5-sonnet' : data.provider === 'openai' ? 'gpt-4o-mini' : 'llama-3.3-70b-versatile'} />
+        <Field label="API Key (Leave blank to use server ENV)" fieldKey="apiKey" type="password" placeholder="gsk_... / AIza... / sk-..." />
+        <Field label="System Prompt" fieldKey="systemPrompt" type="textarea" placeholder="You are a helpful assistant." />
+        <Field label="User Prompt (use $request or $steps)" fieldKey="prompt" type="textarea" placeholder="Summarize this text: $request.body.content" />
+      </>
+    ),
     responseNode: (
       <>
         <div style={{ marginBottom: 14 }}>

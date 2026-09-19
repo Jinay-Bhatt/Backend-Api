@@ -11,7 +11,12 @@ import {
   Lock, 
   Key, 
   Send, 
-  Radio 
+  Radio,
+  Mail,
+  FileSpreadsheet,
+  FileText,
+  Sparkles,
+  Bot
 } from 'lucide-react';
 
 // Mapper to translate emoji strings to Lucide components dynamically
@@ -29,6 +34,10 @@ export function getNodeIcon(iconName: string, size = 14, color?: string) {
     case '🗝️': return <Key size={size} style={style} />;
     case '📤': return <Send size={size} style={style} />;
     case '📡': return <Radio size={size} style={style} />;
+    case '📧': return <Mail size={size} style={style} />;
+    case '📊': return <FileSpreadsheet size={size} style={style} />;
+    case '📄': return <FileText size={size} style={style} />;
+    case '🤖': return <Sparkles size={size} style={style} />;
     default: return null;
   }
 }
@@ -243,7 +252,7 @@ export function CustomCodeNode({ data, selected }: any) {
 export function IfElseNode({ data, selected }: any) {
   const color = '#a78bfa';
   return (
-    <NodeShell color={color} icon="🔀" title="If / Else" subtitle="Conditional branch" selected={selected}>
+    <NodeShell color={color} icon="𔀀" title="If / Else" subtitle="Conditional branch" selected={selected}>
       <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
       <Handle id="true" type="source" position={Position.Right} style={getHandleStyle('#10b981', { top: '35%' })} className="handle-pulse" />
       <Handle id="false" type="source" position={Position.Right} style={getHandleStyle('#ef4444', { top: '65%' })} className="handle-pulse" />
@@ -261,7 +270,7 @@ export function SwitchCaseNode({ data, selected }: any) {
   const color = '#d946ef';
   const cases = data.cases || ['paid', 'pending', 'default'];
   return (
-    <NodeShell color={color} icon="🔀" title="Switch Case" subtitle="Multi-branch switch" selected={selected}>
+    <NodeShell color={color} icon="𔀀" title="Switch Case" subtitle="Multi-branch switch" selected={selected}>
       <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
       
       {/* Map cases to handles */}
@@ -358,6 +367,58 @@ export function HttpClientNode({ data, selected }: any) {
   );
 }
 
+// ─── GMAIL NODE ────────────────────────────────────────────────────────────
+export function GmailNode({ data, selected }: any) {
+  const color = '#ea4335';
+  return (
+    <NodeShell color={color} icon="📧" title="Gmail API" subtitle="Send Email" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="To" value={data.to || '$request.body.email'} />
+      <DataRow label="Subject" value={data.subject || 'Workflow Notification'} />
+    </NodeShell>
+  );
+}
+
+// ─── GOOGLE SHEETS NODE ────────────────────────────────────────────────────
+export function GoogleSheetsNode({ data, selected }: any) {
+  const color = '#0f9d58';
+  return (
+    <NodeShell color={color} icon="📊" title="Google Sheets" subtitle="Read / Append Rows" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Action" value={data.action || 'APPEND_ROW'} />
+      <DataRow label="Sheet ID" value={data.spreadsheetId || '1BxiMVs0XRA5...'} />
+    </NodeShell>
+  );
+}
+
+// ─── TXT FILE NODE ─────────────────────────────────────────────────────────
+export function TxtFileNode({ data, selected }: any) {
+  const color = '#06b6d4';
+  return (
+    <NodeShell color={color} icon="📄" title="TXT File" subtitle="Read / Write File" selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Action" value={data.action || 'WRITE_FILE'} />
+      <DataRow label="Path" value={data.filePath || './logs/output.txt'} />
+    </NodeShell>
+  );
+}
+
+// ─── AI INTEGRATION NODE ───────────────────────────────────────────────────
+export function AiNode({ data, selected }: any) {
+  const color = '#8b5cf6';
+  return (
+    <NodeShell color={color} icon="🤖" title="AI Model" subtitle={`${data.provider || 'Groq'} Integration`} selected={selected}>
+      <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
+      <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
+      <DataRow label="Provider" value={(data.provider || 'Groq').toUpperCase()} />
+      <DataRow label="Model" value={data.model || 'llama-3.3-70b-versatile'} />
+    </NodeShell>
+  );
+}
+
 // ─── NODE TYPES MAP ────────────────────────────────────────────────────────
 export const nodeTypes = {
   triggerNode: TriggerNode,
@@ -372,6 +433,10 @@ export const nodeTypes = {
   jwtValidateNode: JwtValidateNode,
   apiKeyNode: ApiKeyNode,
   responseNode: ResponseNode,
+  gmailNode: GmailNode,
+  googleSheetsNode: GoogleSheetsNode,
+  txtFileNode: TxtFileNode,
+  aiNode: AiNode,
 };
 
 // ─── NODE PALETTE CONFIG ───────────────────────────────────────────────────
@@ -386,6 +451,22 @@ export const NODE_PALETTE = [
     ]
   },
   {
+    category: 'AI & Intelligence',
+    color: '#8b5cf6',
+    nodes: [
+      { type: 'aiNode', icon: '🤖', label: 'AI Integration', desc: 'Groq / Gemini / Claude / OpenAI API call', defaultData: { provider: 'groq', model: 'llama-3.3-70b-versatile', apiKey: '', systemPrompt: 'You are a helpful assistant.', prompt: '$request.body.prompt' } },
+    ]
+  },
+  {
+    category: 'Integrations',
+    color: '#14b8a6',
+    nodes: [
+      { type: 'httpClientNode', icon: '📡', label: 'HTTP Client', desc: 'Call external REST APIs', defaultData: { method: 'GET', url: 'https://api.github.com/users/$request.body.username', headers: '{\n  "User-Agent": "JBSnap-Platform"\n}', body: '' } },
+      { type: 'gmailNode', icon: '📧', label: 'Gmail API', desc: 'Send emails via Gmail', defaultData: { to: '$request.body.email', subject: 'Workflow Notification', body: 'Hello from JBSnap!', accessToken: '' } },
+      { type: 'googleSheetsNode', icon: '📊', label: 'Google Sheets', desc: 'Read or append rows in Sheets', defaultData: { action: 'APPEND_ROW', spreadsheetId: '', range: 'Sheet1!A1', rowData: '[$request.body.name, $request.body.email]', apiKey: '' } },
+    ]
+  },
+  {
     category: 'Logic',
     color: '#a78bfa',
     nodes: [
@@ -395,17 +476,11 @@ export const NODE_PALETTE = [
     ]
   },
   {
-    category: 'Data',
+    category: 'Data & Files',
     color: '#38bdf8',
     nodes: [
       { type: 'databaseNode', icon: '🗄️', label: 'Database', desc: 'PostgreSQL query', defaultData: { query: 'SELECT * FROM users WHERE id = $request.params.id;' } },
-    ]
-  },
-  {
-    category: 'Integrations',
-    color: '#14b8a6',
-    nodes: [
-      { type: 'httpClientNode', icon: '📡', label: 'HTTP Client', desc: 'Call external REST APIs', defaultData: { method: 'GET', url: 'https://api.github.com/users/$request.body.username', headers: '{\n  "User-Agent": "FlowForge-Platform"\n}', body: '' } },
+      { type: 'txtFileNode', icon: '📄', label: 'TXT File', desc: 'Read, write or append text files', defaultData: { action: 'WRITE_FILE', filePath: './data/output.txt', content: '$request.body.text' } },
     ]
   },
   {
@@ -431,4 +506,3 @@ export const NODE_PALETTE = [
     ]
   },
 ];
-

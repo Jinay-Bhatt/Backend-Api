@@ -6,7 +6,7 @@ export async function runHealthRoutes(fastify: FastifyInstance) {
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      message: 'FlowForge Backend Template is connected and running!',
+      message: 'JBSnap Backend Template is connected and running!',
     };
   });
 

@@ -14,7 +14,7 @@ import {
 
 /* ─── Logo ──────────────────────────────────── */
 function Logo({ size = 28 }: { size?: number }) {
-  return <img src="/FlowForge.png" alt="FlowForge" width={size} height={size} style={{ objectFit: 'contain' }} />;
+  return <img src="/logo.jpg" alt="JBSnap" width={size} height={size} style={{ objectFit: 'cover', borderRadius: '50%' }} />;
 }
 
 /* ─── Intersection Observer Hook ──────────────── */
@@ -170,7 +170,7 @@ function Nav({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveIdx: Rea
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }} onClick={() => setActiveIdx(0)}>
           <Logo size={26} />
           <span style={{ fontSize: 17, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+            JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
           </span>
         </div>
 
@@ -430,7 +430,7 @@ function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
               Watch Demo
             </h2>
             <p style={{ fontSize: 18, color: '#94a3b8', lineHeight: 1.6, margin: '0 auto', maxWidth: 640 }}>
-              See how FlowForge intercepts gateway requests, validates authorization, runs isolated sandboxed scripts, and queries databases visually.
+              See how JBSnap intercepts gateway requests, validates authorization, runs isolated sandboxed scripts, and queries databases visually.
             </p>
           </div>
         </Reveal>
@@ -865,7 +865,7 @@ const FEATURES = [
   { icon: <Shield size={22} />, title: 'Enterprise Gateway', desc: 'JWT, API keys, rate limiting, CORS — all configurable per-endpoint, zero config files.', color: '#10b981', wide: false },
   { icon: <Cpu size={22} />, title: 'Secure VM Sandbox', desc: 'Custom JS runs inside isolated Node.js VMs. Hard 200ms CPU timeout. No `process`, no `require`.', color: '#38bdf8', wide: false },
   { icon: <Code2 size={22} />, title: 'TypeScript Export', desc: 'One click compiles your visual pipeline into clean Fastify + Prisma + TypeScript.', color: '#a78bfa', wide: false },
-  { icon: <Sparkles size={22} />, title: 'AI Workflow Generator', desc: 'Describe your API in plain English. FlowForge AI generates the complete node graph instantly.', color: '#f59e0b', wide: false },
+  { icon: <Sparkles size={22} />, title: 'AI Workflow Generator', desc: 'Describe your API in plain English. JBSnap AI generates the complete node graph instantly.', color: '#f59e0b', wide: false },
   { icon: <Activity size={22} />, title: 'Real-Time Analytics', desc: 'Live Socket.IO metrics. Monitor latency, throughput, error rates, and per-route heatmaps.', color: '#ec4899', wide: false, fullWidth: true },
 ];
 
@@ -1495,7 +1495,7 @@ function HowItWorks() {
     },
     {
       num: '03', title: 'Deploy in One Click',
-      desc: 'Hit publish. Your workflow goes live on the FlowForge gateway immediately. No build step, no Dockerfile, no server configuration. From canvas to live URL in under 3 seconds.',
+      desc: 'Hit publish. Your workflow goes live on the JBSnap gateway immediately. No build step, no Dockerfile, no server configuration. From canvas to live URL in under 3 seconds.',
       color: '#38bdf8', icon: <Zap size={24} />,
       visual: <StepVisual3 />,
     },
@@ -1659,7 +1659,7 @@ function StepVisual3() {
         </div>
       ))}
       <div style={{ marginTop: 16, padding: '10px 14px', borderRadius: 10, background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>
-        <span style={{ color: '#475569' }}>$</span> <span style={{ color: '#10b981' }}>https://api.flowforge.app/u/auth-service</span>
+        <span style={{ color: '#475569' }}>$</span> <span style={{ color: '#10b981' }}>https://api.jbsnap.app/u/auth-service</span>
       </div>
     </div>
   );
@@ -1674,7 +1674,7 @@ function StepVisual4() {
       </div>
       <div style={{ padding: '16px 18px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, lineHeight: 1.9 }}>
         {[
-          { t: '$ flowforge export auth-service', c: '#475569' },
+          { t: '$ jbsnap export auth-service', c: '#475569' },
           { t: '⠋ Compiling visual DAG...', c: '#94a3b8' },
           { t: '✔ Fastify routes generated (4)', c: '#f1f5f9' },
           { t: '✔ Prisma schema included', c: '#f1f5f9' },
@@ -1696,7 +1696,7 @@ function APIFlowSection() {
 
   const flowSteps = [
     { label: 'Client', sub: 'Browser / SDK', color: '#64748b', icon: <Globe size={16} /> },
-    { label: 'Gateway', sub: 'FlowForge Edge', color: '#6366f1', icon: <Server size={16} /> },
+    { label: 'Gateway', sub: 'JBSnap Edge', color: '#6366f1', icon: <Server size={16} /> },
     { label: 'JWT Auth', sub: 'RS256 Verified', color: '#8b5cf6', icon: <Lock size={16} /> },
     { label: 'DB Query', sub: 'Prisma ORM', color: '#38bdf8', icon: <Database size={16} /> },
     { label: 'Response', sub: '200 · 0.4ms', color: '#10b981', icon: <CheckCircle size={16} /> },
@@ -1788,7 +1788,7 @@ function APIFlowSection() {
                 </div>
                 <div style={{ padding: '14px 18px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, lineHeight: 1.85 }}>
                   {[
-                    { t: '$ flowforge compile auth-service', c: '#475569' },
+                    { t: '$ jbsnap compile auth-service', c: '#475569' },
                     { t: '✔ 4 nodes → Trigger → JWT → Prisma → Response', c: '#f1f5f9' },
                     { t: '✔ Generating Fastify routes...', c: '#f1f5f9' },
                     { t: '✔ Compiled in 18ms → dist/server.ts', c: '#10b981' },
@@ -2105,7 +2105,7 @@ function Footer({ setActiveIdx }: { setActiveIdx?: React.Dispatch<React.SetState
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
               <Logo size={24} />
               <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+                JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
               </span>
             </div>
             <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, maxWidth: 280 }}>
@@ -2126,8 +2126,8 @@ function Footer({ setActiveIdx }: { setActiveIdx?: React.Dispatch<React.SetState
         </div>
 
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ fontSize: 12.5, color: '#334155', textAlign: 'center' }}>
-            © {new Date().getFullYear()} FlowForge. All rights reserved.
+          <div style={{ fontSize: 12.5, color: '#475569', textAlign: 'center' }}>
+            JBSnap Visual Pipeline Builder & Execution Engine
           </div>
         </div>
       </div>

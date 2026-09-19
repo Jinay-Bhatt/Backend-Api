@@ -65,9 +65,9 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
           <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none', padding: '4px 8px', borderRadius: 7, transition: 'background 0.15s', color: 'var(--text-muted)' }}
             onMouseEnter={e => { (e.currentTarget as any).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as any).style.color = 'var(--text-secondary)'; }}
             onMouseLeave={e => { (e.currentTarget as any).style.background = 'transparent'; (e.currentTarget as any).style.color = 'var(--text-muted)'; }}>
-            <img src="/FlowForge.png" alt="FlowForge Logo" width="26" height="26" style={{ objectFit: 'contain' }} />
+            <img src="/logo.jpg" alt="JBSnap Logo" width="28" height="28" style={{ objectFit: 'cover', borderRadius: '50%' }} />
             <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', Inter, sans-serif" }}>
-              Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+              JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
             </span>
           </Link>
           <span style={{ color: 'var(--text-faint)', fontSize: 16 }}>/</span>

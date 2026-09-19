@@ -197,7 +197,7 @@ export default function DashboardPage() {
   const [notifications, setNotifications] = useState<any[]>([
     { id: 1, title: 'Workflow Published', desc: 'Endpoint /users was successfully published to production gateway.', time: '2 mins ago' },
     { id: 2, title: 'GitHub Sync Completed', desc: 'Committed and pushed latest typescript compilation build to main branch.', time: '1 hour ago' },
-    { id: 3, title: 'Welcome to FlowForge!', desc: 'Get started by creating a new project and dragging nodes onto the visual builder canvas.', time: '1 day ago' },
+    { id: 3, title: 'Welcome to JBSnap!', desc: 'Get started by creating a new project and dragging nodes onto the visual builder canvas.', time: '1 day ago' },
   ]);
   const [avatar, setAvatar] = useState<string | null>(null);
 
@@ -351,9 +351,9 @@ export default function DashboardPage() {
         <div style={{ maxWidth: 1320, margin: '0 auto', padding: '0 28px', height: 58, display: 'flex', alignItems: 'center', gap: 12 }}>
           {/* Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <img src="/FlowForge.png" alt="FlowForge" width={26} height={26} style={{ objectFit: 'contain' }} />
+            <img src="/logo.jpg" alt="JBSnap" width={26} height={26} style={{ objectFit: 'cover', borderRadius: '50%' }} />
             <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Flow<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Forge</span>
+              JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
             </span>
           </div>
 

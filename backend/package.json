@@ -14,8 +14,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@fastify/compress": "^9.2.0",
     "@fastify/cors": "^11.2.0",
+    "@fastify/helmet": "^13.1.1",
     "@fastify/jwt": "^10.1.0",
+    "@fastify/rate-limit": "^11.2.0",
     "@octokit/rest": "^22.0.1",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
@@ -24,7 +27,7 @@
     "bullmq": "^5.78.0",
     "dotenv": "^17.4.2",
     "fastify": "^5.8.5",
-    "flowforge-workspace": "file:..",
+    "jbsnap-workspace": "file:..",
     "node-fetch": "^3.3.2",
     "pg": "^8.21.0",
     "socket.io": "^4.8.3"
