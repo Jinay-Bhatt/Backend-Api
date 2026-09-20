@@ -2,14 +2,16 @@
 import Link from 'next/link';
 
 export default function AboutPage() {
+  const contactEmail = 'dualithjbsnap@gmail.com';
+
   return (
-    <div style={{ minHeight: '100vh', background: '#020202', color: '#f1f5f9', fontFamily: 'sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#020202', color: '#f1f5f9', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       {/* Mini header */}
       <header style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '20px 32px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: '#ffffff' }}>
             <img src="/logo.jpg" alt="JBSnap" width={24} height={24} style={{ borderRadius: '50%', objectFit: 'cover' }} />
-            <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <span style={{ fontSize: 16, fontWeight: 900 }}>
               JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span><span style={{ color: '#94a3b8', marginLeft: 6, fontWeight: 500, fontSize: 13.5 }}>Company</span>
             </span>
           </Link>
@@ -25,7 +27,7 @@ export default function AboutPage() {
           At JBSnap, we believe database and backend integration should be direct, fast, and visual.
         </p>
         <p style={{ fontSize: 16, color: '#94a3b8', lineHeight: 1.7, marginBottom: 40 }}>
-          Traditional integration workflows require writing boilerplate, configuring routing servers, maintaining schema migrations, and managing deployment pipelines. JBSnap replaces all of that with a visual DAG workflow editor that compiles directly to production-grade Fastify + TypeScript code bases.
+          Traditional integration workflows require writing boilerplate, configuring routing servers, maintaining schema migrations, and managing deployment pipelines. JBSnap replaces all of that with a visual DAG workflow editor that compiles directly to production-grade Fastify + TypeScript codebases.
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, marginBottom: 56 }}>
@@ -37,6 +39,16 @@ export default function AboutPage() {
             <h3 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', margin: '0 0 8px 0' }}>Our Commitment</h3>
             <p style={{ fontSize: 13.5, color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>Zero vendor lock-in. Visual design compiles to clean Fastify + TypeScript that you can export and host anywhere.</p>
           </div>
+        </div>
+
+        <div style={{ padding: 24, borderRadius: 16, background: 'rgba(99,102,241,0.04)', border: '1px solid rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#ffffff', marginBottom: 4 }}>Have Questions or Feedback?</div>
+            <div style={{ fontSize: 13, color: '#94a3b8' }}>Official Contact: <span style={{ color: '#38bdf8', fontFamily: 'JetBrains Mono, monospace' }}>{contactEmail}</span></div>
+          </div>
+          <Link href="/contact" style={{ padding: '10px 18px', borderRadius: 10, background: '#6366f1', color: '#ffffff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+            Contact Support
+          </Link>
         </div>
       </div>
     </div>

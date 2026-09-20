@@ -4,19 +4,22 @@ import pg from "pg";
 
 const { Pool } = pg;
 
-// High-Throughput Connection Pool (Tuned for 100,000+ Concurrent Requests)
+// High-Throughput Connection Pool (Tuned for Neon Serverless PostgreSQL)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 30,                       // Up to 30 active pool sockets per instance
-  idleTimeoutMillis: 15000,      // Recycle idle connections every 15s to keep pool fresh
-  connectionTimeoutMillis: 5000, // Drop queued requests if pool doesn't grant socket in 5s
-  statement_timeout: 10000,      // Cancel any query taking longer than 10s to prevent locks
+  max: 20,                       // Up to 20 active pool sockets per instance
+  idleTimeoutMillis: 10000,      // Recycle idle connections every 10s before Neon serverless drops them
+  connectionTimeoutMillis: 10000,// Allow 10s for initial SSL handshake
   keepAlive: true,
 });
 
-// Handle pool notices gracefully
-pool.on("error", (err) => {
-  console.warn("⚠️ Postgres connection pool notice:", err.message);
+// Handle Neon serverless idle socket drops gracefully without server interruption
+pool.on("error", (err: any) => {
+  if (err.message && err.message.includes("connection timeout")) {
+    // Normal serverless pool recycling notice — silent handle
+    return;
+  }
+  console.warn("⚠️ Postgres connection pool notice:", err.message || err);
 });
 
 const adapter = new PrismaPg(pool);
@@ -25,7 +28,7 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   adapter,
-  log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+  log: ["error"],
 });
 
 if (process.env.NODE_ENV !== "production") {

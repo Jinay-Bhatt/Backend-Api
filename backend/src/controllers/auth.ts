@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import bcrypt from "bcryptjs";
 import { prisma } from "../services/db.js";
+import { verifyEmailExistence } from "../services/emailVerification.js";
 
 export async function registerUser(
   request: FastifyRequest,
@@ -29,6 +30,15 @@ export async function registerUser(
   if (!passwordRegex.test(password)) {
     return reply.status(400).send({
       error: "Bad Request: Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
+    });
+  }
+
+  // Real-time Email Existence & MX DNS Lookup Verification
+  const emailVerification = await verifyEmailExistence(email);
+  if (!emailVerification.valid) {
+    return reply.status(400).send({
+      error: "Invalid Email Address",
+      message: emailVerification.reason || "The email address provided does not exist or cannot receive mail.",
     });
   }
 
