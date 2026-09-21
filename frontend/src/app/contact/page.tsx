@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { api, BASE_URL_DIRECT } from '../../services/api';
-import { Mail, Check, Copy, Send, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { Mail, Check, Copy, Send, ShieldCheck } from 'lucide-react';
 
 export default function ContactPage() {
   const [name, setName] = useState('');
@@ -60,8 +60,34 @@ export default function ContactPage() {
               <span style={{ color: '#94a3b8', marginLeft: 8, fontWeight: 500, fontSize: 13.5 }}>Support</span>
             </span>
           </Link>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#94a3b8', textDecoration: 'none', fontWeight: 600 }}>
-            <ArrowLeft size={15} /> Back to Home
+          <Link
+            href="/"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 12.5,
+              fontWeight: 600,
+              color: '#cbd5e1',
+              textDecoration: 'none',
+              padding: '6px 14px',
+              borderRadius: 8,
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+              e.currentTarget.style.color = '#ffffff';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+              e.currentTarget.style.color = '#cbd5e1';
+            }}
+          >
+            Back to Home
           </Link>
         </div>
       </header>

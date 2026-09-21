@@ -15,7 +15,7 @@ import {
   Mail,
   FileSpreadsheet,
   FileText,
-  Sparkles,
+  Cpu,
   Bot
 } from 'lucide-react';
 
@@ -37,7 +37,7 @@ export function getNodeIcon(iconName: string, size = 14, color?: string) {
     case '📧': return <Mail size={size} style={style} />;
     case '📊': return <FileSpreadsheet size={size} style={style} />;
     case '📄': return <FileText size={size} style={style} />;
-    case '🤖': return <Sparkles size={size} style={style} />;
+    case '🤖': return <Cpu size={size} style={style} />;
     default: return null;
   }
 }
@@ -181,7 +181,7 @@ function DataRow({ label, value }: { label: string; value: string }) {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
-      }}>{value || '—'}</span>
+      }}>{value || '-'}</span>
     </div>
   );
 }

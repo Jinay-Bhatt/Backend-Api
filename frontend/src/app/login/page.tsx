@@ -54,25 +54,12 @@ export default function LoginPage() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Premium colorful background glow mesh */}
+      {/* Subtle ambient lighting */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
         <div style={{
-          position: 'absolute', top: '25%', left: '50%', transform: 'translate(-50%, -50%)',
-          width: 550, height: 550, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.04) 50%, transparent 70%)',
-          filter: 'blur(64px)',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-10%', right: '10%',
-          width: 450, height: 450, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%)',
-          filter: 'blur(80px)',
-        }} />
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.015) 1px, transparent 0)',
-          backgroundSize: '24px 24px',
-          opacity: 0.8
+          position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+          width: 800, height: 280,
+          background: 'radial-gradient(ellipse at top, rgba(255,255,255,0.03), transparent 70%)',
         }} />
       </div>
 
@@ -92,9 +79,9 @@ export default function LoginPage() {
           {/* Logo Node with high-tech background glow */}
           <div style={{
             position: 'relative', width: 68, height: 68, borderRadius: 20,
-            background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.06)',
+            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: 20, boxShadow: '0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)'
+            marginBottom: 20, boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
           }}>
             <img src="/logo.jpg" alt="JBSnap Logo" width="38" height="38" style={{ objectFit: 'cover', borderRadius: '50%' }} />
             <div style={{
@@ -106,9 +93,13 @@ export default function LoginPage() {
             fontSize: 28, fontWeight: 900, color: '#ffffff', letterSpacing: '-1px',
             fontFamily: "'Plus Jakarta Sans', Inter, sans-serif", lineHeight: 1.1
           }}>
-            JB<span style={{ background: 'linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
+            JB<span style={{ background: 'linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span> Console
           </h1>
-          <p style={{ fontSize: 13.5, color: '#64748b', marginTop: 8 }}>Sign in to your dashboard</p>
+          <p style={{
+            fontSize: 14, color: '#94a3b8', marginTop: 8, maxWidth: 360, lineHeight: 1.5
+          }}>
+            Secure visual backend engineering and edge runtime environment.
+          </p>
         </div>
 
         {error && (
@@ -128,27 +119,23 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Main Glassmorphic Card */}
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+        {/* Form Card */}
+        <form onSubmit={handleSubmit} style={{ width: '100%', position: 'relative' }}>
+          {/* Main Card */}
           <div style={{
             width: '100%',
             padding: '36px 32px',
-            background: 'rgba(8, 8, 11, 0.45)',
+            background: '#0c0c0e',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: 24,
             display: 'flex',
             flexDirection: 'column',
             gap: 24,
-            boxShadow: '0 24px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
+            boxShadow: '0 24px 80px rgba(0, 0, 0, 0.8)',
             position: 'relative',
             overflow: 'hidden'
           }}>
-            {/* Top Glowing Edge decoration */}
-            <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, height: 1.5,
-              background: 'linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), transparent)'
-            }} />
 
             {/* Email Field */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

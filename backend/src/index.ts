@@ -16,6 +16,7 @@ import { gitRoutes } from './routes/git.js';
 import { analyticsRoutes } from './routes/analytics.js';
 import { servicesRoutes } from './routes/services.js';
 import { aiRoutes } from './routes/ai.js';
+import { notificationRoutes } from './routes/notifications.js';
 import { startWorker, setRedisStatus } from './queue/worker.js';
 import { initializeQueue } from './queue/exportQueue.js';
 import { checkRedisConnection } from './queue/redisCheck.js';
@@ -108,6 +109,7 @@ await fastify.register(gitRoutes, { prefix: '/api' });
 await fastify.register(analyticsRoutes, { prefix: '/api' });
 await fastify.register(servicesRoutes, { prefix: '/api' });
 await fastify.register(aiRoutes, { prefix: '/api' });
+await fastify.register(notificationRoutes, { prefix: '/api' });
 await fastify.register(gatewayRoutes); // Wildcard gateway — no prefix
 
 const start = async () => {

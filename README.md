@@ -114,56 +114,133 @@ Provide a short note on how you used the partner technology:
 
 ---
 
-## 🧪 How to Run the Project
+## 🧪 Developer Quickstart & Setup Guide
 
-### Requirements:
-- Node.js (v18+)
-- PostgreSQL Database URL (Neon or local)
-- GitHub Personal Access Token (for Exporter)
-- Groq API Key (for AI Synthesizer)
+This codebase is structured as a modular monorepo containing a Fastify backend (`backend/`) and a Next.js App Router frontend (`frontend/`).
 
-### Local Setup:
+### Prerequisites:
+- **Node.js**: v18+ (v20+ recommended)
+- **PostgreSQL**: Neon Serverless or any PostgreSQL 14+ database instance
+- **Redis**: Redis 6+ (local or Upstash/Aiven for background task queues)
+- **Groq API Key** (Optional): For AI visual pipeline workflow generation
 
-1. **Clone the repository**:
+---
+
+### Step-by-Step Installation:
+
+#### 1. Clone & Install Dependencies
+```bash
+git clone https://github.com/Jinay-Bhatt/Backend-Api.git
+cd Backend-Api
+
+# Install dependencies for both backend and frontend in one command
+npm run install-all
+```
+
+#### 2. Configure Environment Variables
+Copy the provided `.env.example` templates:
+
+**Backend (`backend/.env`):**
+```bash
+cp backend/.env.example backend/.env
+```
+Ensure the following required keys are populated in `backend/.env`:
+- `DATABASE_URL`: PostgreSQL connection string with SSL mode if cloud-hosted.
+- `REDIS_URL`: `redis://127.0.0.1:6379` (or cloud Redis URI).
+- `JWT_SECRET`: Random 32+ character string for token signing.
+- `ENCRYPTION_KEY`: Random 32-character key for securing credential secrets.
+
+**Frontend (`frontend/.env.local`):**
+```bash
+cp frontend/.env.example frontend/.env.local
+```
+- `NEXT_PUBLIC_API_URL`: Defaults to `http://localhost:5000`.
+
+#### 3. Initialize the Database (Prisma)
+Generate the Prisma client and sync schema tables:
+```bash
+# From repository root:
+npm run db:generate
+npm run db:push
+```
+*(Or inside `backend/`: `npm run prisma:generate && npm run prisma:push`)*
+
+#### 4. Run Development Servers
+Open two terminal windows or run concurrently:
+
+**Terminal 1 (Backend - Fastify & Socket.IO):**
+```bash
+npm run dev:backend
+# Server runs at http://localhost:5000
+```
+
+**Terminal 2 (Frontend - Next.js App Router):**
+```bash
+npm run dev:frontend
+# Client runs at http://localhost:3000
+```
+
+---
+
+### 📦 Production Builds & Verification
+
+To verify that both backend TypeScript and Next.js frontend compile cleanly with 0 errors:
+```bash
+# Build backend and frontend
+npm run build
+```
+
+Individual builds:
+```bash
+npm run build:backend   # Runs tsc in backend
+npm run build:frontend  # Runs next build with Turbopack in frontend
+```
+
+---
+
+### 🗄️ Database Management & Schema Changes
+
+When modifying `backend/prisma/schema.prisma`:
+1. Edit `schema.prisma`.
+2. Run `npm run db:generate` to regenerate `@prisma/client`.
+3. Run `npm run db:push` to push schema changes directly to your database without downtime.
+4. Launch Prisma Studio GUI:
    ```bash
-   git clone https://github.com/Jinay-Bhatt/Backend-Api.git
-   cd Backend-Api
+   npm run db:studio
    ```
 
-2. **Configure Database & Environment**:
-   Create a `.env` file in the `backend/` directory:
-   ```env
-   DATABASE_URL="postgresql://..."
-   JWT_SECRET="your-super-secret-key"
-   GROQ_API_KEY="gsk_..."
-   PORT=5000
-   ```
+---
 
-3. **Initialize Database**:
-   ```bash
-   cd backend
-   npm install
-   npx prisma db push
-   npx prisma db seed
-   ```
+### 📁 Codebase Architecture
 
-4. **Run Backend Server**:
-   ```bash
-   npm run dev
-   ```
-
-5. **Initialize Frontend**:
-   Create a `.env` file in the `frontend/` directory:
-   ```env
-   NEXT_PUBLIC_API_URL="http://localhost:5000"
-   ```
-   ```bash
-   cd ../frontend
-   npm install
-   npm run dev
-   ```
-
-6. Open your browser and navigate to `http://localhost:3000`.
+```
+Backend-Api/
+├── backend/
+│   ├── prisma/
+│   │   └── schema.prisma       # Database models (User, Project, Workflow, Notification)
+│   ├── src/
+│   │   ├── config/             # Environment validation and loading
+│   │   ├── controllers/        # REST route handlers (auth, projects, workflows, notifications)
+│   │   ├── routes/             # Fastify API routes and gateway endpoints
+│   │   ├── services/           # Business logic (compiler, VM sandbox, db pool, notifications)
+│   │   ├── websocket.ts        # Socket.IO real-time event streaming & user rooms
+│   │   └── index.ts            # Fastify application entrypoint
+│   ├── .env.example            # Backend environment template
+│   └── package.json
+│
+├── frontend/
+│   ├── public/                 # Static branding and assets
+│   ├── src/
+│   │   ├── app/                # Next.js 14 App Router pages (builder, monitor, gateway, settings, etc.)
+│   │   ├── components/         # Shared UI components (NotificationBell, nodes, modals)
+│   │   ├── context/            # React Contexts (NotificationContext, Socket.IO listeners)
+│   │   └── services/           # API client with in-memory SWR caching
+│   ├── .env.example            # Frontend environment template
+│   └── package.json
+│
+├── .env.example                # Full monorepo environment template
+└── package.json                # Root monorepo scripts
+```
 
 ---
 

@@ -94,9 +94,13 @@ export const api = {
       return request('/auth/google', { method: 'POST', body: JSON.stringify(body) });
     },
     me: () => request('/auth/me'),
-    update: (body: { username?: string; gender?: string; oldPassword?: string; newPassword?: string }) => {
+    update: (body: { username?: string; gender?: string; avatar?: string | null; oldPassword?: string; newPassword?: string }) => {
       clearApiCache('/auth');
       return request('/auth/update', { method: 'PUT', body: JSON.stringify(body) });
+    },
+    upgradePlan: (plan: 'FREE' | 'PRO_MONTHLY' | 'PRO_YEARLY') => {
+      clearApiCache('/auth');
+      return request('/auth/upgrade-plan', { method: 'POST', body: JSON.stringify({ plan }) });
     },
   },
   projects: {
@@ -192,6 +196,13 @@ export const api = {
   ai: {
     generateWorkflow: (prompt: string) =>
       request('/ai/generate-workflow', { method: 'POST', body: JSON.stringify({ prompt }) }),
+  },
+  notifications: {
+    list: () => request<{ notifications: any[]; unreadCount: number }>('/notifications'),
+    markAsRead: (id: string) => request<{ notification: any }>(`/notifications/${id}/read`, { method: 'PATCH' }),
+    markAllAsRead: () => request<{ message: string }>('/notifications/read-all', { method: 'POST' }),
+    delete: (id: string) => request<{ message: string }>(`/notifications/${id}`, { method: 'DELETE' }),
+    clearAll: () => request<{ message: string }>('/notifications/clear-all', { method: 'DELETE' }),
   },
 };
 

@@ -22,6 +22,27 @@ pool.on("error", (err: any) => {
   console.warn("⚠️ Postgres connection pool notice:", err.message || err);
 });
 
+// Idempotent column check for Neon PostgreSQL to support Tiered Pricing Model, Avatar, and Notifications
+pool.query(`
+  ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "plan" TEXT DEFAULT 'FREE';
+  ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "aiGenerationsCount" INTEGER DEFAULT 0;
+  ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "aiGenerationsResetAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP;
+  ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "avatar" TEXT;
+  CREATE TABLE IF NOT EXISTS "Notification" (
+    "id" TEXT PRIMARY KEY,
+    "userId" TEXT NOT NULL REFERENCES "User"("id") ON DELETE CASCADE,
+    "title" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'info',
+    "link" TEXT,
+    "read" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE INDEX IF NOT EXISTS "Notification_userId_createdAt_idx" ON "Notification"("userId", "createdAt");
+`).catch(err => {
+  console.warn("⚠️ Postgres schema column check notice:", err.message || err);
+});
+
 const adapter = new PrismaPg(pool);
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };

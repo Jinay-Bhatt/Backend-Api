@@ -23,7 +23,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://jbsnap.app'),
   title: {
-    default: 'JBSnap — #1 Visual Backend API Builder & Workflow Compiler',
+    default: 'JBSnap: Visual Backend API Builder & Workflow Compiler',
     template: '%s | JBSnap API Builder',
   },
   description: 'Build, deploy, and export production-ready backend APIs in seconds using a visual node DAG graph. Compiles directly into clean Fastify + TypeScript code with zero vendor lock-in.',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     canonical: 'https://jbsnap.app',
   },
   openGraph: {
-    title: 'JBSnap — #1 Visual Backend API Builder & Workflow Compiler',
+    title: 'JBSnap: Visual Backend API Builder & Workflow Compiler',
     description: 'Design and deploy backend APIs visually. Compile nodes directly into production-grade TypeScript Fastify apps.',
     url: 'https://jbsnap.app',
     siteName: 'JBSnap Platform',
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'JBSnap — #1 Visual Backend API Builder & Workflow Compiler',
+    title: 'JBSnap: Visual Backend API Builder & Workflow Compiler',
     description: 'Design and deploy backend APIs visually. Compile nodes directly into production-grade TypeScript Fastify apps.',
     creator: '@jbsnap_dev',
     images: ['/logo.jpg'],
@@ -127,6 +127,8 @@ const jsonLdSchema = {
   ]
 };
 
+import { NotificationProvider } from '../context/NotificationContext';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning data-scroll-behavior="smooth">
@@ -139,7 +141,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSchema) }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <NotificationProvider>
+          {children}
+        </NotificationProvider>
+      </body>
     </html>
   );
 }

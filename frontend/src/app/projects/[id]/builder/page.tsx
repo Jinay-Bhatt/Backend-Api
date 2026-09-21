@@ -10,13 +10,121 @@ import { io, Socket } from 'socket.io-client';
 import { api, BASE_URL_DIRECT } from '../../../../services/api';
 import { nodeTypes, NODE_PALETTE, getNodeIcon } from '../../../../components/customNodes';
 import CustomSelect from '../../../../components/CustomSelect';
-import { Play, Pause, Settings, Zap, Trash2, Monitor, Save, Rocket, Loader2, Sparkles, Terminal, X, AlertCircle, Check } from 'lucide-react';
+import { Play, Pause, Settings, Zap, Trash2, Monitor, Save, Rocket, Loader2, Cpu, Terminal, X, AlertCircle, Check, Layers, Lock } from 'lucide-react';
 
 const METHOD_COLORS: Record<string, string> = { GET: '#10b981', POST: '#6366f1', PUT: '#f59e0b', DELETE: '#ef4444', PATCH: '#38bdf8' };
+
+const WORKFLOW_TEMPLATES = [
+  {
+    id: 'rest-crud',
+    title: 'REST API CRUD Endpoint',
+    category: 'Basic',
+    isPro: false,
+    desc: 'Receives HTTP GET/POST and queries PostgreSQL for resources.',
+    nodes: [
+      { id: 'node_trigger', type: 'triggerNode', position: { x: 100, y: 150 }, data: { method: 'GET', path: '/api/items' } },
+      { id: 'node_db', type: 'databaseNode', position: { x: 380, y: 150 }, data: { query: 'SELECT * FROM items ORDER BY id DESC LIMIT 20;' } },
+      { id: 'node_res', type: 'responseNode', position: { x: 660, y: 150 }, data: { statusCode: 200, body: '$steps.node_db' } },
+    ],
+    edges: [
+      { id: 'e1', source: 'node_trigger', target: 'node_db' },
+      { id: 'e2', source: 'node_db', target: 'node_res' },
+    ],
+  },
+  {
+    id: 'webhook-ingest',
+    title: 'Webhook Event Ingest',
+    category: 'Basic',
+    isPro: false,
+    desc: 'Ingests external JSON webhooks, transforms payload, and responds 200 OK.',
+    nodes: [
+      { id: 'node_wh', type: 'webhookNode', position: { x: 100, y: 150 }, data: { path: '/webhook/event', secret: 'whsec_secret' } },
+      { id: 'node_tf', type: 'transformNode', position: { x: 380, y: 150 }, data: { mapping: '{ received: true, event: steps.prev.body }' } },
+      { id: 'node_res', type: 'responseNode', position: { x: 660, y: 150 }, data: { statusCode: 200, body: '$steps.node_tf' } },
+    ],
+    edges: [
+      { id: 'e1', source: 'node_wh', target: 'node_tf' },
+      { id: 'e2', source: 'node_tf', target: 'node_res' },
+    ],
+  },
+  {
+    id: 'cron-monitor',
+    title: 'Scheduled Health Monitor',
+    category: 'Basic',
+    isPro: false,
+    desc: 'Pings external service on cron schedule and records availability.',
+    nodes: [
+      { id: 'node_cron', type: 'scheduledNode', position: { x: 100, y: 150 }, data: { cron: '*/15 * * * *', timezone: 'UTC' } },
+      { id: 'node_http', type: 'httpClientNode', position: { x: 380, y: 150 }, data: { method: 'GET', url: 'https://api.github.com/status' } },
+      { id: 'node_res', type: 'responseNode', position: { x: 660, y: 150 }, data: { statusCode: 200, body: '$steps.node_http' } },
+    ],
+    edges: [
+      { id: 'e1', source: 'node_cron', target: 'node_http' },
+      { id: 'e2', source: 'node_http', target: 'node_res' },
+    ],
+  },
+  {
+    id: 'ai-classifier',
+    title: 'AI Sentiment & NLP Classifier',
+    category: 'Advanced',
+    isPro: true,
+    desc: 'Authenticates via JWT, feeds text to AI model, and returns structured analysis.',
+    nodes: [
+      { id: 'node_trigger', type: 'triggerNode', position: { x: 80, y: 150 }, data: { method: 'POST', path: '/api/analyze' } },
+      { id: 'node_jwt', type: 'jwtValidateNode', position: { x: 320, y: 150 }, data: { secret: 'secret_key' } },
+      { id: 'node_ai', type: 'aiNode', position: { x: 560, y: 150 }, data: { provider: 'groq', model: 'llama-3.3-70b-versatile', prompt: '$request.body.text' } },
+      { id: 'node_res', type: 'responseNode', position: { x: 800, y: 150 }, data: { statusCode: 200, body: '$steps.node_ai' } },
+    ],
+    edges: [
+      { id: 'e1', source: 'node_trigger', target: 'node_jwt' },
+      { id: 'e2', source: 'node_jwt', target: 'node_ai' },
+      { id: 'e3', source: 'node_ai', target: 'node_res' },
+    ],
+  },
+  {
+    id: 'payment-webhook',
+    title: 'Payment Webhook Dispatcher',
+    category: 'Advanced',
+    isPro: true,
+    desc: 'Validates API key, branches based on payment status, and saves to database.',
+    nodes: [
+      { id: 'node_wh', type: 'webhookNode', position: { x: 80, y: 150 }, data: { path: '/webhook/stripe' } },
+      { id: 'node_key', type: 'apiKeyNode', position: { x: 320, y: 150 }, data: { headerName: 'x-api-key' } },
+      { id: 'node_sw', type: 'switchCaseNode', position: { x: 560, y: 150 }, data: { expression: 'context.request.body.status', cases: ['succeeded', 'failed', 'refunded'] } },
+      { id: 'node_db', type: 'databaseNode', position: { x: 800, y: 150 }, data: { query: 'INSERT INTO payments VALUES ($request.body.id);' } },
+    ],
+    edges: [
+      { id: 'e1', source: 'node_wh', target: 'node_key' },
+      { id: 'e2', source: 'node_key', target: 'node_sw' },
+      { id: 'e3', source: 'node_sw', target: 'node_db' },
+    ],
+  },
+  {
+    id: 'sheets-crm-sync',
+    title: 'Google Sheets & CRM Exporter',
+    category: 'Advanced',
+    isPro: true,
+    desc: 'Transforms incoming leads and directly writes records to Google Sheets in real-time.',
+    nodes: [
+      { id: 'node_trigger', type: 'triggerNode', position: { x: 80, y: 150 }, data: { method: 'POST', path: '/api/leads' } },
+      { id: 'node_tf', type: 'transformNode', position: { x: 320, y: 150 }, data: { mapping: '{ leadId: steps.prev.id }' } },
+      { id: 'node_sheets', type: 'googleSheetsNode', position: { x: 560, y: 150 }, data: { action: 'APPEND_ROW', range: 'Leads!A1' } },
+      { id: 'node_res', type: 'responseNode', position: { x: 800, y: 150 }, data: { statusCode: 201, body: '$steps.node_sheets' } },
+    ],
+    edges: [
+      { id: 'e1', source: 'node_trigger', target: 'node_tf' },
+      { id: 'e2', source: 'node_tf', target: 'node_sheets' },
+      { id: 'e3', source: 'node_sheets', target: 'node_res' },
+    ],
+  },
+];
 
 export default function BuilderPage() {
   const params = useParams();
   const projectId = params?.id as string;
+
+  const [user, setUser] = useState<any>(null);
+  const isPro = user?.plan === 'PRO_MONTHLY' || user?.plan === 'PRO_YEARLY';
 
   // Workflows
   const [workflows, setWorkflows] = useState<any[]>([]);
@@ -27,6 +135,10 @@ export default function BuilderPage() {
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [creating, setCreating] = useState(false);
+
+  // Templates
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Canvas
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -54,7 +166,6 @@ export default function BuilderPage() {
     };
   }, []);
 
-
   // AI
   const [showAi, setShowAi] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
@@ -72,6 +183,48 @@ export default function BuilderPage() {
   // Metrics
   const [logs, setLogs] = useState<any[]>([]);
   const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const u = await api.auth.me();
+        setUser(u);
+        localStorage.setItem('ff_user', JSON.stringify(u));
+      } catch (_) {
+        const stored = localStorage.getItem('ff_user');
+        if (stored) {
+          try { setUser(JSON.parse(stored)); } catch (_) {}
+        }
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const handleApplyTemplate = async (template: typeof WORKFLOW_TEMPLATES[0]) => {
+    if (template.isPro && !isPro) {
+      setShowUpgradeModal(true);
+      return;
+    }
+    setCreating(true);
+    try {
+      const created = await api.workflows.create(projectId, {
+        name: template.title,
+        path: `/api/${template.id}`,
+        method: (template.nodes.find(n => n.type === 'triggerNode')?.data as any)?.method || 'POST',
+        nodes: template.nodes,
+        edges: template.edges,
+      });
+      setNodes(template.nodes as Node[]);
+      setEdges(template.edges as Edge[]);
+      setSelectedWf(created);
+      setWorkflows(p => [created, ...p]);
+      setShowTemplatesModal(false);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setCreating(false);
+    }
+  };
 
   useEffect(() => {
     if (!projectId) return;
@@ -214,6 +367,7 @@ export default function BuilderPage() {
       setEdges((workflow.edges as Edge[]) || []);
       setSelectedWf(created);
       setWorkflows(p => [created, ...p]);
+      setUser((prev: any) => prev ? { ...prev, aiGenerationsCount: (prev.aiGenerationsCount || 0) + 1 } : prev);
       setShowAi(false);
       setAiPrompt('');
     } catch (err: any) { setAiError(err.message); }
@@ -660,6 +814,29 @@ export default function BuilderPage() {
           )}
           <div style={{ width: 1, height: 16, background: 'rgba(255, 255, 255, 0.08)' }} />
           
+          {/* Templates Button */}
+          <button onClick={() => setShowTemplatesModal(true)}
+            style={{
+              padding: '5px 12px',
+              border: '1px solid var(--border)',
+              background: 'rgba(255, 255, 255, 0.04)',
+              color: '#ffffff',
+              fontSize: 11,
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 5,
+              borderRadius: '6px',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
+          >
+            <Layers size={11} style={{ color: '#38bdf8' }} /> TEMPLATES
+          </button>
+
           {/* AI Button */}
           <button onClick={() => setShowAi(true)}
             style={{
@@ -680,7 +857,7 @@ export default function BuilderPage() {
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
           >
-            <Sparkles size={11} style={{ color: '#ffb300', fill: 'rgba(255, 179, 0, 0.15)' }} /> AI SYNTHESIZE
+            <Zap size={11} style={{ color: '#f59e0b' }} /> AI SYNTHESIZE
           </button>
 
           {selectedWf && (
@@ -874,7 +1051,7 @@ export default function BuilderPage() {
           <div style={{ background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', padding: 32, width: '100%', maxWidth: 520, boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
               <div style={{ width: 44, height: 44, border: '1px solid var(--border)', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Sparkles size={20} style={{ color: '#ffb300', fill: 'rgba(255, 179, 0, 0.15)' }} />
+                <Cpu size={20} style={{ color: '#f59e0b' }} />
               </div>
               <div>
                 <h2 style={{ fontSize: 15, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Workflow Synthesizer</h2>
@@ -885,8 +1062,53 @@ export default function BuilderPage() {
               </button>
             </div>
 
+            {/* AI Plan Quota info */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '8px 12px',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              marginBottom: 16,
+              fontSize: 11,
+              fontFamily: "'JetBrains Mono', monospace",
+            }}>
+              <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                Plan Quota: <strong style={{ color: isPro ? '#00f2fe' : '#ffffff' }}>{isPro ? 'Pro (12/mo)' : 'Free (3/mo)'}</strong>
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  color: (user?.aiGenerationsCount || 0) >= (isPro ? 12 : 3) ? '#ef4444' : '#10b981',
+                  fontWeight: 600,
+                }}>
+                  {user?.aiGenerationsCount || 0} / {isPro ? 12 : 3} used
+                </span>
+                {!isPro && (
+                  <button
+                    onClick={() => { setShowAi(false); setShowUpgradeModal(true); }}
+                    style={{
+                      background: 'linear-gradient(135deg, #00f2fe, #4facfe)',
+                      border: 'none',
+                      color: '#000',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      fontSize: 10,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Upgrade for 12/mo
+                  </button>
+                )}
+              </div>
+            </div>
+
             {aiError && (
-              <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', padding: '10px 14px', marginBottom: 16, color: '#fca5a5', fontSize: 11, fontFamily: "'JetBrains Mono', monospace" }}>⚠ PIPELINE FAIL: {aiError}</div>
+              <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', padding: '10px 14px', marginBottom: 16, color: '#fca5a5', fontSize: 11, fontFamily: "'JetBrains Mono', monospace", display: 'flex', alignItems: 'center', gap: 8 }}>
+                <AlertCircle size={14} style={{ color: '#ef4444', flexShrink: 0 }} /> PIPELINE FAIL: {aiError}
+              </div>
             )}
 
             <div style={{ marginBottom: 18 }}>
@@ -960,7 +1182,7 @@ export default function BuilderPage() {
                   <>Synthesizing...</>
                 ) : (
                   <>
-                    <Sparkles size={13} style={{ marginRight: 6, color: '#ffb300', fill: 'rgba(255, 179, 0, 0.15)' }} />
+                    <Zap size={13} style={{ marginRight: 6, color: '#f59e0b' }} />
                     Synthesize Workflow
                   </>
                 )}
@@ -1137,6 +1359,196 @@ export default function BuilderPage() {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* ── WORKFLOW TEMPLATES LIBRARY MODAL ───────────── */}
+      {showTemplatesModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
+          <div style={{ background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', padding: 28, width: '100%', maxWidth: 740, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column' }} className="scroll-area">
+            
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 40, height: 40, border: '1px solid var(--border)', borderRadius: '8px', background: 'rgba(56, 189, 248, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Layers size={20} style={{ color: '#38bdf8' }} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: 15, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Workflow Templates</h2>
+                  <p style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>
+                    PRE-BUILT ARCHITECTURES · FREE BASIC & PRO ADVANCED
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setShowTemplatesModal(false)} style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X size={12} />
+              </button>
+            </div>
+
+            {/* Template Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 14 }}>
+              {WORKFLOW_TEMPLATES.map(tpl => {
+                const isLocked = tpl.isPro && !isPro;
+                return (
+                  <div
+                    key={tpl.id}
+                    onClick={() => handleApplyTemplate(tpl)}
+                    style={{
+                      border: isLocked ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid var(--border)',
+                      borderRadius: '10px',
+                      padding: 16,
+                      background: isLocked ? 'rgba(255, 255, 255, 0.015)' : 'rgba(255, 255, 255, 0.03)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      position: 'relative',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 10
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.borderColor = isLocked ? 'rgba(0, 242, 254, 0.3)' : 'rgba(255, 255, 255, 0.3)';
+                      e.currentTarget.style.background = isLocked ? 'rgba(0, 242, 254, 0.03)' : 'rgba(255, 255, 255, 0.06)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.borderColor = isLocked ? 'rgba(255, 255, 255, 0.06)' : 'var(--border)';
+                      e.currentTarget.style.background = isLocked ? 'rgba(255, 255, 255, 0.015)' : 'rgba(255, 255, 255, 0.03)';
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{
+                          fontSize: 9,
+                          fontFamily: "'JetBrains Mono', monospace",
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          background: tpl.isPro ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255, 255, 255, 0.06)',
+                          color: tpl.isPro ? '#00f2fe' : 'var(--text-muted)',
+                          border: tpl.isPro ? '1px solid rgba(0, 242, 254, 0.3)' : '1px solid var(--border)',
+                          fontWeight: 700,
+                          textTransform: 'uppercase'
+                        }}>
+                          {tpl.category}
+                        </span>
+                        {tpl.isPro && (
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 3,
+                            fontSize: 9,
+                            fontFamily: "'JetBrains Mono', monospace",
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            background: 'rgba(245, 158, 11, 0.15)',
+                            color: '#fbbf24',
+                            border: '1px solid rgba(245, 158, 11, 0.3)',
+                            fontWeight: 800
+                          }}>
+                            <Lock size={9} /> PRO
+                          </span>
+                        )}
+                      </div>
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {tpl.nodes.length} Nodes
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 4 }}>{tpl.title}</h4>
+                      <p style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.4 }}>{tpl.desc}</p>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                      <span style={{ fontSize: 10, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {isLocked ? 'Requires Pro Plan' : 'Ready to Instantiate'}
+                      </span>
+                      <span style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        color: isLocked ? '#00f2fe' : '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4
+                      }}>
+                        {isLocked ? 'Upgrade' : 'Use Template'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── PRO UPGRADE MODAL ─────────────────────────── */}
+      {showUpgradeModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110, padding: 24 }}>
+          <div style={{ background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', padding: 32, width: '100%', maxWidth: 500, boxShadow: '0 8px 32px rgba(0,0,0,0.7)', textAlign: 'center' }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(0, 242, 254, 0.1)', border: '1px solid rgba(0, 242, 254, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <Zap size={26} style={{ color: '#00f2fe' }} />
+            </div>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: '-0.02em' }}>Upgrade to Pro</h2>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: 24 }}>
+              Unlock advanced workflow templates, 12 AI generations per month, unlimited projects, full execution history, and zero ads.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24, textAlign: 'left' }}>
+              <div style={{ padding: 16, borderRadius: '8px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Pro Monthly</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>₹499<span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 400 }}>/mo</span></div>
+                <div style={{ fontSize: 10, color: '#64748b', marginTop: 4 }}>Flexible monthly billing</div>
+              </div>
+
+              <div style={{ padding: 16, borderRadius: '8px', border: '1px solid rgba(0, 242, 254, 0.3)', background: 'rgba(0, 242, 254, 0.04)', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: -8, right: 8, background: '#00f2fe', color: '#000', fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: '4px' }}>SAVE ₹989</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#00f2fe', textTransform: 'uppercase', marginBottom: 4 }}>Pro Yearly</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>₹4,999<span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 400 }}>/yr</span></div>
+                <div style={{ fontSize: 10, color: '#38bdf8', marginTop: 4 }}>₹417/month effective</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                style={{
+                  flex: 1,
+                  height: 42,
+                  borderRadius: '8px',
+                  border: '1px solid var(--border)',
+                  background: 'transparent',
+                  color: '#94a3b8',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Maybe Later
+              </button>
+              <button
+                onClick={() => {
+                  setShowUpgradeModal(false);
+                  window.location.href = '/settings?tab=plan';
+                }}
+                style={{
+                  flex: 1.5,
+                  height: 42,
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#ffffff',
+                  color: '#000000',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6
+                }}
+              >
+                Go to Plans
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -194,7 +194,7 @@ const DOC_CONTENT: Record<string, React.ReactNode> = {
       <H2>Core Pillars</H2>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
         {[
-          { icon: 'V', title: 'Visual Canvas', desc: 'Drag-and-drop 12+ node types — triggers, DB queries, auth guards, custom code, conditionals, cron schedulers.' },
+          { icon: 'V', title: 'Visual Canvas', desc: 'Drag-and-drop 12+ node types: triggers, DB queries, auth guards, custom code, conditionals, cron schedulers.' },
           { icon: 'S', title: 'Secure Execution', desc: 'Custom JS runs inside isolated Node.js VMs with a hard 200ms CPU timeout. No process, no require.' },
           { icon: 'D', title: 'Zero Config Deploy', desc: 'One-click publish to the JBSnap gateway. No build step, no Dockerfile, no server config required.' },
           { icon: 'E', title: 'TypeScript Export', desc: 'Export clean Fastify + Prisma + TypeScript. Push to GitHub. Run on any cloud, zero runtime dependency.' },
@@ -764,11 +764,11 @@ export default function DocsPage() {
         .nav-btn:hover { background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.12) !important; }
       `}</style>
 
-      <header style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(2,2,2,0.95)', backdropFilter: 'blur(24px)' }}>
+      <header style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(255,255,255,0.06)', background: '#09090b' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', gap: 24 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
             <img src="/logo.jpg" alt="JBSnap" width={22} height={22} style={{ objectFit: 'cover', borderRadius: '50%' }} />
-            <span style={{ fontSize: 15.5, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span></span>
+            <span style={{ fontSize: 15.5, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>JB<span style={{ color: '#a1a1aa' }}>Snap</span></span>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#475569', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', padding: '2px 7px', borderRadius: 4, letterSpacing: '0.06em', textTransform: 'uppercase' as const, marginLeft: 4 }}>Docs</span>
           </Link>
           <div style={{ flex: 1, maxWidth: 360, marginLeft: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, height: 36, display: 'flex', alignItems: 'center', padding: '0 14px', gap: 10 }}>
@@ -776,7 +776,35 @@ export default function DocsPage() {
             <span style={{ marginLeft: 'auto', fontSize: 10.5, color: '#1e293b', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', padding: '1px 6px', borderRadius: 4, fontFamily: 'JetBrains Mono, monospace' }}>Ctrl K</span>
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Link href="/" style={{ fontSize: 13, color: '#475569', textDecoration: 'none', padding: '6px 14px', borderRadius: 7, border: '1px solid rgba(255,255,255,0.07)' }}>Back to Home</Link>
+            <Link
+              href="/"
+              style={{
+                fontSize: 12.5,
+                fontWeight: 600,
+                color: '#cbd5e1',
+                textDecoration: 'none',
+                padding: '6px 14px',
+                borderRadius: 8,
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                e.currentTarget.style.color = '#cbd5e1';
+              }}
+            >
+              Back to Home
+            </Link>
             <Link href="/register" style={{ fontSize: 13, fontWeight: 700, color: '#000', background: '#ffffff', textDecoration: 'none', padding: '6px 16px', borderRadius: 7 }}>Get Started</Link>
           </div>
         </div>

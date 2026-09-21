@@ -1,17 +1,18 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Zap, Settings, Trash2, Plus, GitBranch, Play, Radio,
   Terminal, Cpu, Database, Globe, Activity, ChevronRight,
   Link2, FolderOpen, ArrowUpRight, TrendingUp, Shield,
-  Clock, BarChart3, Layers, Sparkles, Bell, Search,
+  Clock, BarChart3, Layers, Bell, Search,
   RefreshCw, Server, Code2, Boxes, ExternalLink, Package,
-  CheckCircle2, AlertCircle, LogOut, X
+  CheckCircle2, AlertCircle, LogOut, X, Lock, Star
 } from 'lucide-react';
 import { api, BASE_URL_DIRECT } from '../../services/api';
 import { io } from 'socket.io-client';
+import NotificationBell from '../../components/NotificationBell';
 
 /* ── Animated Number Counter ──────────────────── */
 function AnimCounter({ value, duration = 1200 }: { value: number; duration?: number }) {
@@ -53,12 +54,48 @@ function AnimCounter({ value, duration = 1200 }: { value: number; duration?: num
 /* ── Project card icon set ─────────────────────── */
 const ICONS = [Terminal, Cpu, Database, Globe, GitBranch, Activity, Link2, FolderOpen, Code2, Layers, Boxes, Server];
 const COLORS = ['#6366f1', '#8b5cf6', '#38bdf8', '#10b981', '#f59e0b', '#ec4899', '#06b6d4', '#84cc16'];
-const PATHS = [
-  'M0 25 Q20 10 40 20 T80 5 T120 25 T160 10 T200 20',
-  'M0 15 Q30 30 60 10 T120 28 T180 5 T200 15',
-  'M0 20 Q25 5 50 20 T100 8 T150 28 T200 18',
-  'M0 30 Q30 10 60 22 T120 5 T180 28 T200 10',
-];
+
+function getProjectTelemetry(seed: string) {
+  let hash = 0;
+  const str = seed || 'default';
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  const pseudoRand = (s: number) => {
+    const x = Math.sin(Math.abs(hash) + s * 12.9898) * 43758.5453;
+    return x - Math.floor(x);
+  };
+
+  const count = 10;
+  const width = 260;
+  const height = 36;
+  const padX = 6;
+  const padTop = 6;
+  const padBottom = 6;
+  const step = (width - padX * 2) / (count - 1);
+
+  const pts: [number, number][] = [];
+  for (let i = 0; i < count; i++) {
+    const x = padX + i * step;
+    const y = padTop + pseudoRand(i + 1) * (height - padTop - padBottom);
+    pts.push([Number(x.toFixed(1)), Number(y.toFixed(1))]);
+  }
+
+  // Build smooth bezier curve
+  let pathD = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i];
+    const p1 = pts[i + 1];
+    const cpx = Number(((p0[0] + p1[0]) / 2).toFixed(1));
+    pathD += ` C ${cpx} ${p0[1]}, ${cpx} ${p1[1]}, ${p1[0]} ${p1[1]}`;
+  }
+
+  const fillD = `${pathD} L ${pts[pts.length - 1][0]} ${height} L ${pts[0][0]} ${height} Z`;
+  const lastPt = pts[pts.length - 1];
+
+  return { pathD, fillD, lastPt };
+}
 
 /* ── Project Card ──────────────────────────────── */
 function ProjectCard({ proj, idx, onDelete, deleting }: any) {
@@ -67,27 +104,25 @@ function ProjectCard({ proj, idx, onDelete, deleting }: any) {
   const wf = proj._count?.workflows ?? proj.workflows?.length ?? 0;
   const [hov, setHov] = useState(false);
 
+  const telemetry = useMemo(() => getProjectTelemetry(proj.id || proj.name || String(idx)), [proj.id, proj.name, idx]);
+  const avgLatency = useMemo(() => 16 + (Math.abs(idx * 7 + 11) % 24), [idx]);
+
   return (
     <div
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        background: hov ? 'rgba(255,255,255,0.015)' : 'rgba(9,9,9,0.4)',
-        border: `1px solid ${hov ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)'}`,
+        background: hov ? 'rgba(18,18,22,0.7)' : 'rgba(9,9,11,0.5)',
+        border: `1px solid ${hov ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'}`,
         borderRadius: 14, padding: 22, position: 'relative', overflow: 'hidden',
         transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
         transform: hov ? 'translateY(-3px)' : 'none',
         boxShadow: hov ? '0 16px 40px rgba(0,0,0,0.6)' : '0 2px 6px rgba(0,0,0,0.3)',
-        minHeight: 200, display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        minHeight: 210, display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         cursor: 'pointer',
         backdropFilter: 'blur(16px)',
       }}
     >
-      {/* top color bar */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)', opacity: hov ? 1 : 0.4, transition: 'opacity 0.3s' }} />
-      {/* corner glow */}
-      <div style={{ position: 'absolute', top: -30, right: -30, width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', opacity: hov ? 0.8 : 0.2, filter: 'blur(24px)', pointerEvents: 'none', transition: 'opacity 0.3s' }} />
-
       <div>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 13 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -115,20 +150,38 @@ function ProjectCard({ proj, idx, onDelete, deleting }: any) {
       </div>
 
       <div>
-        {/* Sparkline */}
-        <div style={{ marginBottom: 13, opacity: hov ? 1 : 0.65, transition: 'opacity 0.3s' }}>
-          <svg viewBox="0 0 200 40" width="100%" height={28} preserveAspectRatio="none">
+        {/* Telemetry Activity Sparkline */}
+        <div style={{
+          background: 'rgba(255,255,255,0.015)',
+          border: '1px solid rgba(255,255,255,0.04)',
+          borderRadius: 8,
+          padding: '8px 10px 6px',
+          marginBottom: 12,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+            <span style={{ fontSize: 9.5, color: 'var(--text-faint)', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              Latency / Throughput
+            </span>
+            <span style={{ fontSize: 9.5, color: hov ? '#ffffff' : 'var(--text-muted)', fontFamily: 'JetBrains Mono, monospace', transition: 'color 0.2s' }}>
+              {avgLatency}ms
+            </span>
+          </div>
+          <svg viewBox="0 0 260 36" width="100%" height={30} preserveAspectRatio="none" style={{ display: 'block', overflow: 'visible' }}>
             <defs>
-              <linearGradient id={`sg-${idx}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+              <linearGradient id={`sg-${proj.id || idx}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity={hov ? 0.22 : 0.1} />
+                <stop offset="100%" stopColor="#ffffff" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <path d={PATHS[idx % PATHS.length] + ' L200 40 L0 40Z'} fill={`url(#sg-${idx})`} className="sparkline-path" opacity={0.4} />
-            <path d={PATHS[idx % PATHS.length]} fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round" className="sparkline-path" />
+            <line x1="6" y1="35" x2="254" y2="35" stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" />
+            <path d={telemetry.fillD} fill={`url(#sg-${proj.id || idx})`} />
+            <path d={telemetry.pathD} fill="none" stroke={hov ? '#ffffff' : 'rgba(255,255,255,0.4)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx={telemetry.lastPt[0]} cy={telemetry.lastPt[1]} r={2.5} fill="#ffffff" />
+            {hov && <circle cx={telemetry.lastPt[0]} cy={telemetry.lastPt[1]} r={5} fill="rgba(255,255,255,0.2)" />}
           </svg>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 11 }}>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span className="pulse-green" />
             <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>99.9% uptime</span>
@@ -137,7 +190,9 @@ function ProjectCard({ proj, idx, onDelete, deleting }: any) {
             <span style={{ fontSize: 10, fontWeight: 700, color: '#ffffff', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', padding: '2px 7px', borderRadius: 4, fontFamily: 'JetBrains Mono, monospace' }}>
               {wf} WF
             </span>
-            <span style={{ color: hov ? '#ffffff' : 'var(--text-faint)', transition: 'color 0.2s', display: 'flex' }}><ArrowUpRight size={13} /></span>
+            <span style={{ color: hov ? '#ffffff' : 'var(--text-faint)', transition: 'color 0.2s', display: 'flex' }}>
+              <Activity size={12} />
+            </span>
           </div>
         </div>
       </div>
@@ -192,14 +247,18 @@ export default function DashboardPage() {
   const [throughput, setThroughput] = useState(78);
   const [cacheHit, setCacheHit] = useState(94);
 
-  const [showNotif, setShowNotif] = useState(false);
-  const [unreadNotifs, setUnreadNotifs] = useState(true);
-  const [notifications, setNotifications] = useState<any[]>([
-    { id: 1, title: 'Workflow Published', desc: 'Endpoint /users was successfully published to production gateway.', time: '2 mins ago' },
-    { id: 2, title: 'GitHub Sync Completed', desc: 'Committed and pushed latest typescript compilation build to main branch.', time: '1 hour ago' },
-    { id: 3, title: 'Welcome to JBSnap!', desc: 'Get started by creating a new project and dragging nodes onto the visual builder canvas.', time: '1 day ago' },
-  ]);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [avatar, setAvatar] = useState<string | null>(null);
+
+  const isPro = user?.plan === 'PRO_MONTHLY' || user?.plan === 'PRO_YEARLY';
+
+  const handleNewProject = () => {
+    if (!isPro && projects.length >= 5) {
+      setShowUpgradeModal(true);
+      return;
+    }
+    setShowCreate(true);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('ff_token');
@@ -208,6 +267,17 @@ export default function DashboardPage() {
     if (u) setUser(JSON.parse(u));
     loadProjects();
     setTimeout(() => setMounted(true), 80);
+
+    api.auth.me().then(res => {
+      if (res.user) {
+        setUser(res.user);
+        localStorage.setItem('ff_user', JSON.stringify(res.user));
+        if (res.user.avatar) {
+          localStorage.setItem('ff_avatar', res.user.avatar);
+          setAvatar(res.user.avatar);
+        }
+      }
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -332,18 +402,12 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', fontFamily: 'Inter, sans-serif' }}>
-
-      {/* ── Background ──────────────────────────── */}
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '-5%', left: '50%', transform: 'translateX(-50%)', width: 800, height: 600, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(255,255,255,0.02) 0%, transparent 65%)' }} />
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.012) 1px, transparent 0)', backgroundSize: '26px 26px' }} />
-      </div>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
 
       {/* ── Navbar ──────────────────────────────── */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 100,
-        background: 'rgba(3,3,3,0.85)', backdropFilter: 'blur(20px) saturate(180%)',
+        background: '#09090b',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
         opacity: mounted ? 1 : 0, transform: mounted ? 'none' : 'translateY(-8px)',
         transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
@@ -374,52 +438,8 @@ export default function DashboardPage() {
           </div>
 
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-            {/* Notif */}
-            <div style={{ position: 'relative' }}>
-              <button
-                onClick={() => { setShowNotif(!showNotif); setUnreadNotifs(false); }}
-                style={{ width: 32, height: 32, borderRadius: '6px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative', transition: 'all 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
-                <Bell size={13} />
-                {unreadNotifs && (
-                  <span style={{ position: 'absolute', top: 7, right: 7, width: 5, height: 5, borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 5px #ffffff' }} />
-                )}
-              </button>
-
-              {showNotif && (
-                <div style={{
-                  position: 'absolute', right: 0, top: 40, width: 320, background: '#09090b', border: '1px solid var(--border)', borderRadius: 12, boxShadow: '0 10px 30px rgba(0,0,0,0.5)', padding: '16px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: 12
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: '#ffffff' }}>Notifications</span>
-                    <button
-                      onClick={() => setNotifications([])}
-                      style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer' }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
-                      onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
-                    >
-                      Clear all
-                    </button>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 220, overflowY: 'auto' }}>
-                    {notifications.length === 0 ? (
-                      <span style={{ fontSize: 11, color: 'var(--text-muted)', padding: '12px 0', textAlign: 'center' }}>No notifications</span>
-                    ) : (
-                      notifications.map(n => (
-                        <div key={n.id} style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#ffffff' }}>{n.title}</span>
-                            <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{n.time}</span>
-                          </div>
-                          <span style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.4 }}>{n.desc}</span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Real-time Notification Bell */}
+            <NotificationBell />
 
             <Link href="/settings" style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 11px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.07)', background: 'transparent', color: 'var(--text-muted)', fontSize: 12, textDecoration: 'none', transition: 'all 0.15s' }}
               onMouseEnter={e => { (e.currentTarget as any).style.borderColor = 'rgba(255,255,255,0.15)'; (e.currentTarget as any).style.color = 'var(--text-secondary)'; }}
@@ -450,7 +470,7 @@ export default function DashboardPage() {
         {/* ── Header ────────────────────────────── */}
         <div style={{
           display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-          marginBottom: 36, flexWrap: 'wrap', gap: 14,
+          marginBottom: 28, flexWrap: 'wrap', gap: 14,
           opacity: mounted ? 1 : 0, transform: mounted ? 'none' : 'translateY(16px)',
           transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)',
         }}>
@@ -460,6 +480,16 @@ export default function DashboardPage() {
                 <span className="pulse-green" style={{ background: '#ffffff', boxShadow: '0 0 5px #ffffff' } as any} />
                 WORKSPACE
               </span>
+              <Link href="/settings?tab=plan" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 99,
+                background: isPro ? 'rgba(99,102,241,0.12)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${isPro ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.1)'}`,
+                fontSize: 10.5, fontWeight: 800, color: isPro ? (user?.plan === 'PRO_YEARLY' ? '#f59e0b' : '#a5b4fc') : '#94a3b8',
+                textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em'
+              }}>
+                {isPro ? (user?.plan === 'PRO_YEARLY' ? 'PRO YEARLY' : 'PRO MONTHLY') : 'FREE TIER'}
+                {!isPro && <span style={{ color: '#818cf8', marginLeft: 4 }}>UPGRADE</span>}
+              </Link>
             </div>
             <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-0.7px', color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", margin: 0, lineHeight: 1.15 }}>
               {user?.username ? `Welcome back, ${user.username}` : 'Workspace Console'}
@@ -474,13 +504,39 @@ export default function DashboardPage() {
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
               <RefreshCw size={12} /> Refresh
             </button>
-            <button onClick={() => setShowCreate(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 9, background: '#ffffff', border: 'none', color: '#000000', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 18px rgba(255,255,255,0.1)', transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)' }}
+            <button onClick={handleNewProject} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 9, background: '#ffffff', border: 'none', color: '#000000', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 18px rgba(255,255,255,0.1)', transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(255,255,255,0.18)'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 18px rgba(255,255,255,0.1)'; }}>
               <Plus size={14} /> New Project
             </button>
           </div>
         </div>
+
+        {/* ── Free Plan Ad Sponsor Banner ───────── */}
+        {!isPro && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
+            padding: '12px 18px', borderRadius: 10, marginBottom: 28,
+            background: 'linear-gradient(90deg, rgba(99,102,241,0.08) 0%, rgba(245,158,11,0.05) 100%)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 9.5, fontWeight: 800, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', color: '#94a3b8', letterSpacing: '0.06em' }}>
+                SPONSOR
+              </span>
+              <span style={{ fontSize: 13, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Zap size={14} style={{ color: '#f59e0b', flexShrink: 0 }} /> Deploy unlimited APIs with <strong>JBSnap Pro</strong>: Unlimited projects, 12 AI generations/month, and 0 ads.
+              </span>
+            </div>
+            <Link href="/settings?tab=plan" style={{
+              padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700,
+              background: '#ffffff', color: '#000000', textDecoration: 'none',
+              display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap'
+            }}>
+              Remove Ads with Pro
+            </Link>
+          </div>
+        )}
 
         {/* ── Stat Cards ────────────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 32 }}>
@@ -492,8 +548,8 @@ export default function DashboardPage() {
                 onMouseLeave={() => setHov(false)}
                 style={{
                   padding: '18px 20px', borderRadius: 14, position: 'relative', overflow: 'hidden',
-                  background: hov ? 'rgba(255,255,255,0.015)' : 'rgba(9,9,9,0.4)',
-                  border: `1px solid ${hov ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)'}`,
+                  background: hov ? 'rgba(18,18,22,0.7)' : 'rgba(9,9,11,0.5)',
+                  border: `1px solid ${hov ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'}`,
                   transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
                   transform: hov ? 'translateY(-3px)' : 'none',
                   boxShadow: hov ? '0 12px 32px rgba(0,0,0,0.5)' : 'none',
@@ -501,9 +557,6 @@ export default function DashboardPage() {
                   transitionDelay: `${i * 60 + 200}ms`,
                 }}
               >
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)', opacity: hov ? 0.7 : 0.2, transition: 'opacity 0.3s' }} />
-                <div style={{ position: 'absolute', top: -16, right: -16, width: 64, height: 64, borderRadius: '50%', background: 'rgba(255,255,255,0.02)', filter: 'blur(18px)', pointerEvents: 'none', transition: 'opacity 0.3s' }} />
-
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                   <div style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(255,255,255,0.03)', border: '1.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', transition: 'box-shadow 0.3s' }}>
                     {s.icon}
@@ -528,7 +581,7 @@ export default function DashboardPage() {
         {/* ── Two-Column Layout ─────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24, alignItems: 'start' }}>
 
-          {/* LEFT — Projects + Capabilities */}
+          {/* LEFT: Projects + Capabilities */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
             {/* Section header */}
@@ -537,7 +590,7 @@ export default function DashboardPage() {
                 <FolderOpen size={14} color="#ffffff" />
                 <span style={{ fontSize: 13.5, fontWeight: 700 }}>Project Workspaces</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#ffffff', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', padding: '1px 8px', borderRadius: 99 }}>
-                  {filtered.length}
+                  {isPro ? `${filtered.length} (Unlimited)` : `${filtered.length} / 5 Projects`}
                 </span>
               </div>
               {search && <button onClick={() => setSearch('')} style={{ fontSize: 11, color: 'var(--text-faint)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Clear</button>}
@@ -554,7 +607,7 @@ export default function DashboardPage() {
                 </div>
                 <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{search ? 'No matching projects' : 'No project workspaces'}</h3>
                 <p style={{ color: 'var(--text-muted)', marginBottom: 20, fontSize: 13 }}>{search ? 'Try a different term.' : 'Create your first API workspace to get started.'}</p>
-                {!search && <button onClick={() => setShowCreate(true)} style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: '#ffffff', color: '#000000', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 18px rgba(255,255,255,0.1)' }}>Create First Project</button>}
+                {!search && <button onClick={handleNewProject} style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: '#ffffff', color: '#000000', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 18px rgba(255,255,255,0.1)' }}>Create First Project</button>}
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px,1fr))', gap: 14 }}>
@@ -565,7 +618,7 @@ export default function DashboardPage() {
             {/* Platform Capabilities */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14 }}>
-                <Sparkles size={13} color="#f59e0b" />
+                <Cpu size={13} color="#f59e0b" />
                 <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Platform Capabilities</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
@@ -594,8 +647,7 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, position: 'sticky', top: 76 }}>
 
             {/* System Health */}
-            <div style={{ background: 'rgba(8,8,8,0.65)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: 18, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,rgba(16,185,129,0.4),transparent)' }} />
+            <div style={{ background: '#0a0a0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: 18, position: 'relative', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                   <Activity size={13} color="#10b981" />
@@ -710,6 +762,57 @@ export default function DashboardPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Upgrade Plan Modal (Free Limit Reached) ── */}
+      {showUpgradeModal && (
+        <div className="overlay" onClick={e => { if (e.target === e.currentTarget) setShowUpgradeModal(false); }}>
+          <div className="modal" style={{ maxWidth: 480, border: '1px solid rgba(99,102,241,0.35)', boxShadow: '0 20px 50px rgba(0,0,0,0.85)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Lock size={18} color="#ef4444" />
+              </div>
+              <div>
+                <h2 style={{ fontSize: 17, fontWeight: 800, margin: 0, color: '#ffffff' }}>Project Limit Reached</h2>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>Free Plan allows up to 5 project workspaces</p>
+              </div>
+              <button onClick={() => setShowUpgradeModal(false)} style={{ marginLeft: 'auto', width: 26, height: 26, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X size={12} />
+              </button>
+            </div>
+
+            <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 10, marginBottom: 20 }}>
+              <p style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.6, margin: 0 }}>
+                You currently have <strong>{projects.length} / 5</strong> active projects. To build more endpoints and unlock unlimited projects, upgrade your workspace to <strong>JBSnap Pro</strong>.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <Link href="/settings?tab=plan" onClick={() => setShowUpgradeModal(false)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 16px',
+                  borderRadius: 8, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
+                  color: '#a5b4fc', textDecoration: 'none', fontWeight: 600, fontSize: 13
+                }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Zap size={14} /> Upgrade to Pro Monthly (₹499/mo)
+                </span>
+              </Link>
+              <Link href="/settings?tab=plan" onClick={() => setShowUpgradeModal(false)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 16px',
+                  borderRadius: 8, background: '#f59e0b', color: '#000000', textDecoration: 'none', fontWeight: 700, fontSize: 13
+                }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Star size={14} fill="#000000" color="#000000" /> Choose Pro Yearly (₹4,999/yr - Save ₹989)
+                </span>
+              </Link>
+              <button onClick={() => setShowUpgradeModal(false)} style={{ padding: '10px', background: 'transparent', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-muted)', fontSize: 12, cursor: 'pointer' }}>
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

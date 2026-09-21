@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import bcrypt from "bcryptjs";
 import { prisma } from "../services/db.js";
 import { verifyEmailExistence } from "../services/emailVerification.js";
+import { createNotification } from "../services/notifications.js";
 
 export async function registerUser(
   request: FastifyRequest,
@@ -64,13 +65,26 @@ export async function registerUser(
       },
     });
 
+    // Dispatch welcome notification
+    createNotification({
+      userId: user.id,
+      title: "Welcome to JBSnap!",
+      message: "Get started by creating your first project and designing visual API workflows.",
+      type: "info",
+      link: "/dashboard",
+    }).catch(() => {});
+
     return reply.status(201).send({
       message: "User registered successfully",
       user: {
         id: user.id,
         username: user.username,
         email: user.email,
+        avatar: user.avatar || null,
         gender: user.gender,
+        plan: user.plan || "FREE",
+        aiGenerationsCount: user.aiGenerationsCount || 0,
+        aiGenerationsResetAt: user.aiGenerationsResetAt || user.createdAt,
         createdAt: user.createdAt,
       },
     });
@@ -126,7 +140,11 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
         id: user.id,
         username: user.username,
         email: user.email,
+        avatar: user.avatar || null,
         gender: user.gender || "Prefer not to say",
+        plan: user.plan || "FREE",
+        aiGenerationsCount: user.aiGenerationsCount || 0,
+        aiGenerationsResetAt: user.aiGenerationsResetAt || user.createdAt,
         createdAt: user.createdAt,
       },
     });
@@ -164,9 +182,16 @@ export async function googleLogin(request: FastifyRequest, reply: FastifyReply) 
         data: {
           username,
           email,
+          avatar: picture || null,
           passwordHash: null,
           gender: gender || "Prefer not to say",
+          plan: "FREE",
         },
+      });
+    } else if (!user.avatar && picture) {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { avatar: picture },
       });
     }
 
@@ -182,7 +207,11 @@ export async function googleLogin(request: FastifyRequest, reply: FastifyReply) 
         id: user.id,
         username: user.username,
         email: user.email,
+        avatar: user.avatar || picture || null,
         gender: user.gender || "Prefer not to say",
+        plan: user.plan || "FREE",
+        aiGenerationsCount: user.aiGenerationsCount || 0,
+        aiGenerationsResetAt: user.aiGenerationsResetAt || user.createdAt,
         createdAt: user.createdAt,
       },
     });
@@ -204,7 +233,11 @@ export async function getMe(request: FastifyRequest, reply: FastifyReply) {
         id: true,
         username: true,
         email: true,
+        avatar: true,
         gender: true,
+        plan: true,
+        aiGenerationsCount: true,
+        aiGenerationsResetAt: true,
         createdAt: true,
       },
     });
@@ -224,9 +257,10 @@ export async function getMe(request: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function updateProfile(request: FastifyRequest, reply: FastifyReply) {
-  const { username, gender, oldPassword, newPassword } = request.body as {
+  const { username, gender, avatar, oldPassword, newPassword } = request.body as {
     username?: string;
     gender?: string;
+    avatar?: string | null;
     oldPassword?: string;
     newPassword?: string;
   };
@@ -245,6 +279,7 @@ export async function updateProfile(request: FastifyRequest, reply: FastifyReply
     const updateData: any = {};
     if (username !== undefined) updateData.username = username;
     if (gender !== undefined) updateData.gender = gender;
+    if (avatar !== undefined) updateData.avatar = avatar;
 
     if (newPassword) {
       if (user.passwordHash) {
@@ -276,13 +311,75 @@ export async function updateProfile(request: FastifyRequest, reply: FastifyReply
         id: true,
         username: true,
         email: true,
+        avatar: true,
         gender: true,
+        plan: true,
+        aiGenerationsCount: true,
+        aiGenerationsResetAt: true,
         createdAt: true,
       },
     });
 
+    // Dispatch real-time notification
+    createNotification({
+      userId,
+      title: "Profile Updated",
+      message: "Your profile details and avatar were saved successfully.",
+      type: "success",
+      link: "/settings",
+    }).catch(() => {});
+
     return reply.send({
       message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error: any) {
+    request.log.error(error);
+    return reply.status(500).send({
+      error: "Internal Server Error",
+      details: error.message,
+    });
+  }
+}
+
+export async function upgradePlan(request: FastifyRequest, reply: FastifyReply) {
+  const { plan } = request.body as { plan?: string };
+  const userId = (request.user as any).id;
+
+  if (!plan || !["FREE", "PRO_MONTHLY", "PRO_YEARLY"].includes(plan)) {
+    return reply.status(400).send({
+      error: "Bad Request: plan must be 'FREE', 'PRO_MONTHLY', or 'PRO_YEARLY'",
+    });
+  }
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { plan },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        avatar: true,
+        gender: true,
+        plan: true,
+        aiGenerationsCount: true,
+        aiGenerationsResetAt: true,
+        createdAt: true,
+      },
+    });
+
+    // Dispatch real-time notification
+    createNotification({
+      userId,
+      title: "Plan Upgraded",
+      message: `Successfully upgraded to ${plan.replace("_", " ")}. Your enhanced limits are active!`,
+      type: "success",
+      link: "/settings?tab=plan",
+    }).catch(() => {});
+
+    return reply.send({
+      message: `Plan updated to ${plan} successfully`,
       user: updatedUser,
     });
   } catch (error: any) {

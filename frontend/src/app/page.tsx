@@ -6,10 +6,11 @@ import { api, BASE_URL_DIRECT } from '../services/api';
 import { io } from 'socket.io-client';
 import {
   Zap, Shield, BarChart3, Globe, Lock, Database, CheckCircle,
-  ArrowRight, Terminal, Layers, GitBranch, Activity, Code2,
-  Cpu, Sparkles, Play, TrendingUp, Server, Clock, Star, Users,
+  Terminal, Layers, GitBranch, Activity, Code2,
+  Cpu, Play, TrendingUp, Server, Clock, Star, Users,
   ArrowUpRight, ChevronRight, Package, Box, Wifi, BarChart2,
-  Eye, Sliders, AlertCircle, RefreshCw, Volume2, VolumeX, Brain, Settings, Download, Bell
+  Eye, Sliders, AlertCircle, RefreshCw, Volume2, VolumeX, Brain, Settings, Download, Bell,
+  Check, X, Minus
 } from 'lucide-react';
 
 /* ─── Logo ──────────────────────────────────── */
@@ -169,8 +170,8 @@ function Nav({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveIdx: Rea
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }} onClick={() => setActiveIdx(0)}>
           <Logo size={26} />
-          <span style={{ fontSize: 17, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
+          <span style={{ fontSize: 17, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff' }}>
+            JB<span style={{ color: '#a1a1aa' }}>Snap</span>
           </span>
         </div>
 
@@ -272,12 +273,7 @@ function Hero({ onWatchDemoClick }: { onWatchDemoClick: (e: React.MouseEvent) =>
               color: '#ffffff',
             }}>
               Build APIs at the<br />
-              <span style={{
-                background: 'linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}>
+              <span style={{ color: '#e4e4e7' }}>
                 speed of thought.
               </span>
             </h1>
@@ -290,7 +286,7 @@ function Hero({ onWatchDemoClick }: { onWatchDemoClick: (e: React.MouseEvent) =>
               lineHeight: 1.6,
               marginBottom: 40, // Spacing Paragraph -> CTA: 40px
             }}>
-              Drag. Drop. Deploy. No boilerplate, no config files — just production-ready APIs designed visually and exported in type-safe TypeScript.
+              Drag. Drop. Deploy. No boilerplate, no config files - just production-ready APIs designed visually and exported in type-safe TypeScript.
             </p>
 
             {/* CTA Buttons */}
@@ -306,7 +302,7 @@ function Hero({ onWatchDemoClick }: { onWatchDemoClick: (e: React.MouseEvent) =>
                 onMouseEnter={() => setIsPrimaryHovered(true)}
                 onMouseLeave={() => setIsPrimaryHovered(false)}
               >
-                Start Building Free <ArrowRight size={15} />
+                Start Building Free
               </Link>
               <a
                 href="#demo"
@@ -375,11 +371,11 @@ function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
   const timerRef = useRef<any>(null);
 
   const demoSteps = [
-    { name: '1. HTTP Trigger', desc: 'Incoming request on wildcard edge gateway', log: '📥 [Gateway] GET /api/v1/users', color: '#6366f1' },
-    { name: '2. Auth Guard', desc: 'Verify JWT signature & encryption key', log: '🔒 [Auth] Validated JWT signature for user_id: 981', color: '#a78bfa' },
-    { name: '3. JS Sandbox', desc: 'Secure Node.js VM isolated logic', log: '⚙️ [Sandbox] Executing custom logic mapping block (took 2.4ms)', color: '#f59e0b' },
-    { name: '4. Neon DB', desc: 'PostgreSQL database query via Prisma', log: '🗄️ [Prisma] SELECT * FROM "User" LIMIT 50 (took 14ms)', color: '#38bdf8' },
-    { name: '5. Response', desc: 'Fastify returns response JSON schema', log: '📤 [Response] 200 OK returned with payload (240 bytes)', color: '#10b981' }
+    { name: '1. HTTP Trigger', desc: 'Incoming request on wildcard edge gateway', log: '[Gateway] GET /api/v1/users', color: '#6366f1' },
+    { name: '2. Auth Guard', desc: 'Verify JWT signature & encryption key', log: '[Auth] Validated JWT signature for user_id: 981', color: '#a78bfa' },
+    { name: '3. JS Sandbox', desc: 'Secure Node.js VM isolated logic', log: '[Sandbox] Executing custom logic mapping block (took 2.4ms)', color: '#f59e0b' },
+    { name: '4. Neon DB', desc: 'PostgreSQL database query via Prisma', log: '[Prisma] SELECT * FROM "User" LIMIT 50 (took 14ms)', color: '#38bdf8' },
+    { name: '5. Response', desc: 'Fastify returns response JSON schema', log: '[Response] 200 OK returned with payload (240 bytes)', color: '#10b981' }
   ];
 
   const playDemo = () => {
@@ -601,7 +597,7 @@ function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
   );
 }
 
-/* ─── Stats Section — Live Telemetry Dashboard ─── */
+/* ─── Stats Section: Live Telemetry Dashboard ─── */
 function StatsBar() {
   const [realtimeStats, setRealtimeStats] = useState<{
     totalProjects: number;
@@ -859,13 +855,13 @@ function StatsBar() {
   );
 }
 
-/* ─── Features — Bento Grid ─────────────────────── */
+/* ─── Platform Capabilities ─────────────────────── */
 const FEATURES = [
-  { icon: <Layers size={22} />, title: 'Visual Workflow Canvas', desc: 'Drag-and-drop 12+ node types — HTTP triggers, DB queries, JWT auth, custom code, conditionals, cron schedulers. Build complex pipelines visually without writing a single config file.', color: '#6366f1', wide: true },
-  { icon: <Shield size={22} />, title: 'Enterprise Gateway', desc: 'JWT, API keys, rate limiting, CORS — all configurable per-endpoint, zero config files.', color: '#10b981', wide: false },
+  { icon: <Layers size={22} />, title: 'Visual Workflow Canvas', desc: 'Drag-and-drop 12+ node types: HTTP triggers, DB queries, JWT auth, custom code, conditionals, cron schedulers. Build complex pipelines visually without writing a single config file.', color: '#6366f1', wide: true },
+  { icon: <Shield size={22} />, title: 'Enterprise Gateway', desc: 'JWT, API keys, rate limiting, CORS: all configurable per-endpoint, zero config files.', color: '#10b981', wide: false },
   { icon: <Cpu size={22} />, title: 'Secure VM Sandbox', desc: 'Custom JS runs inside isolated Node.js VMs. Hard 200ms CPU timeout. No `process`, no `require`.', color: '#38bdf8', wide: false },
   { icon: <Code2 size={22} />, title: 'TypeScript Export', desc: 'One click compiles your visual pipeline into clean Fastify + Prisma + TypeScript.', color: '#a78bfa', wide: false },
-  { icon: <Sparkles size={22} />, title: 'AI Workflow Generator', desc: 'Describe your API in plain English. JBSnap AI generates the complete node graph instantly.', color: '#f59e0b', wide: false },
+  { icon: <Cpu size={22} />, title: 'AI Workflow Generator', desc: 'Describe your API in plain English. JBSnap AI generates the complete node graph instantly.', color: '#f59e0b', wide: false },
   { icon: <Activity size={22} />, title: 'Real-Time Analytics', desc: 'Live Socket.IO metrics. Monitor latency, throughput, error rates, and per-route heatmaps.', color: '#ec4899', wide: false, fullWidth: true },
 ];
 
@@ -1229,7 +1225,7 @@ function VisualizerAi() {
   return (
     <div style={{ border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden', background: '#030305', padding: 14, width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontFamily: 'monospace', color: '#64748b', marginBottom: 8 }}>
-        <Sparkles size={11} style={{ color: '#f59e0b' }} /> AI PROMPT INJECTOR
+        <Cpu size={11} style={{ color: '#f59e0b' }} /> AI PROMPT INJECTOR
       </div>
       <div style={{
         background: '#0a0a0f',
@@ -1478,18 +1474,18 @@ function Features() {
   );
 }
 
-/* ─── How It Works — Alternating Layout ─────────── */
+/* ─── How It Works: Visual Workflow Stages ──────── */
 function HowItWorks() {
   const steps = [
     {
       num: '01', title: 'Design Visually',
-      desc: 'Open the canvas. Drag HTTP triggers, database nodes, auth guards, and custom code blocks. Connect them with edges to define your data flow — no YAML, no hand-written routes.',
+      desc: 'Open the canvas. Drag HTTP triggers, database nodes, auth guards, and custom code blocks. Connect them with edges to define your data flow with zero YAML or hand-written routes.',
       color: '#6366f1', icon: <Layers size={24} />,
       visual: <StepVisual1 />,
     },
     {
       num: '02', title: 'Configure & Secure',
-      desc: 'Click any node to open its inspector. Add JWT protection, set CORS policies, define rate limits, write custom transformation logic — all in a clean GUI with live validation.',
+      desc: 'Click any node to open its inspector. Add JWT protection, set CORS policies, define rate limits, and write custom transformation logic in a clean GUI with live validation.',
       color: '#8b5cf6', icon: <Shield size={24} />,
       visual: <StepVisual2 />,
     },
@@ -1528,7 +1524,7 @@ function HowItWorks() {
             const isEven = i % 2 === 0;
             return (
               <div key={step.num} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
-                {/* Text — alternates left/right */}
+                {/* Text: alternates left/right */}
                 <Reveal direction={isEven ? 'left' : 'right'} delay={80} threshold={0.1}>
                   <div style={{ order: isEven ? 1 : 2 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
@@ -1536,7 +1532,7 @@ function HowItWorks() {
                         width: 52, height: 52, borderRadius: 15,
                         background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.15)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#ffffff', boxShadow: '0 0 28px rgba(255,255,255,0.06)',
+                        color: '#ffffff',
                       }}>
                         {step.icon}
                       </div>
@@ -1548,20 +1544,20 @@ function HowItWorks() {
                     <p style={{ fontSize: 16, color: '#64748b', lineHeight: 1.7, marginBottom: 24 }}>
                       {step.desc}
                     </p>
-                    <a href="#" style={{
+                    <a href="/docs" style={{
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                       fontSize: 14, fontWeight: 700, color: '#ffffff',
-                      textDecoration: 'none', transition: 'gap 0.2s', opacity: 0.7,
+                      textDecoration: 'none', opacity: 0.85,
                     }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.gap = '10px'; (e.currentTarget as HTMLElement).style.opacity = '1'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.gap = '6px'; (e.currentTarget as HTMLElement).style.opacity = '0.7'; }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85'; }}
                     >
-                      Learn more <ArrowRight size={14} />
+                      Learn more <ArrowUpRight size={14} />
                     </a>
                   </div>
                 </Reveal>
 
-                {/* Visual — alternates right/left */}
+                {/* Visual: alternates right/left */}
                 <Reveal direction={isEven ? 'right' : 'left'} delay={160} threshold={0.1}>
                   <div style={{ order: isEven ? 2 : 1 }}>
                     {step.visual}
@@ -1814,68 +1810,136 @@ function APIFlowSection() {
 
 /* ─── Pricing Section ───────────────────────────── */
 function PricingSection() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-
   const plans = [
     {
-      name: 'Hobby',
+      name: 'Free',
+      icon: <Box size={20} color="#94a3b8" />,
       price: '₹0',
-      period: '/mo',
-      subtext: 'Free forever',
-      desc: 'Perfect for building side projects and testing ideas.',
-      features: [
-        '1 Active Project container',
-        '3 Visual Workflow pipelines',
-        '1,000 Gateway requests/mo',
-        'Node.js secure VM execution',
-        'Community Support',
-      ],
-      btnText: 'Start for Free',
-      btnHref: '/register',
-      color: '#64748b',
+      period: 'forever',
+      effective: '₹0 / mo',
+      savings: null,
+      desc: 'Perfect for students & beginners exploring visual API creation.',
       popular: false,
+      badge: null,
+      bestFor: 'Students & beginners',
+      btnText: 'Get Started Free',
+      btnHref: '/register',
+      color: '#94a3b8',
+      highlights: [
+        '5 Projects maximum',
+        '3 AI Workflow Generations / mo',
+        'Visual API Builder & Testing',
+        'Live Execution & Code Gen',
+        'Download & GitHub Export',
+        'Basic Templates',
+        'Ad-supported experience',
+      ],
     },
     {
-      name: 'Pro',
-      price: billingCycle === 'monthly' ? '₹1,999' : '₹1,499',
-      period: '/mo',
-      subtext: billingCycle === 'monthly' ? 'Billed monthly' : '₹17,988 billed annually (Save 25%)',
-      desc: 'For builders who need reliable production backend APIs.',
-      features: [
-        'Unlimited Project containers',
-        'Unlimited Workflow pipelines',
-        '100,000 Gateway requests/mo',
-        'One-click GitHub Sync',
-        'Prisma & Fastify Code Export',
-        'Sub-ms Routing Cache Layer',
-        'AI Workflow Generation',
-        'Priority SLA Support',
-      ],
-      btnText: 'Get Started Pro',
-      btnHref: '/register',
+      name: 'Pro Monthly',
+      icon: <Zap size={20} color="#a5b4fc" />,
+      price: '₹499',
+      period: '/month',
+      effective: '₹499 / mo',
+      savings: null,
+      desc: 'Built for regular developers crafting production-ready APIs.',
+      popular: false,
+      badge: 'FLEXIBLE',
+      bestFor: 'Regular developers',
+      btnText: 'Start Pro',
+      btnHref: '/register?plan=PRO_MONTHLY',
       color: '#6366f1',
-      popular: true,
+      highlights: [
+        'Unlimited Projects',
+        '12 AI Generations / mo',
+        'Advanced Templates included',
+        'Full Execution History',
+        'Advanced Workflow Features',
+        'Custom Workflows (Full)',
+        'Advanced API Documentation',
+        'Zero Ads & Priority Support',
+      ],
     },
     {
-      name: 'Enterprise',
-      price: 'Custom',
-      period: '',
-      subtext: 'Tailored for scale',
-      desc: 'Dedicated infrastructure, compliance, and custom SLAs.',
-      features: [
-        'Unlimited Gateway requests',
-        'Dedicated server instances',
-        'Custom JWT Secrets & Scopes',
-        '99.99% Guaranteed SLA uptime',
-        'SOC2 Compliance validation',
-        '24/7 Dedicated Account Engineer',
+      name: 'Pro Yearly',
+      icon: <Star size={20} color="#f59e0b" fill="#f59e0b" />,
+      price: '₹4999',
+      period: '/year',
+      effective: '₹417 / mo',
+      savings: 'Save ₹989 annually',
+      desc: 'Maximum savings and power for committed engineers & teams.',
+      popular: true,
+      badge: 'BEST VALUE: SAVE ₹989',
+      bestFor: 'Long-term users',
+      btnText: 'Choose Yearly',
+      btnHref: '/register?plan=PRO_YEARLY',
+      color: '#f59e0b',
+      highlights: [
+        'All Pro Monthly features',
+        'Only ₹417 / mo effective price',
+        'Unlimited Projects',
+        '12 AI Generations / mo',
+        'Advanced Templates included',
+        'Full Execution History',
+        'Zero Ads & Priority Support',
       ],
-      btnText: 'Contact Enterprise',
-      btnHref: '/contact',
-      color: '#10b981',
-      popular: false,
     },
   ];
+
+  const comparisonRows: Array<{
+    feature: string;
+    free: any;
+    monthly: any;
+    yearly: any;
+    bold?: boolean;
+    highlightYearly?: boolean;
+    isCta?: boolean;
+  }> = [
+    { feature: 'Price', free: '₹0', monthly: '₹499/month', yearly: '₹4,999/year', bold: true },
+    { feature: 'Effective Monthly Price', free: '₹0', monthly: '₹499', yearly: '₹417/month', bold: true },
+    { feature: 'Annual Saving', free: '-', monthly: '-', yearly: '₹989', bold: true, highlightYearly: true },
+    { feature: 'Visual API Builder', free: true, monthly: true, yearly: true },
+    { feature: 'Create API Workflows', free: true, monthly: true, yearly: true },
+    { feature: 'API Testing', free: true, monthly: true, yearly: true },
+    { feature: 'Live Execution', free: true, monthly: true, yearly: true },
+    { feature: 'Generate Backend Code', free: true, monthly: true, yearly: true },
+    { feature: 'Download Source Code', free: true, monthly: true, yearly: true },
+    { feature: 'GitHub Export', free: true, monthly: true, yearly: true },
+    { feature: 'Projects', free: '5', monthly: 'Unlimited', yearly: 'Unlimited', bold: true },
+    { feature: 'AI Workflow Generation', free: '3/month', monthly: '12/month', yearly: '12/month', bold: true },
+    { feature: 'Basic Templates', free: true, monthly: true, yearly: true },
+    { feature: 'Advanced Templates', free: false, monthly: true, yearly: true },
+    { feature: 'Execution History', free: 'Limited', monthly: true, yearly: true },
+    { feature: 'Advanced Workflow Features', free: 'Limited', monthly: true, yearly: true },
+    { feature: 'Custom Workflows', free: 'Limited', monthly: true, yearly: true },
+    { feature: 'API Documentation', free: 'Basic', monthly: 'Advanced', yearly: 'Advanced' },
+    { feature: 'Ads', free: true, monthly: 'No', yearly: 'No', bold: true },
+    { feature: 'Priority Support', free: false, monthly: true, yearly: true },
+    { feature: 'Best For', free: 'Students & beginners', monthly: 'Regular developers', yearly: 'Long-term users' },
+    { feature: 'Action', free: 'Get Started Free', monthly: 'Start Pro', yearly: 'Choose Yearly', isCta: true },
+  ];
+
+  const renderCellContent = (val: any, isYearly = false, isBold = false) => {
+    if (val === true) {
+      return (
+        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, borderRadius: '50%', background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>
+          <Check size={13} strokeWidth={3} />
+        </span>
+      );
+    }
+    if (val === false || val === '-') {
+      return <span style={{ color: '#475569', fontSize: 13 }}>-</span>;
+    }
+    return (
+      <span style={{
+        fontWeight: isBold ? 700 : 500,
+        color: isYearly ? '#f59e0b' : '#cbd5e1',
+        fontSize: 13,
+      }}>
+        {val}
+      </span>
+    );
+  };
 
   return (
     <section id="pricing" style={{ padding: '32px 32px 120px', position: 'relative', background: '#020202' }}>
@@ -1883,80 +1947,82 @@ function PricingSection() {
       <div style={{ maxWidth: 1280, margin: '24px auto 0', position: 'relative', zIndex: 5 }}>
         <Reveal direction="up">
           <div style={{ marginBottom: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <h2 style={{ fontSize: 'clamp(36px, 4.5vw, 52px)', fontWeight: 900, letterSpacing: '-1.8px', fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff', lineHeight: 1.06, marginBottom: 12 }}>
-              Pricing
-            </h2>
-            <p style={{ fontSize: 18, color: '#94a3b8', lineHeight: 1.6, margin: '0 auto 24px', maxWidth: 640 }}>
-              Simple, transparent pricing built for developers. Scale as your APIs grow.
-            </p>
-
-            {/* Toggle Billing */}
             <div style={{
-              display: 'flex', background: 'rgba(255,255,255,0.03)', padding: 4, borderRadius: 9,
-              border: '1px solid rgba(255,255,255,0.05)', gap: 4, width: 220, justifySelf: 'center'
+              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px',
+              borderRadius: 6, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)',
+              fontSize: 11, fontWeight: 700, color: '#a5b4fc', textTransform: 'uppercase', letterSpacing: '0.08em',
+              marginBottom: 16
             }}>
-              {['monthly', 'yearly'].map((cycle) => (
-                <button
-                   key={cycle}
-                  onClick={() => setBillingCycle(cycle as any)}
-                  style={{
-                    flex: 1, padding: '6px 12px', border: 'none', borderRadius: 6, fontSize: 13,
-                    fontWeight: 600, background: billingCycle === cycle ? '#ffffff' : 'transparent',
-                    color: billingCycle === cycle ? '#000000' : '#64748b', cursor: 'pointer',
-                    transition: 'all 0.2s ease', textTransform: 'capitalize'
-                  }}
-                >
-                  {cycle}
-                </button>
-              ))}
+              <Zap size={12} color="#818cf8" /> Transparent Pricing
             </div>
+            <h2 style={{ fontSize: 'clamp(36px, 4.5vw, 52px)', fontWeight: 900, letterSpacing: '-1.8px', fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff', lineHeight: 1.06, marginBottom: 12 }}>
+              Built for every developer scale
+            </h2>
+            <p style={{ fontSize: 18, color: '#94a3b8', lineHeight: 1.6, margin: '0 auto', maxWidth: 680 }}>
+              Start for free as a student or beginner, or unlock unlimited workflows, AI synthesis, and ad-free productivity with Pro.
+            </p>
           </div>
         </Reveal>
 
         {/* Pricing Cards Grid */}
-        <div className="pricing-grid">
+        <div className="pricing-grid" style={{ marginBottom: 72 }}>
           {plans.map((p, i) => {
             const isPro = p.popular;
+            const isYearly = p.name === 'Pro Yearly';
             return (
               <Reveal key={p.name} delay={i * 80} direction="up" threshold={0.08}>
                 <div style={{
-                  padding: '40px 32px', borderRadius: 20, height: '100%',
-                  background: isPro ? 'rgba(99,102,241,0.02)' : 'rgba(8,8,10,0.3)',
-                  border: `1px solid ${isPro ? '#6366f160' : 'rgba(255,255,255,0.05)'}`,
+                  padding: '36px 30px', borderRadius: 12, height: '100%',
+                  background: isYearly
+                    ? 'linear-gradient(180deg, rgba(245,158,11,0.04) 0%, rgba(8,8,10,0.5) 100%)'
+                    : isPro
+                    ? 'rgba(99,102,241,0.03)'
+                    : 'rgba(8,8,10,0.3)',
+                  border: `1px solid ${isYearly ? 'rgba(245,158,11,0.35)' : isPro ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.07)'}`,
                   position: 'relative', display: 'flex', flexDirection: 'column',
-                  boxShadow: isPro ? '0 20px 48px rgba(99,102,241,0.08)' : 'none',
                   transition: 'transform 0.3s ease, border-color 0.3s ease',
                 }}
                   className="pricing-card"
                 >
-                  {isPro && (
+                  {p.badge && (
                     <span style={{
                       position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)',
-                      background: '#6366f1', color: '#ffffff', fontSize: 10.5, fontWeight: 800,
-                      padding: '4px 12px', borderRadius: 99, letterSpacing: '0.06em', textTransform: 'uppercase',
-                      boxShadow: '0 4px 12px rgba(99,102,241,0.4)'
-                    }}>Most Popular</span>
+                      background: isYearly ? '#f59e0b' : '#6366f1', color: isYearly ? '#000000' : '#ffffff',
+                      fontSize: 10, fontWeight: 800, padding: '3px 12px', borderRadius: 4,
+                      letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+                    }}>{p.badge}</span>
                   )}
                   
-                  <div style={{ marginBottom: 28 }}>
-                    <h3 style={{ fontSize: 20, fontWeight: 800, color: '#ffffff', margin: '0 0 8px 0', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{p.name}</h3>
-                    <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.5, margin: '0 0 20px 0' }}>{p.desc}</p>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                      <span style={{ fontSize: 44, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-1.5px' }}>{p.price}</span>
-                      <span style={{ fontSize: 14, color: '#475569' }}>{p.period}</span>
+                  <div style={{ marginBottom: 24 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center' }}>{p.icon}</span>
+                      <h3 style={{ fontSize: 20, fontWeight: 800, color: '#ffffff', margin: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{p.name}</h3>
                     </div>
-                    {p.subtext && (
-                      <div style={{ fontSize: 11.5, color: isPro ? '#818cf8' : '#475569', marginTop: 4, fontWeight: 500 }}>
-                        {p.subtext}
-                      </div>
-                    )}
+                    <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5, margin: '0 0 18px 0' }}>{p.desc}</p>
+                    
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                      <span style={{ fontSize: 44, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-1.5px' }}>{p.price}</span>
+                      <span style={{ fontSize: 14, color: '#64748b' }}>{p.period}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                      <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Effective: {p.effective}</span>
+                      {p.savings && (
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', background: 'rgba(245,158,11,0.1)', padding: '2px 8px', borderRadius: 6, border: '1px solid rgba(245,158,11,0.2)' }}>
+                          {p.savings}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 28, marginBottom: 40, flex: 1 }}>
-                    <ul style={{ padding: 0, margin: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      {p.features.map(f => (
-                        <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13.5, color: '#cbd5e1' }}>
-                          <CheckCircle size={14} color={isPro ? '#6366f1' : '#10b981'} style={{ flexShrink: 0 }} />
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 24, marginBottom: 32, flex: 1 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
+                      Included Capabilities:
+                    </div>
+                    <ul style={{ padding: 0, margin: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 11 }}>
+                      {p.highlights.map(f => (
+                        <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#cbd5e1' }}>
+                          <CheckCircle size={14} color={isYearly ? '#f59e0b' : isPro ? '#6366f1' : '#10b981'} style={{ flexShrink: 0 }} />
                           {f}
                         </li>
                       ))}
@@ -1968,21 +2034,99 @@ function PricingSection() {
                       href={p.btnHref}
                       style={{
                         display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%',
-                        padding: '14px 0', borderRadius: 10, fontSize: 14, fontWeight: 700, textDecoration: 'none',
-                        background: isPro ? '#6366f1' : 'rgba(255,255,255,0.02)',
-                        border: `1px solid ${isPro ? '#6366f1' : 'rgba(255,255,255,0.08)'}`,
-                        color: '#ffffff', transition: 'all 0.25s ease',
+                        padding: '13px 0', borderRadius: 10, fontSize: 13.5, fontWeight: 700, textDecoration: 'none',
+                        background: isYearly ? '#f59e0b' : isPro ? '#6366f1' : 'rgba(255,255,255,0.03)',
+                        border: `1px solid ${isYearly ? '#f59e0b' : isPro ? '#6366f1' : 'rgba(255,255,255,0.1)'}`,
+                        color: isYearly ? '#000000' : '#ffffff', transition: 'all 0.25s ease',
                       }}
-                      className={isPro ? 'pricing-btn-pro' : 'pricing-btn-standard'}
+                      className={isYearly ? 'pricing-btn-pro' : isPro ? 'pricing-btn-pro' : 'pricing-btn-standard'}
                     >
                       {p.btnText}
                     </Link>
+                    <div style={{ textAlign: 'center', marginTop: 8, fontSize: 11, color: '#475569' }}>
+                      Best for: {p.bestFor}
+                    </div>
                   </div>
                 </div>
               </Reveal>
             );
           })}
         </div>
+
+        {/* Feature Comparison Matrix */}
+        <Reveal direction="up">
+          <div style={{
+            background: 'rgba(8,8,10,0.4)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: 20,
+            padding: '36px 32px',
+            overflow: 'hidden'
+          }}>
+            <div style={{ marginBottom: 28, textAlign: 'center' }}>
+              <h3 style={{ fontSize: 24, fontWeight: 800, color: '#ffffff', marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                Detailed Feature Matrix
+              </h3>
+              <p style={{ fontSize: 14, color: '#64748b', margin: 0 }}>
+                A granular side-by-side comparison across all JBSnap product capabilities.
+              </p>
+            </div>
+
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 680 }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <th style={{ padding: '14px 16px', fontSize: 13, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Feature</th>
+                    <th style={{ padding: '14px 16px', fontSize: 14, fontWeight: 800, color: '#ffffff', textAlign: 'center', width: '22%' }}>Free</th>
+                    <th style={{ padding: '14px 16px', fontSize: 14, fontWeight: 800, color: '#818cf8', textAlign: 'center', width: '22%' }}>Pro Monthly</th>
+                    <th style={{ padding: '14px 16px', fontSize: 14, fontWeight: 800, color: '#f59e0b', textAlign: 'center', width: '22%' }}>Pro Yearly</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonRows.map((row, idx) => (
+                    <tr
+                      key={row.feature}
+                      style={{
+                        borderBottom: idx === comparisonRows.length - 1 ? 'none' : '1px solid rgba(255,255,255,0.03)',
+                        background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
+                      }}
+                    >
+                      <td style={{ padding: '12px 16px', fontSize: 13.5, color: '#cbd5e1', fontWeight: row.bold ? 700 : 400 }}>
+                        {row.feature}
+                      </td>
+                      <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                        {row.isCta ? (
+                          <Link href="/register" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#ffffff', textDecoration: 'none' }}>
+                            {row.free}
+                          </Link>
+                        ) : (
+                          renderCellContent(row.free, false, row.bold)
+                        )}
+                      </td>
+                      <td style={{ padding: '12px 16px', textAlign: 'center', background: 'rgba(99,102,241,0.02)' }}>
+                        {row.isCta ? (
+                          <Link href="/register?plan=PRO_MONTHLY" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, background: '#6366f1', color: '#ffffff', textDecoration: 'none' }}>
+                            {row.monthly}
+                          </Link>
+                        ) : (
+                          renderCellContent(row.monthly, false, row.bold)
+                        )}
+                      </td>
+                      <td style={{ padding: '12px 16px', textAlign: 'center', background: 'rgba(245,158,11,0.03)' }}>
+                        {row.isCta ? (
+                          <Link href="/register?plan=PRO_YEARLY" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, background: '#f59e0b', color: '#000000', textDecoration: 'none' }}>
+                            {row.yearly}
+                          </Link>
+                        ) : (
+                          renderCellContent(row.yearly, true, row.bold)
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -2023,6 +2167,8 @@ function Footer({ setActiveIdx }: { setActiveIdx?: React.Dispatch<React.SetState
       links: [
         { name: 'About', action: 'route', target: '/about' },
         { name: 'Contact', action: 'route', target: '/contact' },
+        { name: 'Terms of Service', action: 'route', target: '/terms' },
+        { name: 'Privacy Policy', action: 'route', target: '/privacy' },
       ],
     },
   ];
@@ -2104,8 +2250,8 @@ function Footer({ setActiveIdx }: { setActiveIdx?: React.Dispatch<React.SetState
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
               <Logo size={24} />
-              <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
+              <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff' }}>
+                JB<span style={{ color: '#a1a1aa' }}>Snap</span>
               </span>
             </div>
             <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, maxWidth: 280 }}>
@@ -2372,7 +2518,7 @@ export function LandingPageContent() {
   );
 }
 
-/* ─── Page Root (/) — Landing Page with session check ────────── */
+/* ─── Page Root (/): Landing Page with session check ────────── */
 export default function RootPage() {
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -2383,7 +2529,7 @@ export default function RootPage() {
       setCheckingAuth(false);
       return;
     }
-    // Token exists — verify it
+    // Token exists: verify it
     api.auth.me()
       .then(() => {
         router.replace('/dashboard');
