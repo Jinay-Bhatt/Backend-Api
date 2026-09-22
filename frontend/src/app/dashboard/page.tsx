@@ -112,21 +112,27 @@ function ProjectCard({ proj, idx, onDelete, deleting }: any) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        background: hov ? 'rgba(18,18,22,0.7)' : 'rgba(9,9,11,0.5)',
-        border: `1px solid ${hov ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'}`,
-        borderRadius: 14, padding: 22, position: 'relative', overflow: 'hidden',
+        background: 'var(--neu-surface)',
+        border: `1px solid ${hov ? 'var(--neu-border-bevel)' : 'var(--neu-border)'}`,
+        borderRadius: 20, padding: 22, position: 'relative', overflow: 'hidden',
         transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
         transform: hov ? 'translateY(-3px)' : 'none',
-        boxShadow: hov ? '0 16px 40px rgba(0,0,0,0.6)' : '0 2px 6px rgba(0,0,0,0.3)',
+        boxShadow: hov ? 'var(--neu-flat-lg)' : 'var(--neu-flat)',
         minHeight: 210, display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         cursor: 'pointer',
-        backdropFilter: 'blur(16px)',
       }}
     >
       <div>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 13 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', transition: 'box-shadow 0.3s' }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10,
+              background: 'var(--neu-surface)',
+              border: '1px solid var(--neu-border)',
+              boxShadow: 'var(--neu-flat-xs)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#ffffff', transition: 'box-shadow 0.3s'
+            }}>
               <Icon size={16} />
             </div>
             <div>
@@ -150,11 +156,12 @@ function ProjectCard({ proj, idx, onDelete, deleting }: any) {
       </div>
 
       <div>
-        {/* Telemetry Activity Sparkline */}
+        {/* Telemetry Activity Sparkline (Sunken Well) */}
         <div style={{
-          background: 'rgba(255,255,255,0.015)',
-          border: '1px solid rgba(255,255,255,0.04)',
-          borderRadius: 8,
+          background: 'var(--neu-sunken)',
+          border: '1px solid var(--neu-border)',
+          boxShadow: 'var(--neu-pressed-sm)',
+          borderRadius: 10,
           padding: '8px 10px 6px',
           marginBottom: 12,
         }}>
@@ -407,8 +414,9 @@ export default function DashboardPage() {
       {/* ── Navbar ──────────────────────────────── */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 100,
-        background: '#09090b',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--neu-surface)',
+        borderBottom: '1px solid var(--neu-border)',
+        boxShadow: 'var(--neu-flat-xs)',
         opacity: mounted ? 1 : 0, transform: mounted ? 'none' : 'translateY(-8px)',
         transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
       }}>
@@ -424,34 +432,53 @@ export default function DashboardPage() {
           <ChevronRight size={13} color="rgba(255,255,255,0.15)" style={{ margin: '0 4px' }} />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>Dashboard</span>
 
-          {/* Search */}
+          {/* Search (Sunken Neumorphic Well) */}
           <div style={{ position: 'relative', marginLeft: 16 }}>
             <Search size={12} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-faint)', pointerEvents: 'none' }} />
             <input
               placeholder="Search projects..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ paddingLeft: 30, paddingRight: 12, height: 32, width: 240, borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', color: 'var(--text-primary)', fontSize: 12.5, outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.2s, box-shadow 0.2s' }}
-              onFocus={e => { e.target.style.borderColor = 'rgba(255,255,255,0.4)'; e.target.style.boxShadow = '0 0 0 3px rgba(255,255,255,0.07)'; }}
-              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.06)'; e.target.style.boxShadow = 'none'; }}
+              style={{
+                paddingLeft: 30, paddingRight: 12, height: 34, width: 240,
+                borderRadius: 10, background: 'var(--neu-sunken)',
+                border: '1px solid var(--neu-border)',
+                boxShadow: 'var(--neu-pressed-sm)',
+                color: 'var(--text-primary)', fontSize: 12.5, outline: 'none',
+                fontFamily: 'inherit', transition: 'border-color 0.2s, box-shadow 0.2s, width 0.2s'
+              }}
+              onFocus={e => { e.target.style.borderColor = 'rgba(255,255,255,0.25)'; e.target.style.boxShadow = 'var(--neu-pressed-sm), 0 0 0 2px rgba(255,255,255,0.08)'; e.target.style.width = '270px'; }}
+              onBlur={e => { e.target.style.borderColor = 'var(--neu-border)'; e.target.style.boxShadow = 'var(--neu-pressed-sm)'; e.target.style.width = '240px'; }}
             />
           </div>
 
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
             {/* Real-time Notification Bell */}
             <NotificationBell />
 
-            <Link href="/settings" style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 11px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.07)', background: 'transparent', color: 'var(--text-muted)', fontSize: 12, textDecoration: 'none', transition: 'all 0.15s' }}
-              onMouseEnter={e => { (e.currentTarget as any).style.borderColor = 'rgba(255,255,255,0.15)'; (e.currentTarget as any).style.color = 'var(--text-secondary)'; }}
-              onMouseLeave={e => { (e.currentTarget as any).style.borderColor = 'rgba(255,255,255,0.07)'; (e.currentTarget as any).style.color = 'var(--text-muted)'; }}>
+            <Link href="/settings" style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
+              borderRadius: 10, border: '1px solid var(--neu-border)',
+              background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)',
+              color: 'var(--text-muted)', fontSize: 12, textDecoration: 'none',
+              transition: 'all 0.2s ease'
+            }}
+              onMouseEnter={e => { (e.currentTarget as any).style.borderColor = 'var(--neu-border-bevel)'; (e.currentTarget as any).style.color = '#ffffff'; (e.currentTarget as any).style.boxShadow = 'var(--neu-flat-sm)'; }}
+              onMouseLeave={e => { (e.currentTarget as any).style.borderColor = 'var(--neu-border)'; (e.currentTarget as any).style.color = 'var(--text-muted)'; (e.currentTarget as any).style.boxShadow = 'var(--neu-flat-xs)'; }}>
               <Settings size={12} /> Settings
             </Link>
 
-            {/* Avatar */}
-            <div style={{ width: 32, height: 32, borderRadius: '50%', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12.5, fontWeight: 800, color: '#000000', cursor: 'pointer', transition: 'all 0.2s' }}
+            {/* Avatar (Tactile circle) */}
+            <div style={{
+              width: 34, height: 34, borderRadius: '50%',
+              border: '1px solid var(--neu-border-bevel)',
+              boxShadow: 'var(--neu-flat-xs)',
+              overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 12.5, fontWeight: 800, color: '#000000', cursor: 'pointer', transition: 'all 0.2s'
+            }}
               onClick={() => router.replace('/settings')}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; }}>
+              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}>
               {avatar ? (
                 <img src={avatar} alt="User Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
@@ -476,14 +503,15 @@ export default function DashboardPage() {
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px', borderRadius: 99, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', fontSize: 11, fontWeight: 700, color: '#cbd5e1', letterSpacing: '0.05em' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 99, background: 'var(--neu-surface)', border: '1px solid var(--neu-border)', boxShadow: 'var(--neu-flat-xs)', fontSize: 11, fontWeight: 700, color: '#cbd5e1', letterSpacing: '0.05em' }}>
                 <span className="pulse-green" style={{ background: '#ffffff', boxShadow: '0 0 5px #ffffff' } as any} />
                 WORKSPACE
               </span>
               <Link href="/settings?tab=plan" style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 99,
-                background: isPro ? 'rgba(99,102,241,0.12)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${isPro ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.1)'}`,
+                display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 12px', borderRadius: 99,
+                background: isPro ? 'rgba(99,102,241,0.12)' : 'var(--neu-surface)',
+                border: `1px solid ${isPro ? 'rgba(99,102,241,0.35)' : 'var(--neu-border)'}`,
+                boxShadow: 'var(--neu-flat-xs)',
                 fontSize: 10.5, fontWeight: 800, color: isPro ? (user?.plan === 'PRO_YEARLY' ? '#f59e0b' : '#a5b4fc') : '#94a3b8',
                 textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em'
               }}>
@@ -498,30 +526,44 @@ export default function DashboardPage() {
               Manage your API endpoints, workflow pipelines, and gateway configurations.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button onClick={loadProjects} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)', color: 'var(--text-muted)', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button onClick={loadProjects} style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px',
+              borderRadius: 12, border: '1px solid var(--neu-border)',
+              background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)',
+              color: 'var(--text-muted)', fontSize: 12.5, fontWeight: 600,
+              cursor: 'pointer', transition: 'all 0.2s ease'
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--neu-border-bevel)'; e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--neu-border)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}>
               <RefreshCw size={12} /> Refresh
             </button>
-            <button onClick={handleNewProject} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 9, background: '#ffffff', border: 'none', color: '#000000', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 18px rgba(255,255,255,0.1)', transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(255,255,255,0.18)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 18px rgba(255,255,255,0.1)'; }}>
+            <button onClick={handleNewProject} style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '9px 20px',
+              borderRadius: 12, background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
+              border: '1px solid rgba(255, 255, 255, 0.45)', color: '#000000',
+              fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              boxShadow: '4px 4px 14px rgba(0,0,0,0.6), -2px -2px 8px rgba(255,255,255,0.12)',
+              transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)'
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '6px 6px 18px rgba(0,0,0,0.7), -3px -3px 10px rgba(255,255,255,0.2)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '4px 4px 14px rgba(0,0,0,0.6), -2px -2px 8px rgba(255,255,255,0.12)'; }}>
               <Plus size={14} /> New Project
             </button>
           </div>
         </div>
 
-        {/* ── Free Plan Ad Sponsor Banner ───────── */}
+        {/* ── Free Plan Ad Sponsor Banner (Neumorphic Card) ───────── */}
         {!isPro && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
-            padding: '12px 18px', borderRadius: 10, marginBottom: 28,
-            background: 'linear-gradient(90deg, rgba(99,102,241,0.08) 0%, rgba(245,158,11,0.05) 100%)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            padding: '14px 20px', borderRadius: 16, marginBottom: 28,
+            background: 'var(--neu-surface)',
+            border: '1px solid var(--neu-border)',
+            boxShadow: 'var(--neu-flat-sm)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 9.5, fontWeight: 800, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', color: '#94a3b8', letterSpacing: '0.06em' }}>
+              <span style={{ fontSize: 9.5, fontWeight: 800, padding: '2px 8px', borderRadius: 6, background: 'var(--neu-sunken)', border: '1px solid var(--neu-border)', color: '#94a3b8', letterSpacing: '0.06em' }}>
                 SPONSOR
               </span>
               <span style={{ fontSize: 13, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -529,8 +571,9 @@ export default function DashboardPage() {
               </span>
             </div>
             <Link href="/settings?tab=plan" style={{
-              padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700,
+              padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 700,
               background: '#ffffff', color: '#000000', textDecoration: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
               display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap'
             }}>
               Remove Ads with Pro
@@ -538,7 +581,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ── Stat Cards ────────────────────────── */}
+        {/* ── Stat Cards (Neumorphic Extrusions) ─────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 32 }}>
           {statCards.map((s, i) => {
             const [hov, setHov] = useState(false);
@@ -547,18 +590,25 @@ export default function DashboardPage() {
                 onMouseEnter={() => setHov(true)}
                 onMouseLeave={() => setHov(false)}
                 style={{
-                  padding: '18px 20px', borderRadius: 14, position: 'relative', overflow: 'hidden',
-                  background: hov ? 'rgba(18,18,22,0.7)' : 'rgba(9,9,11,0.5)',
-                  border: `1px solid ${hov ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'}`,
+                  padding: '20px 22px', borderRadius: 18, position: 'relative', overflow: 'hidden',
+                  background: 'var(--neu-surface)',
+                  border: `1px solid ${hov ? 'var(--neu-border-bevel)' : 'var(--neu-border)'}`,
                   transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
                   transform: hov ? 'translateY(-3px)' : 'none',
-                  boxShadow: hov ? '0 12px 32px rgba(0,0,0,0.5)' : 'none',
+                  boxShadow: hov ? 'var(--neu-flat-lg)' : 'var(--neu-flat)',
                   opacity: mounted ? 1 : 0,
                   transitionDelay: `${i * 60 + 200}ms`,
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(255,255,255,0.03)', border: '1.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', transition: 'box-shadow 0.3s' }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10,
+                    background: 'var(--neu-surface)',
+                    border: '1px solid var(--neu-border)',
+                    boxShadow: 'var(--neu-flat-xs)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#ffffff', transition: 'box-shadow 0.3s'
+                  }}>
                     {s.icon}
                   </div>
                   {s.isStatus && (
@@ -646,8 +696,8 @@ export default function DashboardPage() {
           {/* RIGHT SIDEBAR */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, position: 'sticky', top: 76 }}>
 
-            {/* System Health */}
-            <div style={{ background: '#0a0a0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: 18, position: 'relative', overflow: 'hidden' }}>
+            {/* System Health (Neumorphic Surface) */}
+            <div style={{ background: 'var(--neu-surface)', border: '1px solid var(--neu-border)', borderRadius: 18, padding: 20, boxShadow: 'var(--neu-flat)', position: 'relative', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                   <Activity size={13} color="#10b981" />
@@ -670,20 +720,20 @@ export default function DashboardPage() {
                     <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{bar.label}</span>
                     <span style={{ fontSize: 10.5, color: bar.color, fontFamily: 'JetBrains Mono, monospace', fontWeight: 700 }}>{bar.val}{bar.unit}</span>
                   </div>
-                  <div style={{ height: 4, background: 'rgba(255,255,255,0.04)', borderRadius: 99, overflow: 'hidden' }}>
+                  <div style={{ height: 5, background: 'var(--neu-sunken)', borderRadius: 99, overflow: 'hidden', boxShadow: 'var(--neu-pressed-sm)' }}>
                     <div style={{ height: '100%', width: `${bar.label === 'API Throughput' ? (bar.val / 120) * 100 : bar.val}%`, background: `linear-gradient(90deg,${bar.color}70,${bar.color})`, borderRadius: 99, boxShadow: `0 0 6px ${bar.color}50`, transition: 'width 1s cubic-bezier(0.16,1,0.3,1)' }} />
                   </div>
                 </div>
               ))}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--neu-border)' }}>
                 {[
                   { k: 'Latency', v: avgLatency > 0 ? `${avgLatency}ms` : '<1ms', c: '#10b981' },
                   { k: 'Workers', v: `${activeWorkers}/4`, c: '#38bdf8' },
                   { k: 'Error Rate', v: `${errRate}%`, c: errRate > 10 ? '#ef4444' : '#10b981' },
                   { k: 'Requests', v: `${liveLogs.length}`, c: '#8b5cf6' },
                 ].map(m => (
-                  <div key={m.k} style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 7, padding: '8px 10px' }}>
+                  <div key={m.k} style={{ background: 'var(--neu-sunken)', border: '1px solid var(--neu-border)', boxShadow: 'var(--neu-pressed-sm)', borderRadius: 8, padding: '8px 10px' }}>
                     <div style={{ fontSize: 9, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>{m.k}</div>
                     <div style={{ fontSize: 14, fontWeight: 800, color: m.c, fontFamily: 'JetBrains Mono, monospace' }}>{m.v}</div>
                   </div>
@@ -692,9 +742,9 @@ export default function DashboardPage() {
             </div>
 
 
-            {/* Top Projects quick links */}
+            {/* Top Projects quick links (Neumorphic Card) */}
             {projects.length > 0 && (
-              <div style={{ background: 'rgba(8,8,8,0.65)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: 18 }}>
+              <div style={{ background: 'var(--neu-surface)', border: '1px solid var(--neu-border)', borderRadius: 18, padding: 20, boxShadow: 'var(--neu-flat)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
                   <TrendingUp size={13} color="#f59e0b" />
                   <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recent Projects</span>
@@ -704,11 +754,11 @@ export default function DashboardPage() {
                   const Icon = ICONS[i % ICONS.length];
                   return (
                     <Link key={p.id} href={`/projects/${p.id}/builder`} style={{ textDecoration: 'none' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '7px 0', borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.03)' : 'none', cursor: 'pointer', transition: 'background 0.15s', borderRadius: 6 }}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 0', borderBottom: i < 3 ? '1px solid var(--neu-border)' : 'none', cursor: 'pointer', transition: 'all 0.15s', borderRadius: 8 }}
                         onMouseEnter={e => e.currentTarget.style.paddingLeft = '4px'}
                         onMouseLeave={e => e.currentTarget.style.paddingLeft = '0'}
                       >
-                        <div style={{ width: 26, height: 26, borderRadius: 7, background: `${c}10`, border: `1px solid ${c}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: c, flexShrink: 0 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--neu-surface)', border: `1px solid ${c}30`, boxShadow: 'var(--neu-flat-xs)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: c, flexShrink: 0 }}>
                           <Icon size={12} />
                         </div>
                         <div style={{ flex: 1, overflow: 'hidden' }}>
@@ -731,15 +781,15 @@ export default function DashboardPage() {
         <div className="overlay" onClick={e => { if (e.target === e.currentTarget) setShowCreate(false); }}>
           <div className="modal" style={{ maxWidth: 460 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-              <div style={{ width: 38, height: 38, borderRadius: 11, background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(255,255,255,0.1)' }}>
-                <Plus size={17} color="#000000" />
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg,#ffffff,#e2e8f0)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '4px 4px 12px rgba(0,0,0,0.5), -2px -2px 6px rgba(255,255,255,0.2)' }}>
+                <Plus size={18} color="#000000" />
               </div>
               <div>
                 <h2 style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.3px' }}>Create New Project</h2>
                 <p style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 2 }}>Set up your API workspace</p>
               </div>
-              <button onClick={() => setShowCreate(false)} style={{ marginLeft: 'auto', width: 26, height: 26, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <X size={12} />
+              <button onClick={() => setShowCreate(false)} style={{ marginLeft: 'auto', width: 28, height: 28, borderRadius: 8, border: '1px solid var(--neu-border)', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X size={13} />
               </button>
             </div>
             <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -750,14 +800,14 @@ export default function DashboardPage() {
               <div>
                 <label className="label">Description</label>
                 <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="What does this project do?" rows={3}
-                  style={{ width: '100%', background: 'var(--bg-void)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 13px', color: 'var(--text-primary)', fontFamily: 'inherit', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
-                  onFocus={e => e.target.style.borderColor = 'var(--accent)'}
-                  onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                  style={{ width: '100%', background: 'var(--neu-sunken)', border: '1px solid var(--neu-border)', borderRadius: 10, padding: '10px 13px', color: 'var(--text-primary)', fontFamily: 'inherit', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box', boxShadow: 'var(--neu-pressed)', transition: 'border-color 0.2s, box-shadow 0.2s' }}
+                  onFocus={e => { e.target.style.borderColor = 'rgba(255,255,255,0.25)'; e.target.style.boxShadow = 'var(--neu-pressed), 0 0 0 2px rgba(255,255,255,0.08)'; }}
+                  onBlur={e => { e.target.style.borderColor = 'var(--neu-border)'; e.target.style.boxShadow = 'var(--neu-pressed)'; }}
                 />
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
-                <button type="button" onClick={() => setShowCreate(false)} className="btn btn-ghost" style={{ flex: 1, padding: '9px 14px', borderRadius: 8 }}>Cancel</button>
-                <button type="submit" disabled={creating} className="btn" style={{ flex: 2, padding: '9px 14px', borderRadius: 8, background: creating ? 'var(--bg-elevated)' : '#ffffff', color: creating ? '#fff' : '#000000', border: 'none', boxShadow: creating ? 'none' : '0 4px 18px rgba(255,255,255,0.1)' }}>
+                <button type="button" onClick={() => setShowCreate(false)} className="btn btn-ghost" style={{ flex: 1, padding: '10px 14px', borderRadius: 10 }}>Cancel</button>
+                <button type="submit" disabled={creating} className="btn btn-primary" style={{ flex: 2, padding: '10px 14px', borderRadius: 10 }}>
                   {creating ? <><span className="spinner" />Creating...</> : 'Create Project'}
                 </button>
               </div>
@@ -769,7 +819,7 @@ export default function DashboardPage() {
       {/* ── Upgrade Plan Modal (Free Limit Reached) ── */}
       {showUpgradeModal && (
         <div className="overlay" onClick={e => { if (e.target === e.currentTarget) setShowUpgradeModal(false); }}>
-          <div className="modal" style={{ maxWidth: 480, border: '1px solid rgba(99,102,241,0.35)', boxShadow: '0 20px 50px rgba(0,0,0,0.85)' }}>
+          <div className="modal" style={{ maxWidth: 480, border: '1px solid rgba(99,102,241,0.35)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Lock size={18} color="#ef4444" />

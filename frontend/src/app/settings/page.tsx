@@ -7,26 +7,26 @@ import { Zap, Package, GitBranch, GitFork, User, Settings, Shield, Terminal, Key
 
 function IntegrationPipeline({ provider, repositoryName }: { provider: string; repositoryName?: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, padding: '32px 20px', background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', marginBottom: 24, overflow: 'hidden', position: 'relative' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, padding: '32px 20px', background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', borderRadius: '16px', boxShadow: 'var(--neu-flat-sm)', marginBottom: 24, overflow: 'hidden', position: 'relative' }}>
       {/* Node 1: Local Workspace */}
-      <div style={{ width: 44, height: 44, borderRadius: '8px', border: '1px solid var(--border)', background: '#18181b', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
-        <Zap size={16} style={{ color: '#ffffff' }} />
+      <div style={{ width: 48, height: 48, borderRadius: '12px', border: '1px solid var(--neu-border)', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+        <Zap size={18} style={{ color: '#ffffff' }} />
       </div>
 
       {/* Connector 1 */}
-      <div style={{ flex: 1, height: 1, background: 'var(--border)', minWidth: 40 }} />
+      <div style={{ flex: 1, height: 2, background: 'var(--neu-border)', minWidth: 40 }} />
 
       {/* Node 2: Compile Engine */}
-      <div style={{ width: 44, height: 44, borderRadius: '8px', border: '1px solid var(--border)', background: '#18181b', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
-        <Package size={16} style={{ color: '#ffffff' }} />
+      <div style={{ width: 48, height: 48, borderRadius: '12px', border: '1px solid var(--neu-border)', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+        <Package size={18} style={{ color: '#ffffff' }} />
       </div>
 
       {/* Connector 2 */}
-      <div style={{ flex: 1, height: 1, background: 'var(--border)', minWidth: 40 }} />
+      <div style={{ flex: 1, height: 2, background: 'var(--neu-border)', minWidth: 40 }} />
 
       {/* Node 3: Git Repo */}
-      <div style={{ width: 44, height: 44, borderRadius: '8px', border: '1px solid var(--border)', background: '#18181b', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
-        {provider === 'GITLAB' ? <GitFork size={16} style={{ color: '#ffffff' }} /> : <GitBranch size={16} style={{ color: '#ffffff' }} />}
+      <div style={{ width: 48, height: 48, borderRadius: '12px', border: '1px solid var(--neu-border)', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+        {provider === 'GITLAB' ? <GitFork size={18} style={{ color: '#ffffff' }} /> : <GitBranch size={18} style={{ color: '#ffffff' }} />}
       </div>
     </div>
   );
@@ -253,8 +253,8 @@ export default function SettingsPage() {
         </h1>
         <p style={{ color: 'var(--text-muted)', marginBottom: 32, fontSize: 14 }}>Configure external repositories, profile preferences, and key exports.</p>
 
-        {/* Flat Zinc Tab nav */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 28 }}>
+        {/* Dark Neumorphic Tab nav */}
+        <div style={{ display: 'flex', gap: 6, marginBottom: 28, background: 'var(--neu-sunken)', padding: 6, borderRadius: 14, boxShadow: 'var(--neu-pressed-sm)', border: '1px solid var(--neu-border)' }}>
           {TABS.map(t => (
             <button key={t.key} onClick={() => setActiveTab(t.key as any)}
               style={{
@@ -263,18 +263,19 @@ export default function SettingsPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                padding: '12px 16px',
-                border: t.key === activeTab ? 'none' : '1px solid var(--border)',
-                borderRadius: '6px',
-                background: t.key === activeTab ? '#ffffff' : 'transparent',
+                padding: '10px 16px',
+                border: t.key === activeTab ? '1px solid var(--neu-border)' : '1px solid transparent',
+                borderRadius: '10px',
+                background: t.key === activeTab ? 'var(--neu-surface)' : 'transparent',
+                boxShadow: t.key === activeTab ? 'var(--neu-flat-xs)' : 'none',
                 cursor: 'pointer',
                 fontSize: 12,
-                fontWeight: 600,
-                color: t.key === activeTab ? '#000000' : 'var(--text-muted)',
+                fontWeight: 700,
+                color: t.key === activeTab ? '#ffffff' : 'var(--text-muted)',
                 transition: 'all 0.15s ease'
               }}
-              onMouseEnter={e => { if (t.key !== activeTab) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#ffffff'; } }}
-              onMouseLeave={e => { if (t.key !== activeTab) { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; } }}
+              onMouseEnter={e => { if (t.key !== activeTab) { e.currentTarget.style.color = '#ffffff'; } }}
+              onMouseLeave={e => { if (t.key !== activeTab) { e.currentTarget.style.color = 'var(--text-muted)'; } }}
             >
               <t.icon size={13} /> {t.label}
             </button>
@@ -284,7 +285,7 @@ export default function SettingsPage() {
         {/* ── PROFILE TAB ── */}
         {activeTab === 'profile' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={{ padding: 28, background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px' }}>
+            <div style={{ padding: 28, background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', borderRadius: '18px', boxShadow: 'var(--neu-flat-lg)' }}>
               {/* Profile Photo Uploader section */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid var(--border)' }}>
                 <div style={{ width: 80, height: 80, borderRadius: '50%', border: '1px solid var(--border)', background: '#121214', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0 }}>

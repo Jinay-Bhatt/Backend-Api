@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Lock, Shield } from 'lucide-react';
+import { Lock, Shield, ArrowLeft } from 'lucide-react';
 
 export default function PrivacyPage() {
   const sections = [
@@ -38,74 +38,125 @@ export default function PrivacyPage() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#030303', color: '#f1f5f9', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      {/* Header */}
-      <header style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: '#09090b', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: '#ffffff' }}>
-            <img src="/logo.jpg" alt="JBSnap" width={22} height={22} style={{ borderRadius: '50%', objectFit: 'cover' }} />
-            <span style={{ fontSize: 15, fontWeight: 800 }}>JBSnap</span>
-            <span style={{ fontSize: 11, color: '#71717a', border: '1px solid rgba(255,255,255,0.08)', padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Legal</span>
+    <div style={{ minHeight: '100vh', background: 'var(--neu-base)', color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
+      {/* Neumorphic Header Plate */}
+      <header style={{
+        borderBottom: '1px solid var(--neu-border)',
+        background: 'var(--neu-surface)',
+        boxShadow: 'var(--neu-flat-xs)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        height: 60,
+        display: 'flex',
+        alignItems: 'center'
+      }}>
+        <div style={{ maxWidth: 1080, width: '100%', margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', color: '#ffffff' }}>
+            <div style={{
+              width: 34,
+              height: 34,
+              borderRadius: 10,
+              background: 'var(--neu-sunken)',
+              border: '1px solid var(--neu-border)',
+              boxShadow: 'var(--neu-pressed-sm)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}>
+              <img src="/logo.jpg" alt="JBSnap" width={22} height={22} style={{ borderRadius: '50%', objectFit: 'cover' }} />
+            </div>
+            <span style={{ fontSize: 16, fontWeight: 900 }}>JB<span style={{ color: '#a1a1aa' }}>Snap</span></span>
+            <span style={{
+              fontSize: 11,
+              color: 'var(--text-muted)',
+              border: '1px solid var(--neu-border)',
+              background: 'var(--neu-sunken)',
+              boxShadow: 'var(--neu-pressed-sm)',
+              padding: '2px 8px',
+              borderRadius: 6,
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              fontWeight: 700
+            }}>Legal</span>
           </Link>
           <Link
             href="/"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
-              fontSize: 12.5,
-              fontWeight: 600,
-              color: '#cbd5e1',
+              gap: 8,
+              fontSize: 13,
+              fontWeight: 700,
+              color: 'var(--text-secondary)',
               textDecoration: 'none',
-              padding: '6px 14px',
-              borderRadius: 8,
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              transition: 'all 0.15s ease',
+              padding: '8px 16px',
+              borderRadius: 10,
+              background: 'var(--neu-grad-convex)',
+              border: '1px solid var(--neu-border-bevel)',
+              boxShadow: 'var(--neu-flat-xs)',
+              transition: 'all 0.18s ease',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
               e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-              e.currentTarget.style.color = '#cbd5e1';
+              e.currentTarget.style.color = 'var(--text-secondary)';
+              e.currentTarget.style.transform = 'none';
+              e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)';
             }}
           >
-            Back to Home
+            <ArrowLeft size={14} /> Back to Home
           </Link>
         </div>
       </header>
 
       {/* Main Content */}
-      <main style={{ maxWidth: 780, margin: '0 auto', padding: '64px 24px 96px' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 6, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', fontSize: 11, fontWeight: 700, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
-          <Lock size={12} /> Privacy Policy
+      <main style={{ maxWidth: 800, margin: '0 auto', padding: '64px 24px 96px' }}>
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '4px 12px',
+          borderRadius: 8,
+          background: 'var(--neu-sunken)',
+          boxShadow: 'var(--neu-pressed-sm)',
+          border: '1px solid var(--neu-border)',
+          fontSize: 11,
+          fontWeight: 800,
+          color: '#ffffff',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          marginBottom: 16
+        }}>
+          <Lock size={12} color="#ffffff" /> Privacy Policy
         </div>
-        <h1 style={{ fontSize: 36, fontWeight: 800, color: '#ffffff', letterSpacing: '-1px', margin: '0 0 12px 0' }}>
+        <h1 style={{ fontSize: 38, fontWeight: 900, color: '#ffffff', letterSpacing: '-1px', margin: '0 0 12px 0' }}>
           Privacy Policy
         </h1>
-        <p style={{ fontSize: 14, color: '#71717a', marginBottom: 40, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 14.5, color: 'var(--text-muted)', marginBottom: 44, lineHeight: 1.7 }}>
           Last updated: September 21, 2026. This policy outlines our strict commitments to data isolation, credential encryption, and developer ownership.
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {sections.map((s) => (
             <div
               key={s.title}
               style={{
                 padding: '24px 28px',
-                borderRadius: 8,
-                background: '#09090b',
-                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: 16,
+                background: 'var(--neu-surface)',
+                border: '1px solid var(--neu-border-bevel)',
+                boxShadow: 'var(--neu-flat-sm)',
               }}
             >
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: '#f4f4f5', margin: '0 0 12px 0' }}>
+              <h2 style={{ fontSize: 16.5, fontWeight: 800, color: '#ffffff', margin: '0 0 12px 0', letterSpacing: '-0.2px' }}>
                 {s.title}
               </h2>
-              <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.7, margin: 0 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
                 {s.content}
               </p>
             </div>
@@ -113,10 +164,34 @@ export default function PrivacyPage() {
         </div>
 
         {/* Footer info box */}
-        <div style={{ marginTop: 48, padding: '20px 24px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Shield size={20} color="#10b981" style={{ flexShrink: 0 }} />
-          <div style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6 }}>
-            Security inquiries or requests for data deletion can be directed to our privacy compliance desk at <a href="mailto:privacy@jbsnap.app" style={{ color: '#ffffff', textDecoration: 'underline' }}>privacy@jbsnap.app</a>.
+        <div style={{
+          marginTop: 48,
+          padding: '20px 24px',
+          borderRadius: 16,
+          background: 'var(--neu-surface)',
+          border: '1px solid var(--neu-border-bevel)',
+          boxShadow: 'var(--neu-flat-xs)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16
+        }}>
+          <div style={{
+            width: 36,
+            height: 36,
+            borderRadius: 10,
+            background: 'var(--neu-sunken)',
+            border: '1px solid var(--neu-border)',
+            boxShadow: 'var(--neu-pressed-sm)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#34d399',
+            flexShrink: 0
+          }}>
+            <Shield size={18} />
+          </div>
+          <div style={{ fontSize: 13.5, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+            Have questions regarding how your data is handled or encrypted? Contact our security team at <a href="mailto:dualithjbsnap@gmail.com" style={{ color: '#ffffff', textDecoration: 'underline', fontWeight: 600 }}>dualithjbsnap@gmail.com</a>.
           </div>
         </div>
       </main>

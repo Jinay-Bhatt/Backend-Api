@@ -58,23 +58,26 @@ export default function NotificationBell({ align = 'right' }: { align?: 'left' |
           width: 32,
           height: 32,
           borderRadius: 8,
-          background: isOpen ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: isOpen ? 'var(--neu-sunken)' : 'var(--neu-surface)',
+          border: '1px solid var(--neu-border)',
+          boxShadow: isOpen ? 'var(--neu-pressed-sm)' : 'var(--neu-flat-xs)',
           color: unreadCount > 0 ? '#ffffff' : 'var(--text-muted)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
           position: 'relative',
-          transition: 'all 0.15s ease',
+          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
           e.currentTarget.style.color = 'var(--text-secondary)';
+          if (!isOpen) e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+          e.currentTarget.style.borderColor = 'var(--neu-border)';
           e.currentTarget.style.color = unreadCount > 0 ? '#ffffff' : 'var(--text-muted)';
+          e.currentTarget.style.boxShadow = isOpen ? 'var(--neu-pressed-sm)' : 'var(--neu-flat-xs)';
         }}
         aria-label="Notifications"
       >
@@ -89,7 +92,7 @@ export default function NotificationBell({ align = 'right' }: { align?: 'left' |
               height: 6,
               borderRadius: '50%',
               background: '#38bdf8',
-              boxShadow: '0 0 6px #38bdf8',
+              boxShadow: '0 0 8px #38bdf8',
             }}
           />
         )}
@@ -104,10 +107,10 @@ export default function NotificationBell({ align = 'right' }: { align?: 'left' |
             top: 42,
             width: 340,
             maxWidth: 'calc(100vw - 32px)',
-            background: '#09090b',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: 12,
-            boxShadow: '0 16px 40px rgba(0,0,0,0.65)',
+            background: 'var(--neu-surface)',
+            border: '1px solid var(--neu-border-bevel)',
+            borderRadius: 16,
+            boxShadow: 'var(--neu-flat-lg)',
             padding: '16px',
             zIndex: 1000,
             display: 'flex',
@@ -229,19 +232,20 @@ export default function NotificationBell({ align = 'right' }: { align?: 'left' |
                     style={{
                       display: 'flex',
                       gap: 10,
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: n.read ? 'transparent' : 'rgba(255, 255, 255, 0.02)',
-                      border: `1px solid ${n.read ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.08)'}`,
+                      padding: '10px 12px',
+                      borderRadius: 10,
+                      background: n.read ? 'transparent' : 'var(--neu-sunken)',
+                      border: `1px solid ${n.read ? 'rgba(255, 255, 255, 0.04)' : 'var(--neu-border)'}`,
+                      boxShadow: n.read ? 'none' : 'var(--neu-pressed-sm)',
                       cursor: n.link ? 'pointer' : 'default',
                       position: 'relative',
-                      transition: 'background 0.15s ease',
+                      transition: 'all 0.15s ease',
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = n.read ? 'transparent' : 'rgba(255, 255, 255, 0.02)';
+                      e.currentTarget.style.background = n.read ? 'transparent' : 'var(--neu-sunken)';
                     }}
                   >
                     <div style={{ color: accentColor, marginTop: 2, flexShrink: 0 }}>

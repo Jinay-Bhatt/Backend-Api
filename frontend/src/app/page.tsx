@@ -115,9 +115,9 @@ function Typewriter({ words }: { words: string[] }) {
   }, [charIdx, deleting, idx, words]);
 
   return (
-    <span style={{ color: '#818cf8' }}>
+    <span style={{ color: '#ffffff' }}>
       {display}
-      <span style={{ borderRight: '2px solid #818cf8', marginLeft: 1, animation: 'blink 1s step-end infinite' }} />
+      <span style={{ borderRight: '2px solid #ffffff', marginLeft: 1, animation: 'blink 1s step-end infinite' }} />
     </span>
   );
 }
@@ -162,9 +162,10 @@ function Nav({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveIdx: Rea
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999,
-      background: scrolled ? 'rgba(3,3,3,0.88)' : 'transparent',
+      background: scrolled ? 'rgba(15, 18, 25, 0.88)' : 'transparent',
       backdropFilter: scrolled ? 'blur(24px) saturate(200%)' : 'none',
-      borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+      borderBottom: scrolled ? '1px solid var(--neu-border)' : '1px solid transparent',
+      boxShadow: scrolled ? 'var(--neu-flat-sm)' : 'none',
       transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
     }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -175,48 +176,49 @@ function Nav({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveIdx: Rea
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginLeft: 40 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 40 }}>
           {[
             { name: 'Features', id: 'features' },
             { name: 'How it Works', id: 'how-it-works' },
             { name: 'Pricing', id: 'pricing' },
           ].map(l => (
             <button key={l.name} onClick={() => scrollTo(l.id)} style={{
-              all: 'unset', padding: '6px 14px', borderRadius: 8, fontSize: 13.5, fontWeight: 500,
+              all: 'unset', padding: '7px 16px', borderRadius: 10, fontSize: 13.5, fontWeight: 500,
               color: 'rgba(148,163,184,0.85)', cursor: 'pointer',
-              transition: 'color 0.15s, background 0.15s',
+              transition: 'all 0.2s ease',
             }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#f1f5f9'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(148,163,184,0.85)'; e.currentTarget.style.background = 'transparent'; }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = 'var(--neu-surface)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(148,163,184,0.85)'; e.currentTarget.style.background = 'transparent'; e.currentTarget.style.boxShadow = 'none'; }}
             >{l.name}</button>
           ))}
           <a href="/docs" style={{
-            padding: '6px 14px', borderRadius: 8, fontSize: 13.5, fontWeight: 500,
+            padding: '7px 16px', borderRadius: 10, fontSize: 13.5, fontWeight: 500,
             color: 'rgba(148,163,184,0.85)', textDecoration: 'none',
-            transition: 'color 0.15s, background 0.15s',
+            transition: 'all 0.2s ease',
           }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#f1f5f9'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(148,163,184,0.85)'; e.currentTarget.style.background = 'transparent'; }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = 'var(--neu-surface)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(148,163,184,0.85)'; e.currentTarget.style.background = 'transparent'; e.currentTarget.style.boxShadow = 'none'; }}
           >Docs</a>
         </div>
 
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
           <a href="/login" style={{
-            padding: '7px 18px', borderRadius: 8, fontSize: 13.5, fontWeight: 600,
-            color: '#94a3b8', textDecoration: 'none', transition: 'color 0.15s',
+            padding: '8px 18px', borderRadius: 10, fontSize: 13.5, fontWeight: 600,
+            color: '#94a3b8', textDecoration: 'none', transition: 'all 0.2s ease',
           }}
-            onMouseEnter={e => e.currentTarget.style.color = '#f1f5f9'}
-            onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+            onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = 'var(--neu-surface)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.background = 'transparent'; e.currentTarget.style.boxShadow = 'none'; }}
           >Sign in</a>
           <a href="/register" style={{
-            padding: '8px 20px', borderRadius: 9,
-            background: '#ffffff',
+            padding: '9px 20px', borderRadius: 12,
+            background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
             color: '#000000', fontSize: 13.5, fontWeight: 700, textDecoration: 'none',
-            boxShadow: '0 4px 20px rgba(255,255,255,0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.45)',
+            boxShadow: '4px 4px 12px rgba(0,0,0,0.6), -2px -2px 8px rgba(255,255,255,0.1)',
             transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
           }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(255,255,255,0.18)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(255,255,255,0.1)'; }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '6px 6px 18px rgba(0,0,0,0.7), -3px -3px 10px rgba(255,255,255,0.2)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '4px 4px 12px rgba(0,0,0,0.6), -2px -2px 8px rgba(255,255,255,0.1)'; }}
           >Get Started Free</a>
         </div>
       </div>
@@ -417,7 +419,7 @@ function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
 
 
   return (
-    <section id="demo" style={{ padding: '32px 32px 120px', position: 'relative', background: '#020202' }}>
+    <section id="demo" style={{ padding: '32px 32px 120px', position: 'relative', background: 'var(--neu-base)' }}>
       <SectionDivider />
       <div style={{ maxWidth: 1280, margin: '24px auto 0', position: 'relative', zIndex: 5 }}>
         <Reveal direction="up">
@@ -439,17 +441,19 @@ function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
                 const isActive = activeStep === idx;
                 return (
                   <div key={idx} style={{
-                    display: 'flex', gap: 16, padding: '16px 20px', borderRadius: 14,
-                    background: isActive ? 'rgba(255,255,255,0.015)' : 'transparent',
-                    border: `1px solid ${isActive ? 'rgba(255,255,255,0.08)' : 'transparent'}`,
+                    display: 'flex', gap: 16, padding: '16px 20px', borderRadius: 16,
+                    background: isActive ? 'var(--neu-surface)' : 'transparent',
+                    border: `1px solid ${isActive ? 'var(--neu-border-bevel)' : 'transparent'}`,
+                    boxShadow: isActive ? 'var(--neu-flat-sm)' : 'none',
                     transition: 'all 0.4s ease',
                   }}>
                     <div style={{
-                      width: 28, height: 28, borderRadius: '50%', background: isActive ? `${step.color}20` : 'rgba(255,255,255,0.02)',
-                      border: `1.5px solid ${isActive ? step.color : 'rgba(255,255,255,0.08)'}`,
+                      width: 32, height: 32, borderRadius: '50%',
+                      background: isActive ? `${step.color}20` : 'var(--neu-surface)',
+                      border: `1.5px solid ${isActive ? step.color : 'var(--neu-border)'}`,
+                      boxShadow: isActive ? `0 0 16px ${step.color}40, var(--neu-flat-xs)` : 'var(--neu-flat-xs)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: isActive ? step.color : '#64748b', fontSize: 12, fontWeight: 700,
-                      boxShadow: isActive ? `0 0 16px ${step.color}30` : 'none',
                       transition: 'all 0.4s ease', flexShrink: 0
                     }}>
                       {idx + 1}
@@ -468,12 +472,13 @@ function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
                 onClick={playDemo}
                 disabled={isPlaying}
                 style={{
-                  padding: '16px 36px', borderRadius: 12,
-                  background: isPlaying ? 'rgba(255,255,255,0.03)' : '#ffffff',
+                  padding: '16px 36px', borderRadius: 14,
+                  background: isPlaying ? 'var(--neu-surface)' : 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
                   color: isPlaying ? '#64748b' : '#000000',
-                  fontSize: 15, fontWeight: 700, border: 'none',
+                  fontSize: 15, fontWeight: 700,
+                  border: isPlaying ? '1px solid var(--neu-border)' : '1px solid rgba(255, 255, 255, 0.45)',
                   cursor: isPlaying ? 'not-allowed' : 'pointer',
-                  boxShadow: isPlaying ? 'none' : '0 12px 32px rgba(255,255,255,0.12)',
+                  boxShadow: isPlaying ? 'var(--neu-pressed-sm)' : '6px 6px 16px rgba(0, 0, 0, 0.6), -4px -4px 12px rgba(255, 255, 255, 0.12), 0 0 20px rgba(255, 255, 255, 0.15)',
                   transition: 'all 0.3s ease',
                   display: 'inline-flex', alignItems: 'center', gap: 10
                 }}
@@ -496,25 +501,26 @@ function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* Visual Canvas Simulator */}
             <div style={{
-              background: 'rgba(8,8,10,0.5)', border: '1px solid rgba(255,255,255,0.05)',
-              borderRadius: 18, padding: 32, minHeight: 280, display: 'flex',
+              background: 'var(--neu-surface)', border: '1px solid var(--neu-border)',
+              borderRadius: 20, padding: 32, minHeight: 280, display: 'flex',
+              boxShadow: 'var(--neu-flat)',
               flexDirection: 'column', justifyContent: 'center', position: 'relative',
               overflow: 'hidden'
             }}>
-              <div style={{ fontSize: 10.5, color: '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', position: 'absolute', top: 20, left: 24 }}>
+              <div style={{ fontSize: 10.5, color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', position: 'absolute', top: 20, left: 24 }}>
                 Visual Pipeline Canvas
               </div>
 
               {/* Grid dots background */}
               <div style={{
-                position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.15,
-                backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)',
+                position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.12,
+                backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px)',
                 backgroundSize: '20px 20px', zIndex: 1
               }} />
 
               {/* Connective path */}
               <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 2 }}>
-                <path d="M 60 140 H 500" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="2" />
+                <path d="M 60 140 H 500" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2" />
                 {activeStep >= 0 && (
                   <path
                     d={`M 60 140 H ${60 + (activeStep * 100)}`}
@@ -533,12 +539,12 @@ function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
                   return (
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
                       <div style={{
-                        width: 52, height: 52, borderRadius: 14,
-                        background: isActive ? '#131524' : (isCompleted ? '#0d1d17' : '#0b0b0e'),
-                        border: `1.5px solid ${isActive ? step.color : (isCompleted ? '#10b98160' : 'rgba(255,255,255,0.06)')}`,
+                        width: 54, height: 54, borderRadius: 16,
+                        background: isActive ? 'linear-gradient(145deg, #202636, #161a25)' : (isCompleted ? 'linear-gradient(145deg, #13241d, #0f1c16)' : 'var(--neu-surface)'),
+                        border: `1.5px solid ${isActive ? step.color : (isCompleted ? '#10b98160' : 'var(--neu-border)')}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         color: isActive ? step.color : (isCompleted ? '#10b981' : '#475569'),
-                        boxShadow: isActive ? `0 0 24px ${step.color}25` : 'none',
+                        boxShadow: isActive ? `0 0 20px ${step.color}35, var(--neu-flat-sm)` : 'var(--neu-flat-xs)',
                         transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
                         transform: isActive ? 'scale(1.08)' : 'none'
                       }}>
@@ -563,16 +569,16 @@ function WatchDemo({ playTrigger = 0 }: { playTrigger?: number }) {
 
             {/* Live Terminal Log Panel */}
             <div style={{
-              background: '#040406', border: '1px solid rgba(255,255,255,0.05)',
+              background: 'var(--neu-sunken)', border: '1px solid var(--neu-border)',
               borderRadius: 16, padding: '18px 24px', minHeight: 150, display: 'flex',
               flexDirection: 'column', gap: 10, fontFamily: 'monospace', fontSize: 13,
-              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)'
+              boxShadow: 'var(--neu-pressed-sm)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 10, marginBottom: 6 }}>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff5f57' }} />
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e' }} />
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840' }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff5f57', boxShadow: '0 0 6px rgba(255,95,87,0.5)' }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e', boxShadow: '0 0 6px rgba(254,188,46,0.5)' }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840', boxShadow: '0 0 6px rgba(40,200,64,0.5)' }} />
                 </div>
                 <span style={{ fontSize: 10.5, color: '#475569', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Edge Tracer Log</span>
               </div>
@@ -704,7 +710,7 @@ function StatsBar() {
   }
 
   return (
-    <section style={{ padding: '32px 32px 120px', position: 'relative', background: '#020202', overflow: 'hidden' }}>
+    <section style={{ padding: '32px 32px 120px', position: 'relative', background: 'var(--neu-base)', overflow: 'hidden' }}>
       <SectionDivider />
       
       {/* Soft background glow */}
@@ -733,7 +739,7 @@ function StatsBar() {
               ].map((f, i) => (
                 <Reveal key={f.title} delay={i * 80} direction="up">
                   <div style={{ display: 'flex', gap: 14 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ffffff', marginTop: 8, boxShadow: '0 0 8px rgba(255, 255, 255, 0.4)' }} />
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ffffff', marginTop: 8, boxShadow: '0 0 10px rgba(255, 255, 255, 0.6), inset 0 0 2px #ffffff' }} />
                     <div>
                       <div style={{ fontSize: 14.5, fontWeight: 700, color: '#cbd5e1', marginBottom: 4 }}>{f.title}</div>
                       <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.5 }}>{f.desc}</div>
@@ -765,13 +771,13 @@ function StatsBar() {
                         onMouseLeave={() => setHov(false)}
                         style={{
                           padding: '24px 20px',
-                          background: hov ? 'rgba(255,255,255,0.015)' : 'rgba(8,8,10,0.3)',
-                          border: `1px solid ${hov ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)'}`,
-                          borderRadius: 18,
+                          background: 'var(--neu-surface)',
+                          border: `1px solid ${hov ? 'var(--neu-border-bevel)' : 'var(--neu-border)'}`,
+                          borderRadius: 20,
                           position: 'relative',
                           transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
                           transform: hov ? 'translateY(-3px)' : 'none',
-                          boxShadow: hov ? '0 12px 24px rgba(0,0,0,0.4)' : '0 2px 8px rgba(0,0,0,0.2)',
+                          boxShadow: hov ? 'var(--neu-flat-lg)' : 'var(--neu-flat)',
                           minHeight: 140,
                         }}
                       >
@@ -781,10 +787,10 @@ function StatsBar() {
                           transition: 'opacity 0.6s cubic-bezier(0.16,1,0.3,1), filter 0.6s cubic-bezier(0.16,1,0.3,1)',
                         }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                            <div style={{ width: 34, height: 34, borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
+                            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--neu-surface)', border: '1px solid var(--neu-border)', boxShadow: 'var(--neu-flat-xs)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
                               {s.icon}
                             </div>
-                            <span style={{ fontSize: 9, fontWeight: 800, color: '#ffffff', background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '2px 8px', borderRadius: 99, letterSpacing: '0.04em' }}>
+                            <span style={{ fontSize: 9, fontWeight: 800, color: '#ffffff', background: 'var(--neu-surface)', border: '1px solid var(--neu-border)', boxShadow: 'var(--neu-flat-xs)', padding: '3px 9px', borderRadius: 99, letterSpacing: '0.04em' }}>
                               {s.trend}
                             </span>
                           </div>
@@ -805,9 +811,10 @@ function StatsBar() {
               <Reveal direction="up" delay={200}>
                 <div style={{
                   padding: '24px 28px',
-                  background: 'rgba(8,8,10,0.3)',
-                  border: '1px solid rgba(255,255,255,0.04)',
-                  borderRadius: 18,
+                  background: 'var(--neu-surface)',
+                  border: '1px solid var(--neu-border)',
+                  borderRadius: 20,
+                  boxShadow: 'var(--neu-flat)',
                   position: 'relative',
                   minHeight: 172,
                 }}>
@@ -1289,7 +1296,7 @@ function Features() {
   }, []);
 
   return (
-    <section id="features" style={{ padding: '80px 32px 140px', background: '#020202', overflow: 'hidden' }}>
+    <section id="features" style={{ padding: '80px 32px 140px', background: 'var(--neu-base)', overflow: 'hidden' }}>
       <SectionDivider />
 
       <div style={{ maxWidth: 1280, margin: '24px auto 0', textAlign: 'center' }}>
@@ -1308,15 +1315,15 @@ function Features() {
         <Reveal direction="up" delay={50}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 56 }}>
             <div style={{
-              background: '#07070a',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              background: 'var(--neu-sunken)',
+              border: '1px solid var(--neu-border)',
               padding: '6px',
               borderRadius: '99px',
               display: 'inline-flex',
               gap: '6px',
               maxWidth: '100%',
               overflowX: 'auto',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+              boxShadow: 'var(--neu-pressed-sm)',
               scrollbarWidth: 'none',
             }} className="scroll-clean">
               {FEATURES.map((f, idx) => {
@@ -1333,8 +1340,9 @@ function Features() {
                       fontWeight: 600,
                       color: isActive ? '#ffffff' : '#94a3b8',
                       cursor: 'pointer',
-                      background: isActive ? 'linear-gradient(135deg, #05ffc4 0%, #00b887 100%)' : 'transparent',
-                      boxShadow: isActive ? '0 4px 16px rgba(5,255,196,0.1)' : 'none',
+                      background: isActive ? 'var(--neu-surface)' : 'transparent',
+                      border: isActive ? '1px solid var(--neu-border-bevel)' : '1px solid transparent',
+                      boxShadow: isActive ? 'var(--neu-flat-xs)' : 'none',
                       transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                       whiteSpace: 'nowrap'
                     }}
@@ -1942,14 +1950,15 @@ function PricingSection() {
   };
 
   return (
-    <section id="pricing" style={{ padding: '32px 32px 120px', position: 'relative', background: '#020202' }}>
+    <section id="pricing" style={{ padding: '32px 32px 120px', position: 'relative', background: 'var(--neu-base)' }}>
       <SectionDivider />
       <div style={{ maxWidth: 1280, margin: '24px auto 0', position: 'relative', zIndex: 5 }}>
         <Reveal direction="up">
           <div style={{ marginBottom: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px',
-              borderRadius: 6, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)',
+              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px',
+              borderRadius: 99, background: 'var(--neu-surface)', border: '1px solid var(--neu-border)',
+              boxShadow: 'var(--neu-flat-xs)',
               fontSize: 11, fontWeight: 700, color: '#a5b4fc', textTransform: 'uppercase', letterSpacing: '0.08em',
               marginBottom: 16
             }}>
@@ -1972,15 +1981,12 @@ function PricingSection() {
             return (
               <Reveal key={p.name} delay={i * 80} direction="up" threshold={0.08}>
                 <div style={{
-                  padding: '36px 30px', borderRadius: 12, height: '100%',
-                  background: isYearly
-                    ? 'linear-gradient(180deg, rgba(245,158,11,0.04) 0%, rgba(8,8,10,0.5) 100%)'
-                    : isPro
-                    ? 'rgba(99,102,241,0.03)'
-                    : 'rgba(8,8,10,0.3)',
-                  border: `1px solid ${isYearly ? 'rgba(245,158,11,0.35)' : isPro ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.07)'}`,
+                  padding: '36px 30px', borderRadius: 20, height: '100%',
+                  background: 'var(--neu-surface)',
+                  border: `1px solid ${isYearly ? 'rgba(245,158,11,0.35)' : isPro ? 'rgba(99,102,241,0.35)' : 'var(--neu-border)'}`,
+                  boxShadow: isPro ? 'var(--neu-flat-lg), 0 0 28px rgba(99,102,241,0.15)' : 'var(--neu-flat)',
                   position: 'relative', display: 'flex', flexDirection: 'column',
-                  transition: 'transform 0.3s ease, border-color 0.3s ease',
+                  transition: 'transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
                 }}
                   className="pricing-card"
                 >
@@ -1988,8 +1994,9 @@ function PricingSection() {
                     <span style={{
                       position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)',
                       background: isYearly ? '#f59e0b' : '#6366f1', color: isYearly ? '#000000' : '#ffffff',
-                      fontSize: 10, fontWeight: 800, padding: '3px 12px', borderRadius: 4,
+                      fontSize: 10, fontWeight: 800, padding: '3px 12px', borderRadius: 99,
                       letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
                     }}>{p.badge}</span>
                   )}
                   
@@ -2015,7 +2022,7 @@ function PricingSection() {
                     </div>
                   </div>
 
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 24, marginBottom: 32, flex: 1 }}>
+                  <div style={{ borderTop: '1px solid var(--neu-border)', paddingTop: 24, marginBottom: 32, flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
                       Included Capabilities:
                     </div>
@@ -2034,9 +2041,9 @@ function PricingSection() {
                       href={p.btnHref}
                       style={{
                         display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%',
-                        padding: '13px 0', borderRadius: 10, fontSize: 13.5, fontWeight: 700, textDecoration: 'none',
-                        background: isYearly ? '#f59e0b' : isPro ? '#6366f1' : 'rgba(255,255,255,0.03)',
-                        border: `1px solid ${isYearly ? '#f59e0b' : isPro ? '#6366f1' : 'rgba(255,255,255,0.1)'}`,
+                        padding: '13px 0', borderRadius: 12, fontSize: 13.5, fontWeight: 700, textDecoration: 'none',
+                        background: isYearly ? '#f59e0b' : isPro ? '#6366f1' : 'var(--neu-surface)',
+                        border: `1px solid ${isYearly ? '#f59e0b' : isPro ? '#6366f1' : 'var(--neu-border)'}`,
                         color: isYearly ? '#000000' : '#ffffff', transition: 'all 0.25s ease',
                       }}
                       className={isYearly ? 'pricing-btn-pro' : isPro ? 'pricing-btn-pro' : 'pricing-btn-standard'}
@@ -2056,9 +2063,10 @@ function PricingSection() {
         {/* Feature Comparison Matrix */}
         <Reveal direction="up">
           <div style={{
-            background: 'rgba(8,8,10,0.4)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: 20,
+            background: 'var(--neu-surface)',
+            border: '1px solid var(--neu-border)',
+            boxShadow: 'var(--neu-flat)',
+            borderRadius: 24,
             padding: '36px 32px',
             overflow: 'hidden'
           }}>
@@ -2176,18 +2184,18 @@ function Footer({ setActiveIdx }: { setActiveIdx?: React.Dispatch<React.SetState
   const renderLink = (link: FooterLink) => {
     const style: React.CSSProperties = {
       fontSize: 13.5,
-      color: '#475569',
+      color: 'var(--text-muted)',
       textDecoration: 'none',
-      transition: 'color 0.15s',
+      transition: 'color 0.15s ease',
       cursor: 'pointer',
     };
 
     const handleHover = (e: React.MouseEvent<HTMLAnchorElement>) => {
-      e.currentTarget.style.color = '#94a3b8';
+      e.currentTarget.style.color = '#ffffff';
     };
 
     const handleLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
-      e.currentTarget.style.color = '#475569';
+      e.currentTarget.style.color = 'var(--text-muted)';
     };
 
     if (link.action === 'scroll') {
@@ -2243,25 +2251,43 @@ function Footer({ setActiveIdx }: { setActiveIdx?: React.Dispatch<React.SetState
   };
 
   return (
-    <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '48px 32px 36px' }}>
+    <footer style={{
+      borderTop: '1px solid var(--neu-border)',
+      background: 'var(--neu-surface)',
+      boxShadow: 'var(--neu-flat-xs)',
+      padding: '56px 32px 40px'
+    }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 48 }}>
           {/* Brand */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <Logo size={24} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+              <div style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: 'var(--neu-sunken)',
+                border: '1px solid var(--neu-border)',
+                boxShadow: 'var(--neu-pressed-sm)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }}>
+                <Logo size={20} />
+              </div>
               <span style={{ fontSize: 16, fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#ffffff' }}>
                 JB<span style={{ color: '#a1a1aa' }}>Snap</span>
               </span>
             </div>
-            <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, maxWidth: 280 }}>
+            <p style={{ fontSize: 13.5, color: 'var(--text-muted)', lineHeight: 1.7, maxWidth: 300 }}>
               The visual API builder for modern teams. Build, deploy, and export production-ready APIs without writing boilerplate.
             </p>
           </div>
           {/* Links */}
           {footerColumns.map((col) => (
             <div key={col.title}>
-              <div style={{ fontSize: 11.5, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
+              <div style={{ fontSize: 11.5, fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
                 {col.title}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -2271,8 +2297,8 @@ function Footer({ setActiveIdx }: { setActiveIdx?: React.Dispatch<React.SetState
           ))}
         </div>
 
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ fontSize: 12.5, color: '#475569', textAlign: 'center' }}>
+        <div style={{ borderTop: '1px solid var(--neu-border)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ fontSize: 12.5, color: 'var(--text-faint)', textAlign: 'center' }}>
             JBSnap Visual Pipeline Builder & Execution Engine
           </div>
         </div>

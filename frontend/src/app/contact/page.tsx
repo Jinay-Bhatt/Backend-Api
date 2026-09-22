@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { api, BASE_URL_DIRECT } from '../../services/api';
-import { Mail, Check, Copy, Send, ShieldCheck } from 'lucide-react';
+import { Mail, Check, Copy, Send, ShieldCheck, ArrowLeft, MessageSquare } from 'lucide-react';
 
 export default function ContactPage() {
   const [name, setName] = useState('');
@@ -13,6 +13,11 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const [nameFocused, setNameFocused] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [subjectFocused, setSubjectFocused] = useState(false);
+  const [messageFocused, setMessageFocused] = useState(false);
 
   const primaryEmail = 'dualithjbsnap@gmail.com';
 
@@ -48,16 +53,61 @@ export default function ContactPage() {
     }
   };
 
+  const getInputStyle = (focused: boolean) => ({
+    width: '100%',
+    padding: '12px 16px',
+    borderRadius: 12,
+    background: 'var(--neu-sunken)',
+    border: `1px solid ${focused ? 'rgba(255, 255, 255, 0.35)' : 'var(--neu-border)'}`,
+    boxShadow: focused ? 'var(--neu-pressed-sm), 0 0 0 3px rgba(255, 255, 255, 0.08)' : 'var(--neu-pressed-sm)',
+    color: '#ffffff',
+    outline: 'none',
+    fontSize: 14,
+    fontFamily: 'inherit',
+    boxSizing: 'border-box' as const,
+    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+  });
+
   return (
-    <div style={{ minHeight: '100vh', background: '#020202', color: '#f1f5f9', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      {/* Header */}
-      <header style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '18px 32px', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(12px)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--neu-base)', color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
+      {/* Neumorphic Header Plate */}
+      <header style={{
+        borderBottom: '1px solid var(--neu-border)',
+        background: 'var(--neu-surface)',
+        boxShadow: 'var(--neu-flat-xs)',
+        padding: '16px 32px',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50
+      }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: '#ffffff' }}>
-            <img src="/logo.jpg" alt="JBSnap" width={28} height={28} style={{ borderRadius: '50%', objectFit: 'cover' }} />
-            <span style={{ fontSize: 17, fontWeight: 900, letterSpacing: '-0.3px' }}>
-              JB<span style={{ background: 'linear-gradient(135deg,#ffffff,#a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Snap</span>
-              <span style={{ color: '#94a3b8', marginLeft: 8, fontWeight: 500, fontSize: 13.5 }}>Support</span>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', color: '#ffffff' }}>
+            <div style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              background: 'var(--neu-sunken)',
+              border: '1px solid var(--neu-border)',
+              boxShadow: 'var(--neu-pressed-sm)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}>
+              <img src="/logo.jpg" alt="JBSnap" width={24} height={24} style={{ borderRadius: '50%', objectFit: 'cover' }} />
+            </div>
+            <span style={{ fontSize: 16, fontWeight: 900, letterSpacing: '-0.3px' }}>
+              JB<span style={{ color: '#a1a1aa' }}>Snap</span>
+              <span style={{
+                color: 'var(--text-muted)',
+                marginLeft: 8,
+                fontWeight: 600,
+                fontSize: 12,
+                padding: '2px 8px',
+                borderRadius: 6,
+                background: 'var(--neu-sunken)',
+                border: '1px solid var(--neu-border)'
+              }}>Support</span>
             </span>
           </Link>
           <Link
@@ -65,65 +115,117 @@ export default function ContactPage() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
-              fontSize: 12.5,
-              fontWeight: 600,
-              color: '#cbd5e1',
+              gap: 8,
+              fontSize: 13,
+              fontWeight: 700,
+              color: 'var(--text-secondary)',
               textDecoration: 'none',
-              padding: '6px 14px',
-              borderRadius: 8,
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              transition: 'all 0.15s ease',
+              padding: '8px 16px',
+              borderRadius: 10,
+              background: 'var(--neu-grad-convex)',
+              border: '1px solid var(--neu-border-bevel)',
+              boxShadow: 'var(--neu-flat-xs)',
+              transition: 'all 0.18s ease',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
               e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-              e.currentTarget.style.color = '#cbd5e1';
+              e.currentTarget.style.color = 'var(--text-secondary)';
+              e.currentTarget.style.transform = 'none';
+              e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)';
             }}
           >
-            Back to Home
+            <ArrowLeft size={14} /> Back to Home
           </Link>
         </div>
       </header>
 
       {/* Main Container */}
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '64px 32px' }}>
+      <div style={{ maxWidth: 940, margin: '0 auto', padding: '64px 24px 96px' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Direct Official Contact</span>
-          <h1 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-1.5px', margin: '10px 0 16px', color: '#ffffff' }}>Get in Touch With Us</h1>
-          <p style={{ fontSize: 16, color: '#94a3b8', maxWidth: 560, margin: '0 auto', lineHeight: 1.6 }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '4px 12px',
+            borderRadius: 8,
+            background: 'var(--neu-sunken)',
+            boxShadow: 'var(--neu-pressed-sm)',
+            border: '1px solid var(--neu-border)',
+            fontSize: 11,
+            fontWeight: 800,
+            color: '#ffffff',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: 16
+          }}>
+            <MessageSquare size={12} color="#ffffff" /> Direct Official Contact
+          </div>
+          <h1 style={{ fontSize: 'clamp(32px, 4vw, 44px)', fontWeight: 900, letterSpacing: '-1.2px', margin: '0 0 16px', color: '#ffffff' }}>Get in Touch With Us</h1>
+          <p style={{ fontSize: 16, color: 'var(--text-muted)', maxWidth: 560, margin: '0 auto', lineHeight: 1.65 }}>
             Have questions about JBSnap, custom enterprise workflows, or technical support? All inquiries are routed directly to our inbox.
           </p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
           {/* Direct Email Card */}
-          <div style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{
+            background: 'var(--neu-surface)',
+            border: '1px solid var(--neu-border-bevel)',
+            boxShadow: 'var(--neu-flat-sm)',
+            borderRadius: 20,
+            padding: 32,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}>
             <div>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#818cf8', marginBottom: 20 }}>
+              <div style={{
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                background: 'var(--neu-sunken)',
+                border: '1px solid var(--neu-border)',
+                boxShadow: 'var(--neu-pressed-sm)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffffff',
+                marginBottom: 24
+              }}>
                 <Mail size={22} />
               </div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: '#ffffff', margin: '0 0 8px' }}>Official Inbox</h3>
-              <p style={{ fontSize: 13.5, color: '#94a3b8', lineHeight: 1.6, margin: '0 0 24px' }}>
-                All contact form submissions and direct responses are dispatched to this designated email address:
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: '#ffffff', margin: '0 0 10px' }}>Official Inbox</h3>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.65, margin: '0 0 24px' }}>
+                All contact form submissions and direct email responses are dispatched to this designated address:
               </p>
 
-              <div style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 14, color: '#38bdf8', fontWeight: 600, wordBreak: 'break-all' }}>
+              {/* Sunken Email Container */}
+              <div style={{
+                background: 'var(--neu-sunken)',
+                border: '1px solid var(--neu-border)',
+                boxShadow: 'var(--neu-pressed-sm)',
+                borderRadius: 12,
+                padding: '12px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12,
+                marginBottom: 24
+              }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13.5, color: '#ffffff', fontWeight: 600, wordBreak: 'break-all' }}>
                   {primaryEmail}
                 </span>
                 <button
                   type="button"
                   onClick={handleCopyEmail}
                   style={{
-                    background: copied ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)',
-                    border: '1px solid ' + (copied ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'),
+                    background: copied ? 'rgba(16, 185, 129, 0.15)' : 'var(--neu-surface)',
+                    border: '1px solid ' + (copied ? 'rgba(16, 185, 129, 0.4)' : 'var(--neu-border-bevel)'),
+                    boxShadow: 'var(--neu-flat-xs)',
                     color: copied ? '#10b981' : '#ffffff',
                     padding: '6px 12px',
                     borderRadius: 8,
@@ -133,35 +235,73 @@ export default function ContactPage() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
-                    flexShrink: 0
+                    flexShrink: 0,
+                    transition: 'all 0.15s ease'
                   }}
                 >
-                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                  {copied ? <Check size={13} /> : <Copy size={13} />}
                   {copied ? 'Copied' : 'Copy'}
                 </button>
               </div>
             </div>
 
-            <div style={{ paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 10, color: '#10b981', fontSize: 13, fontWeight: 600 }}>
+            <div style={{
+              paddingTop: 20,
+              borderTop: '1px solid var(--neu-border)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              color: '#34d399',
+              fontSize: 13,
+              fontWeight: 600
+            }}>
               <ShieldCheck size={18} /> Verified Direct Receiving Inbox
             </div>
           </div>
 
-          {/* Form */}
-          <div style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: 32 }}>
+          {/* Form Card */}
+          <div style={{
+            background: 'var(--neu-surface)',
+            border: '1px solid var(--neu-border-bevel)',
+            boxShadow: 'var(--neu-flat-sm)',
+            borderRadius: 20,
+            padding: 32
+          }}>
             {sent ? (
               <div style={{ textAlign: 'center', padding: '36px 16px' }}>
-                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                <div style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: '50%',
+                  background: 'var(--neu-sunken)',
+                  border: '1px solid rgba(52, 211, 153, 0.3)',
+                  boxShadow: 'var(--neu-pressed-sm)',
+                  color: '#34d399',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 20px'
+                }}>
                   <Check size={28} />
                 </div>
                 <h3 style={{ fontSize: 22, fontWeight: 800, color: '#ffffff', marginBottom: 12 }}>Message Dispatched!</h3>
-                <p style={{ fontSize: 14.5, color: '#94a3b8', lineHeight: 1.7, marginBottom: 24 }}>
-                  Your message has been routed to <strong style={{ color: '#38bdf8' }}>{primaryEmail}</strong>. Our engineering team will review it and reply directly to <strong style={{ color: '#ffffff' }}>{email}</strong>.
+                <p style={{ fontSize: 14.5, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: 24 }}>
+                  Your message has been routed to <strong style={{ color: '#ffffff' }}>{primaryEmail}</strong>. Our engineering team will review it and reply directly to <strong style={{ color: '#ffffff' }}>{email}</strong>.
                 </p>
                 <button
                   type="button"
                   onClick={() => { setSent(false); setMessage(''); }}
-                  style={{ padding: '10px 20px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#ffffff', fontSize: 13.5, fontWeight: 700, cursor: 'pointer' }}
+                  style={{
+                    padding: '12px 24px',
+                    borderRadius: 12,
+                    background: 'var(--neu-grad-convex)',
+                    border: '1px solid var(--neu-border-bevel)',
+                    boxShadow: 'var(--neu-flat-xs)',
+                    color: '#ffffff',
+                    fontSize: 13.5,
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
                 >
                   Send Another Message
                 </button>
@@ -169,69 +309,79 @@ export default function ContactPage() {
             ) : (
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                 {errorMsg && (
-                  <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', fontSize: 13 }}>
+                  <div style={{
+                    padding: '12px 16px',
+                    borderRadius: 10,
+                    background: 'rgba(248, 113, 113, 0.1)',
+                    border: '1px solid rgba(248, 113, 113, 0.25)',
+                    color: '#f87171',
+                    fontSize: 13
+                  }}>
                     {errorMsg}
                   </div>
                 )}
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, color: '#cbd5e1', fontWeight: 700, marginBottom: 6 }}>Your Name</label>
+                  <label style={{ display: 'block', fontSize: 11.5, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                    Your Name
+                  </label>
                   <input
                     type="text"
                     value={name}
                     onChange={e => setName(e.target.value)}
+                    onFocus={() => setNameFocused(true)}
+                    onBlur={() => setNameFocused(false)}
                     placeholder="Alex Morgan"
-                    style={{
-                      width: '100%', padding: '12px 14px', borderRadius: 10, background: 'rgba(0,0,0,0.4)',
-                      border: '1px solid rgba(255,255,255,0.08)', color: '#ffffff', outline: 'none',
-                      fontSize: 14, boxSizing: 'border-box'
-                    }}
+                    style={getInputStyle(nameFocused)}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, color: '#cbd5e1', fontWeight: 700, marginBottom: 6 }}>Your Email Address *</label>
+                  <label style={{ display: 'block', fontSize: 11.5, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                    Your Email Address *
+                  </label>
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={e => setEmail(e.target.value)}
+                    onFocus={() => setEmailFocused(true)}
+                    onBlur={() => setEmailFocused(false)}
                     placeholder="alex@company.com"
-                    style={{
-                      width: '100%', padding: '12px 14px', borderRadius: 10, background: 'rgba(0,0,0,0.4)',
-                      border: '1px solid rgba(255,255,255,0.08)', color: '#ffffff', outline: 'none',
-                      fontSize: 14, boxSizing: 'border-box'
-                    }}
+                    style={getInputStyle(emailFocused)}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, color: '#cbd5e1', fontWeight: 700, marginBottom: 6 }}>Subject</label>
+                  <label style={{ display: 'block', fontSize: 11.5, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                    Subject
+                  </label>
                   <input
                     type="text"
                     value={subject}
                     onChange={e => setSubject(e.target.value)}
+                    onFocus={() => setSubjectFocused(true)}
+                    onBlur={() => setSubjectFocused(false)}
                     placeholder="Question about JBSnap API Gateway"
-                    style={{
-                      width: '100%', padding: '12px 14px', borderRadius: 10, background: 'rgba(0,0,0,0.4)',
-                      border: '1px solid rgba(255,255,255,0.08)', color: '#ffffff', outline: 'none',
-                      fontSize: 14, boxSizing: 'border-box'
-                    }}
+                    style={getInputStyle(subjectFocused)}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, color: '#cbd5e1', fontWeight: 700, marginBottom: 6 }}>Message *</label>
+                  <label style={{ display: 'block', fontSize: 11.5, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                    Message *
+                  </label>
                   <textarea
                     required
                     rows={4}
                     value={message}
                     onChange={e => setMessage(e.target.value)}
+                    onFocus={() => setMessageFocused(true)}
+                    onBlur={() => setMessageFocused(false)}
                     placeholder="How can we help your engineering team?"
                     style={{
-                      width: '100%', padding: '12px 14px', borderRadius: 10, background: 'rgba(0,0,0,0.4)',
-                      border: '1px solid rgba(255,255,255,0.08)', color: '#ffffff', outline: 'none',
-                      fontSize: 14, resize: 'none', boxSizing: 'border-box'
+                      ...getInputStyle(messageFocused),
+                      resize: 'vertical'
                     }}
                   />
                 </div>
@@ -240,17 +390,39 @@ export default function ContactPage() {
                   type="submit"
                   disabled={submitting}
                   style={{
-                    width: '100%', padding: '13px 20px', borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#4f46e5)',
-                    color: '#ffffff', border: 'none', fontSize: 14, fontWeight: 800, cursor: submitting ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 4px 20px rgba(99,102,241,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    marginTop: 4
+                    width: '100%',
+                    padding: '14px 20px',
+                    borderRadius: 12,
+                    background: 'var(--neu-grad-convex)',
+                    border: '1px solid var(--neu-border-bevel)',
+                    boxShadow: 'var(--neu-flat-sm)',
+                    color: '#ffffff',
+                    fontSize: 14,
+                    fontWeight: 800,
+                    cursor: submitting ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    marginTop: 6,
+                    transition: 'all 0.18s ease'
+                  }}
+                  onMouseEnter={e => {
+                    if (!submitting) {
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = 'var(--neu-flat)';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'none';
+                    e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)';
                   }}
                 >
                   <Send size={16} />
                   {submitting ? 'Routing Message...' : 'Send Message'}
                 </button>
 
-                <p style={{ fontSize: 11.5, color: '#64748b', textAlign: 'center', margin: '4px 0 0' }}>
+                <p style={{ fontSize: 11.5, color: 'var(--text-faint)', textAlign: 'center', margin: '4px 0 0' }}>
                   All inquiries route to {primaryEmail}
                 </p>
               </form>

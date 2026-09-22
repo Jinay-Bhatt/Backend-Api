@@ -507,13 +507,13 @@ export default function BuilderPage() {
         </div>
 
         {/* Response Body Text */}
-        <div style={{ flex: 1, position: 'relative', overflow: 'hidden', border: '1px solid var(--border)', borderRadius: '6px', background: '#030303', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '6px 12px', borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)', fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>
+        <div style={{ flex: 1, position: 'relative', overflow: 'hidden', border: '1px solid var(--neu-border)', borderRadius: '10px', background: 'var(--neu-sunken)', boxShadow: 'var(--neu-pressed-sm)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '8px 14px', borderBottom: '1px solid var(--neu-border)', background: 'rgba(255,255,255,0.02)', fontSize: 9.5, fontWeight: 700, color: '#94a3b8', fontFamily: "'JetBrains Mono', monospace" }}>
             RESPONSE BODY ({testResult.isJson ? 'JSON' : 'PLAINTEXT'})
           </div>
           <pre style={{
             margin: 0,
-            padding: '12px',
+            padding: '14px',
             overflowY: 'auto',
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 11,
@@ -528,20 +528,21 @@ export default function BuilderPage() {
   };
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 100px)', background: 'var(--bg-base)', fontFamily: "'Plus Jakarta Sans', sans-serif", overflow: 'hidden' }}>
+    <div style={{ display: 'flex', height: 'calc(100vh - 100px)', background: 'var(--neu-base)', fontFamily: "'Plus Jakarta Sans', sans-serif", overflow: 'hidden' }}>
 
       {/* ── LEFT SIDEBAR ─────────────────────────────── */}
-      <div style={{ width: 260, background: '#09090b', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', flexShrink: 0, overflow: 'hidden' }}>
+      <div style={{ width: 268, background: 'var(--neu-surface)', borderRight: '1px solid var(--neu-border)', display: 'flex', flexDirection: 'column', flexShrink: 0, overflow: 'hidden', boxShadow: 'var(--neu-flat-xs)', zIndex: 12 }}>
         {/* Workflows panel */}
-        <div style={{ padding: '16px 16px 12px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ padding: '16px 16px 12px', borderBottom: '1px solid var(--neu-border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <span style={{ fontSize: 10, fontWeight: 800, color: '#ffffff', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: 5 }}><Monitor size={11} /> ACTIVE ROUTES</span>
             <button onClick={() => setShowCreateWf(true)}
               style={{
-                width: 22,
-                height: 22,
-                border: '1px solid var(--border)',
-                background: 'rgba(255, 255, 255, 0.04)',
+                width: 24,
+                height: 24,
+                border: '1px solid var(--neu-border)',
+                background: 'var(--neu-surface)',
+                boxShadow: 'var(--neu-flat-xs)',
                 color: '#ffffff',
                 cursor: 'pointer',
                 fontSize: 13,
@@ -550,14 +551,14 @@ export default function BuilderPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: '6px',
-                transition: 'all 0.15s',
+                transition: 'all 0.15s ease',
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--neu-border)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}
             >+</button>
           </div>
           <div className="scroll-area" style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 180, overflowY: 'auto' }}>
-            {wfLoading ? <div style={{ height: 32, borderRadius: 6 }} className="skeleton" /> :
+            {wfLoading ? <div style={{ height: 32, borderRadius: 8 }} className="skeleton" /> :
               workflows.map(wf => {
                 const isSelected = selectedWf?.id === wf.id;
                 return (
@@ -566,9 +567,10 @@ export default function BuilderPage() {
                       width: '100%',
                       display: 'flex',
                       alignItems: 'center',
-                      background: isSelected ? 'rgba(255, 255, 255, 0.06)' : 'transparent',
-                      border: `1px solid ${isSelected ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)'}`,
-                      borderRadius: '6px',
+                      background: isSelected ? 'var(--neu-sunken)' : 'transparent',
+                      border: `1px solid ${isSelected ? 'var(--neu-border)' : 'transparent'}`,
+                      boxShadow: isSelected ? 'var(--neu-pressed-sm)' : 'none',
+                      borderRadius: '8px',
                       transition: 'all 0.2s',
                     }}
                   >
@@ -586,10 +588,10 @@ export default function BuilderPage() {
                         overflow: 'hidden',
                         color: 'inherit',
                       }}>
-                      <span style={{ fontSize: 8, fontWeight: 900, color: METHOD_COLORS[wf.method] || '#6366f1', background: `${METHOD_COLORS[wf.method]}18`, border: `1px solid ${METHOD_COLORS[wf.method]}30`, borderRadius: 3, padding: '1px 4px', fontFamily: "'JetBrains Mono', monospace" }}>{wf.method}</span>
-                      <span style={{ fontSize: 11, color: isSelected ? '#ffffff' : '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace", fontWeight: isSelected ? 600 : 400 }}>{wf.name}</span>
+                      <span style={{ fontSize: 8, fontWeight: 900, color: METHOD_COLORS[wf.method] || '#6366f1', background: `${METHOD_COLORS[wf.method]}18`, border: `1px solid ${METHOD_COLORS[wf.method]}30`, borderRadius: 4, padding: '1px 5px', fontFamily: "'JetBrains Mono', monospace" }}>{wf.method}</span>
+                      <span style={{ fontSize: 11, color: isSelected ? '#ffffff' : '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace", fontWeight: isSelected ? 700 : 400 }}>{wf.name}</span>
                       {wf.isPublished && (
-                        <span style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: '#10b981', flexShrink: 0 }} />
+                        <span style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 6px #10b981', flexShrink: 0 }} />
                       )}
                     </button>
                     
@@ -636,28 +638,27 @@ export default function BuilderPage() {
                     width: '100%',
                     textAlign: 'left',
                     padding: '10px 14px',
-                    background: cat.color + '0c',
-                    border: `1px solid ${cat.color}25`,
-                    borderRadius: '8px',
+                    background: 'var(--neu-surface)',
+                    border: `1px solid var(--neu-border)`,
+                    boxShadow: 'var(--neu-flat-xs)',
+                    borderRadius: '10px',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 12,
-                    marginBottom: 6,
+                    marginBottom: 8,
                     transition: 'all 0.2s ease',
                     color: '#cbd5e1',
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.borderColor = cat.color + '55';
-                    e.currentTarget.style.background = cat.color + '18';
+                    e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)';
                     e.currentTarget.style.color = '#ffffff';
-                    e.currentTarget.style.boxShadow = `0 0 12px ${cat.color}15`;
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = cat.color + '25';
-                    e.currentTarget.style.background = cat.color + '0c';
+                    e.currentTarget.style.borderColor = 'var(--neu-border)';
+                    e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)';
                     e.currentTarget.style.color = '#cbd5e1';
-                    e.currentTarget.style.boxShadow = 'none';
                   }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', color: cat.color }}>
                     {getNodeIcon(n.icon, 14)}
@@ -685,24 +686,25 @@ export default function BuilderPage() {
           display: 'flex',
           alignItems: 'center',
           gap: 10,
-          background: 'rgba(9, 9, 11, 0.92)',
-          backdropFilter: 'blur(24px)',
-          border: '1px solid var(--border)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-          borderRadius: '8px',
-          padding: '6px 14px'
+          background: 'var(--neu-surface)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid var(--neu-border-bevel)',
+          boxShadow: 'var(--neu-flat)',
+          borderRadius: '12px',
+          padding: '8px 16px'
         }}>
           {selectedWf ? (
             <>
               <span style={{ fontSize: 11, color: '#ffffff', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedWf.name.toUpperCase()}</span>
-              <div style={{ width: 1, height: 16, background: 'rgba(255, 255, 255, 0.08)' }} />
+              <div style={{ width: 1, height: 16, background: 'var(--neu-border)' }} />
               
               {/* Save Button */}
               <button onClick={handleSave} disabled={saving}
                 style={{
-                  padding: '5px 12px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid var(--border)',
+                  padding: '6px 14px',
+                  background: 'var(--neu-surface)',
+                  border: '1px solid var(--neu-border)',
+                  boxShadow: 'var(--neu-flat-xs)',
                   color: saving ? 'var(--text-faint)' : '#ffffff',
                   fontSize: 11,
                   fontFamily: "'JetBrains Mono', monospace",
@@ -710,46 +712,45 @@ export default function BuilderPage() {
                   cursor: saving ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 5,
-                  borderRadius: '6px',
+                  gap: 6,
+                  borderRadius: '8px',
                   transition: 'all 0.15s ease',
                 }}
-                onMouseEnter={e => { if(!saving) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; } }}
-                onMouseLeave={e => { if(!saving) { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; } }}
+                onMouseEnter={e => { if(!saving) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; } }}
+                onMouseLeave={e => { if(!saving) { e.currentTarget.style.borderColor = 'var(--neu-border)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; } }}
               >
                 {saving ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={12} />} {saving ? 'SAVING...' : 'SAVE'}
               </button>
 
               <button onClick={handlePublish} disabled={publishing}
                 style={{
-                  padding: '5px 12px',
-                  background: selectedWf?.isPublished ? 'rgba(239,68,68,0.1)' : '#ffffff',
-                  border: selectedWf?.isPublished ? '1px solid rgba(239,68,68,0.3)' : '1px solid transparent',
-                  color: selectedWf?.isPublished ? '#ef4444' : '#020202',
+                  padding: '6px 14px',
+                  background: selectedWf?.isPublished ? 'rgba(239,68,68,0.12)' : 'var(--neu-grad-convex)',
+                  border: selectedWf?.isPublished ? '1px solid rgba(239,68,68,0.35)' : '1px solid var(--neu-border)',
+                  boxShadow: 'var(--neu-flat-xs)',
+                  color: selectedWf?.isPublished ? '#ef4444' : '#ffffff',
                   fontSize: 11,
                   fontFamily: "'JetBrains Mono', monospace",
                   fontWeight: 700,
                   cursor: publishing ? 'not-allowed' : 'pointer',
-                  borderRadius: '6px',
+                  borderRadius: '8px',
                   transition: 'all 0.15s ease',
                 }}
                 onMouseEnter={e => {
                   if (!publishing) {
+                    e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)';
                     if (selectedWf?.isPublished) {
-                      e.currentTarget.style.background = 'rgba(239,68,68,0.15)';
+                      e.currentTarget.style.background = 'rgba(239,68,68,0.18)';
                       e.currentTarget.style.borderColor = '#ef4444';
-                    } else {
-                      e.currentTarget.style.background = '#e2e8f0';
                     }
                   }
                 }}
                 onMouseLeave={e => {
                   if (!publishing) {
+                    e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)';
                     if (selectedWf?.isPublished) {
-                      e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
-                      e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)';
-                    } else {
-                      e.currentTarget.style.background = '#ffffff';
+                      e.currentTarget.style.background = 'rgba(239,68,68,0.12)';
+                      e.currentTarget.style.borderColor = 'rgba(239,68,68,0.35)';
                     }
                   }
                 }}
@@ -762,16 +763,17 @@ export default function BuilderPage() {
                   padding: '3px 8px',
                   background: 'rgba(16, 185, 129, 0.08)',
                   border: '1px solid rgba(16, 185, 129, 0.25)',
+                  boxShadow: 'var(--neu-pressed-sm)',
                   fontSize: 9,
                   color: '#10b981',
                   fontWeight: 700,
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   fontFamily: "'JetBrains Mono', monospace",
                   display: 'flex',
                   alignItems: 'center',
                   gap: 5
                 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 6px #10b981', display: 'inline-block' }} />
                   LIVE
                 </div>
               )}
@@ -779,9 +781,10 @@ export default function BuilderPage() {
               <button
                 onClick={handleDeleteWf}
                 style={{
-                  padding: '5px 12px',
-                  border: '1px solid rgba(239, 68, 68, 0.2)',
-                  background: 'rgba(239, 68, 68, 0.04)',
+                  padding: '6px 12px',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  background: 'rgba(239, 68, 68, 0.06)',
+                  boxShadow: 'var(--neu-flat-xs)',
                   color: '#ef4444',
                   fontSize: 11,
                   fontFamily: "'JetBrains Mono', monospace",
@@ -790,18 +793,20 @@ export default function BuilderPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 5,
-                  borderRadius: '6px',
+                  borderRadius: '8px',
                   transition: 'all 0.15s ease',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = '#ef4444';
                   e.currentTarget.style.borderColor = '#ef4444';
                   e.currentTarget.style.color = '#ffffff';
+                  e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.04)';
-                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.06)';
+                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
                   e.currentTarget.style.color = '#ef4444';
+                  e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)';
                 }}
                 title="Delete Workflow"
               >
@@ -812,14 +817,15 @@ export default function BuilderPage() {
           ) : (
             <span style={{ fontSize: 11, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>← SELECT OR GENERATE WORKFLOW</span>
           )}
-          <div style={{ width: 1, height: 16, background: 'rgba(255, 255, 255, 0.08)' }} />
+          <div style={{ width: 1, height: 16, background: 'var(--neu-border)' }} />
           
           {/* Templates Button */}
           <button onClick={() => setShowTemplatesModal(true)}
             style={{
-              padding: '5px 12px',
-              border: '1px solid var(--border)',
-              background: 'rgba(255, 255, 255, 0.04)',
+              padding: '6px 12px',
+              border: '1px solid var(--neu-border)',
+              background: 'var(--neu-surface)',
+              boxShadow: 'var(--neu-flat-xs)',
               color: '#ffffff',
               fontSize: 11,
               fontFamily: "'JetBrains Mono', monospace",
@@ -828,11 +834,11 @@ export default function BuilderPage() {
               display: 'flex',
               alignItems: 'center',
               gap: 5,
-              borderRadius: '6px',
+              borderRadius: '8px',
               transition: 'all 0.15s ease',
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--neu-border)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}
           >
             <Layers size={11} style={{ color: '#38bdf8' }} /> TEMPLATES
           </button>
@@ -840,9 +846,10 @@ export default function BuilderPage() {
           {/* AI Button */}
           <button onClick={() => setShowAi(true)}
             style={{
-              padding: '5px 12px',
-              border: '1px solid var(--border)',
-              background: 'rgba(255, 255, 255, 0.04)',
+              padding: '6px 12px',
+              border: '1px solid var(--neu-border)',
+              background: 'var(--neu-surface)',
+              boxShadow: 'var(--neu-flat-xs)',
               color: '#ffffff',
               fontSize: 11,
               fontFamily: "'JetBrains Mono', monospace",
@@ -851,11 +858,11 @@ export default function BuilderPage() {
               display: 'flex',
               alignItems: 'center',
               gap: 5,
-              borderRadius: '6px',
+              borderRadius: '8px',
               transition: 'all 0.15s ease',
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--neu-border)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}
           >
             <Zap size={11} style={{ color: '#f59e0b' }} /> AI SYNTHESIZE
           </button>
@@ -863,9 +870,10 @@ export default function BuilderPage() {
           {selectedWf && (
             <button onClick={() => setShowTestModal(true)}
               style={{
-                padding: '5px 12px',
-                border: '1.5px solid rgba(0, 242, 254, 0.35)',
-                background: 'rgba(0, 242, 254, 0.05)',
+                padding: '6px 12px',
+                border: '1px solid rgba(0, 242, 254, 0.4)',
+                background: 'var(--neu-surface)',
+                boxShadow: 'var(--neu-flat-xs)',
                 color: '#00f2fe',
                 fontSize: 11,
                 fontFamily: "'JetBrains Mono', monospace",
@@ -874,13 +882,13 @@ export default function BuilderPage() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 5,
-                borderRadius: '6px',
+                borderRadius: '8px',
                 transition: 'all 0.15s ease',
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0, 242, 254, 0.65)'; e.currentTarget.style.background = 'rgba(0, 242, 254, 0.15)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0, 242, 254, 0.35)'; e.currentTarget.style.background = 'rgba(0, 242, 254, 0.05)'; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0, 242, 254, 0.8)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0, 242, 254, 0.4)'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}
             >
-              <Play size={11} style={{ fill: 'rgba(0, 242, 254, 0.15)' }} /> TEST API
+              <Play size={11} style={{ fill: 'rgba(0, 242, 254, 0.2)' }} /> TEST API
             </button>
           )}
         </div>
@@ -897,16 +905,17 @@ export default function BuilderPage() {
           style={{ background: 'var(--bg-base)' }}
           defaultEdgeOptions={{ animated: true, style: { stroke: '#00f2fe', strokeWidth: 2 } }}
         >
-          <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="rgba(0, 242, 254, 0.08)" />
-          <Controls style={{ background: '#0a0f1e', border: '1px solid rgba(0, 242, 254, 0.25)', borderRadius: 0, boxShadow: '0 0 10px rgba(0, 242, 254, 0.15)' }} />
+          <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="rgba(255, 255, 255, 0.07)" />
+          <Controls style={{ background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', borderRadius: 10, boxShadow: 'var(--neu-flat-sm)' }} />
           <MiniMap style={{
-            background: '#020617',
-            border: '1px solid rgba(0, 242, 254, 0.25)',
-            borderRadius: 0,
+            background: 'var(--neu-sunken)',
+            border: '1px solid var(--neu-border)',
+            borderRadius: 10,
+            boxShadow: 'var(--neu-flat-sm)',
             opacity: isMinimapVisible ? 1 : 0,
             pointerEvents: isMinimapVisible ? 'all' : 'none',
             transition: 'opacity 0.3s ease-in-out',
-          }} nodeColor={() => '#00f2fe'} maskColor="rgba(2,6,23,0.85)" />
+          }} nodeColor={() => '#ffffff'} maskColor="rgba(5, 5, 6, 0.85)" />
           {nodes.length === 0 && (
             <Panel position="top-center">
               <div style={{ marginTop: 100, textAlign: 'center', pointerEvents: 'none' }}>
@@ -926,8 +935,8 @@ export default function BuilderPage() {
             bottom: 0,
             left: 0,
             right: 0,
-            background: 'rgba(5, 10, 20, 0.95)',
-            borderTop: '1.5px solid rgba(0, 242, 254, 0.2)',
+            background: 'rgba(8, 8, 8, 0.96)',
+            borderTop: '1px solid var(--neu-border)',
             padding: '8px 16px',
             display: 'flex',
             gap: 16,
@@ -949,14 +958,14 @@ export default function BuilderPage() {
 
       {/* ── RIGHT CONFIG PANEL ────────────────────────── */}
       {selectedNode && (
-        <div style={{ width: 300, background: 'rgba(10, 15, 30, 0.9)', borderLeft: '1.5px solid rgba(0, 242, 254, 0.2)', overflowY: 'auto', flexShrink: 0, backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px dashed rgba(0, 242, 254, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ width: 310, background: 'var(--neu-surface)', borderLeft: '1px solid var(--neu-border)', overflowY: 'auto', flexShrink: 0, boxShadow: 'var(--neu-flat)', display: 'flex', flexDirection: 'column', zIndex: 12 }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--neu-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 12, fontWeight: 900, color: '#00f2fe', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 6 }}>
               <Settings size={12} /> NODE CONFIG
             </span>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={deleteNode} style={{ padding: '4px 8px', border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.1)', color: '#ef4444', fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>DELETE</button>
-              <button onClick={() => setSelectedNodeId(null)} style={{ width: 22, height: 22, border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={deleteNode} style={{ padding: '5px 10px', border: '1px solid rgba(239,68,68,0.35)', background: 'rgba(239,68,68,0.1)', boxShadow: 'var(--neu-flat-xs)', color: '#ef4444', fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", borderRadius: '6px' }}>DELETE</button>
+              <button onClick={() => setSelectedNodeId(null)} style={{ width: 24, height: 24, border: '1px solid var(--neu-border)', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px' }}>
                 <X size={12} />
               </button>
             </div>
@@ -969,35 +978,36 @@ export default function BuilderPage() {
 
       {/* ── CREATE WORKFLOW MODAL ─────────────────────── */}
       {showCreateWf && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
-          <div style={{ background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', padding: 28, width: '100%', maxWidth: 420, boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
+          <div style={{ background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', borderRadius: '18px', padding: 30, width: '100%', maxWidth: 430, boxShadow: 'var(--neu-flat-lg)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-              <h2 style={{ fontSize: 13, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.06em' }}>CREATE WORKFLOW</h2>
-              <button onClick={() => setShowCreateWf(false)} style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <h2 style={{ fontSize: 13, fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.06em' }}>CREATE WORKFLOW</h2>
+              <button onClick={() => setShowCreateWf(false)} style={{ width: 26, height: 26, border: '1px solid var(--neu-border)', borderRadius: '8px', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X size={12} />
               </button>
             </div>
             <form onSubmit={handleCreateWf} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[{ k: 'name', label: 'Name Namespace Key', placeholder: 'Get Products', type: 'text' }, { k: 'path', label: 'Gateway Endpoint Path', placeholder: '/products', type: 'text' }].map(f => (
                 <div key={f.k}>
-                  <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'JetBrains Mono', monospace" }}>{f.label}</label>
+                  <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'JetBrains Mono', monospace" }}>{f.label}</label>
                   <input required type={f.type} value={(newWf as any)[f.k]} onChange={e => setNewWf(p => ({ ...p, [f.k]: e.target.value }))} placeholder={f.placeholder}
                     style={{
                       width: '100%',
                       boxSizing: 'border-box',
-                      background: '#030303',
-                      border: '1px solid var(--border)',
-                      borderRadius: '6px',
+                      background: 'var(--neu-sunken)',
+                      border: '1px solid var(--neu-border)',
+                      boxShadow: 'var(--neu-pressed-sm)',
+                      borderRadius: '8px',
                       color: '#fff',
                       fontSize: 12.5,
                       fontFamily: "'JetBrains Mono', monospace",
-                      padding: '8px 12px',
+                      padding: '10px 14px',
                       outline: 'none',
                     }} />
                 </div>
               ))}
               <div>
-                <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'JetBrains Mono', monospace" }}>REST Method</label>
+                <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'JetBrains Mono', monospace" }}>REST Method</label>
                 <CustomSelect
                   value={newWf.method}
                   onChange={(val) => setNewWf(p => ({ ...p, method: val }))}
@@ -1005,30 +1015,31 @@ export default function BuilderPage() {
                 />
               </div>
               <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                <button type="button" onClick={() => setShowCreateWf(false)} disabled={creating} style={{ flex: 1, height: 38, borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: creating ? 'not-allowed' : 'pointer', transition: 'all 0.15s' }}>Cancel</button>
+                <button type="button" onClick={() => setShowCreateWf(false)} disabled={creating} style={{ flex: 1, height: 42, borderRadius: '10px', border: '1px solid var(--neu-border)', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', color: '#94a3b8', fontSize: 12.5, cursor: creating ? 'not-allowed' : 'pointer', transition: 'all 0.15s ease' }}>Cancel</button>
                 <button type="submit"
                   disabled={creating}
                   style={{
                     flex: 2,
-                    height: 38,
-                    background: creating ? 'rgba(255, 255, 255, 0.4)' : '#ffffff',
-                    border: 'none',
-                    color: '#000000',
-                    borderRadius: '8px',
+                    height: 42,
+                    background: creating ? 'var(--neu-surface)' : 'var(--neu-grad-convex)',
+                    border: '1px solid var(--neu-border)',
+                    boxShadow: creating ? 'none' : 'var(--neu-flat-sm)',
+                    color: creating ? '#64748b' : '#ffffff',
+                    borderRadius: '10px',
                     fontSize: 12.5,
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     fontFamily: "'JetBrains Mono', monospace",
                     cursor: creating ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.15s',
+                    transition: 'all 0.15s ease',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: 6
                   }}
-                  onMouseEnter={e => { if (!creating) e.currentTarget.style.background = '#cbd5e1'; }}
-                  onMouseLeave={e => { if (!creating) e.currentTarget.style.background = '#ffffff'; }}
+                  onMouseEnter={e => { if (!creating) { e.currentTarget.style.boxShadow = 'var(--neu-flat)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; } }}
+                  onMouseLeave={e => { if (!creating) { e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; e.currentTarget.style.borderColor = 'var(--neu-border)'; } }}
                 >
                   {creating ? (
                     <>
@@ -1047,17 +1058,17 @@ export default function BuilderPage() {
 
       {/* ── AI GENERATE MODAL ─────────────────────────── */}
       {showAi && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
-          <div style={{ background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', padding: 32, width: '100%', maxWidth: 520, boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-              <div style={{ width: 44, height: 44, border: '1px solid var(--border)', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Cpu size={20} style={{ color: '#f59e0b' }} />
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
+          <div style={{ background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', borderRadius: '20px', padding: 32, width: '100%', maxWidth: 540, boxShadow: 'var(--neu-flat-lg)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
+              <div style={{ width: 46, height: 46, border: '1px solid var(--neu-border)', borderRadius: '12px', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Cpu size={22} style={{ color: '#f59e0b' }} />
               </div>
               <div>
-                <h2 style={{ fontSize: 15, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Workflow Synthesizer</h2>
-                <p style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>POWERED BY GEMINI · SPECIFY INSTRUCTIONS</p>
+                <h2 style={{ fontSize: 15, fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Workflow Synthesizer</h2>
+                <p style={{ fontSize: 10, color: '#94a3b8', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>POWERED BY GEMINI · SPECIFY INSTRUCTIONS</p>
               </div>
-              <button onClick={() => { setShowAi(false); setAiError(''); }} style={{ marginLeft: 'auto', width: 24, height: 24, border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={() => { setShowAi(false); setAiError(''); }} style={{ marginLeft: 'auto', width: 26, height: 26, border: '1px solid var(--neu-border)', borderRadius: '8px', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X size={12} />
               </button>
             </div>
@@ -1067,15 +1078,16 @@ export default function BuilderPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '8px 12px',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid var(--border)',
-              borderRadius: '8px',
+              padding: '10px 14px',
+              background: 'var(--neu-sunken)',
+              border: '1px solid var(--neu-border)',
+              boxShadow: 'var(--neu-pressed-sm)',
+              borderRadius: '10px',
               marginBottom: 16,
               fontSize: 11,
               fontFamily: "'JetBrains Mono', monospace",
             }}>
-              <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 6 }}>
                 Plan Quota: <strong style={{ color: isPro ? '#00f2fe' : '#ffffff' }}>{isPro ? 'Pro (12/mo)' : 'Free (3/mo)'}</strong>
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1092,10 +1104,10 @@ export default function BuilderPage() {
                       background: 'linear-gradient(135deg, #00f2fe, #4facfe)',
                       border: 'none',
                       color: '#000',
-                      padding: '2px 8px',
-                      borderRadius: '4px',
+                      padding: '3px 9px',
+                      borderRadius: '6px',
                       fontSize: 10,
-                      fontWeight: 700,
+                      fontWeight: 800,
                       cursor: 'pointer',
                     }}
                   >
@@ -1106,7 +1118,7 @@ export default function BuilderPage() {
             </div>
 
             {aiError && (
-              <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', padding: '10px 14px', marginBottom: 16, color: '#fca5a5', fontSize: 11, fontFamily: "'JetBrains Mono', monospace", display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', padding: '10px 14px', marginBottom: 16, color: '#fca5a5', fontSize: 11, fontFamily: "'JetBrains Mono', monospace", display: 'flex', alignItems: 'center', gap: 8, borderRadius: '8px' }}>
                 <AlertCircle size={14} style={{ color: '#ef4444', flexShrink: 0 }} /> PIPELINE FAIL: {aiError}
               </div>
             )}
@@ -1117,17 +1129,18 @@ export default function BuilderPage() {
                   <button key={ex} onClick={() => setAiPrompt(ex)}
                     style={{
                       padding: '6px 12px',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--text-muted)',
+                      background: 'var(--neu-surface)',
+                      border: '1px solid var(--neu-border)',
+                      boxShadow: 'var(--neu-flat-xs)',
+                      color: '#94a3b8',
                       fontSize: 11,
                       fontFamily: "'JetBrains Mono', monospace",
                       cursor: 'pointer',
-                      borderRadius: '6px',
+                      borderRadius: '8px',
                       transition: 'all 0.15s ease'
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#fff'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--neu-border)'; e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}>
                     {ex}
                   </button>
                 ))}
@@ -1138,13 +1151,14 @@ export default function BuilderPage() {
                 rows={4}
                 style={{
                   width: '100%',
-                  background: '#030303',
-                  border: '1px solid var(--border)',
-                  borderRadius: '6px',
+                  background: 'var(--neu-sunken)',
+                  border: '1px solid var(--neu-border)',
+                  boxShadow: 'var(--neu-pressed-sm)',
+                  borderRadius: '10px',
                   color: '#fff',
                   fontSize: 12.5,
                   fontFamily: "'JetBrains Mono', monospace",
-                  padding: '12px',
+                  padding: '12px 14px',
                   outline: 'none',
                   resize: 'none',
                   boxSizing: 'border-box',
@@ -1154,15 +1168,16 @@ export default function BuilderPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => { setShowAi(false); setAiError(''); }} style={{ flex: 1, height: 38, borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s ease' }}>Cancel</button>
+              <button onClick={() => { setShowAi(false); setAiError(''); }} style={{ flex: 1, height: 42, borderRadius: '10px', border: '1px solid var(--neu-border)', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', color: '#94a3b8', fontSize: 12.5, cursor: 'pointer', transition: 'all 0.15s ease' }}>Cancel</button>
               <button onClick={handleAiGenerate} disabled={aiLoading || !aiPrompt.trim()}
                 style={{
                   flex: 3,
-                  height: 38,
-                  background: aiLoading ? '#1e293b' : '#ffffff',
-                  border: 'none',
-                  color: aiLoading ? '#475569' : '#000000',
-                  borderRadius: '8px',
+                  height: 42,
+                  background: aiLoading ? 'var(--neu-surface)' : 'var(--neu-grad-convex)',
+                  border: '1px solid var(--neu-border)',
+                  boxShadow: aiLoading ? 'none' : 'var(--neu-flat-sm)',
+                  color: aiLoading ? '#64748b' : '#ffffff',
+                  borderRadius: '10px',
                   fontSize: 12.5,
                   fontWeight: 700,
                   textTransform: 'uppercase',
@@ -1175,8 +1190,8 @@ export default function BuilderPage() {
                   gap: 8,
                   transition: 'all 0.15s ease'
                 }}
-                onMouseEnter={e => { if(!aiLoading && aiPrompt.trim()) e.currentTarget.style.background = '#cbd5e1'; }}
-                onMouseLeave={e => { if(!aiLoading && aiPrompt.trim()) e.currentTarget.style.background = '#ffffff'; }}
+                onMouseEnter={e => { if(!aiLoading && aiPrompt.trim()) { e.currentTarget.style.boxShadow = 'var(--neu-flat)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; } }}
+                onMouseLeave={e => { if(!aiLoading && aiPrompt.trim()) { e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; e.currentTarget.style.borderColor = 'var(--neu-border)'; } }}
               >
                 {aiLoading ? (
                   <>Synthesizing...</>
@@ -1194,26 +1209,28 @@ export default function BuilderPage() {
 
       {/* ── API TESTING SANDBOX MODAL ────────────────── */}
       {showTestModal && selectedWf && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
-          <div style={{ background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', padding: 28, width: '100%', maxWidth: 780, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column' }} className="scroll-area">
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
+          <div style={{ background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', borderRadius: '20px', padding: 30, width: '100%', maxWidth: 800, maxHeight: '90vh', overflowY: 'auto', boxShadow: 'var(--neu-flat-lg)', display: 'flex', flexDirection: 'column' }} className="scroll-area">
             
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Terminal size={18} style={{ color: '#00f2fe' }} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid var(--neu-border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: 'var(--neu-surface)', border: '1px solid var(--neu-border)', boxShadow: 'var(--neu-flat-xs)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Terminal size={18} style={{ color: '#00f2fe' }} />
+                </div>
                 <div>
-                  <h2 style={{ fontSize: 13, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>API Sandbox Test Runner</h2>
-                  <p style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>TEST LIVE INTERACTIVE GATEWAY ENDPOINTS IN REALTIME</p>
+                  <h2 style={{ fontSize: 13, fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>API Sandbox Test Runner</h2>
+                  <p style={{ fontSize: 10, color: '#94a3b8', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>TEST LIVE INTERACTIVE GATEWAY ENDPOINTS IN REALTIME</p>
                 </div>
               </div>
-              <button onClick={() => { setShowTestModal(false); setTestResult(null); }} style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={() => { setShowTestModal(false); setTestResult(null); }} style={{ width: 26, height: 26, border: '1px solid var(--neu-border)', borderRadius: '8px', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X size={12} />
               </button>
             </div>
 
             {/* Warning banner if workflow is unpublished */}
             {!selectedWf.isPublished && (
-              <div style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.25)', padding: '10px 14px', borderRadius: '6px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.25)', padding: '10px 14px', borderRadius: '10px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <AlertCircle size={16} style={{ color: '#f59e0b', flexShrink: 0 }} />
                 <span style={{ fontSize: 11, color: '#fcd34d', lineHeight: 1.4 }}>
                   <strong>Workflow is suspended/unpublished.</strong> Please click <strong>Initialize</strong> on the canvas toolbar to publish the route, otherwise the gateway will return a 404 error.
@@ -1226,50 +1243,52 @@ export default function BuilderPage() {
               
               {/* Left Column: Request configuration */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ fontSize: 11, fontWeight: 800, color: '#00f2fe', fontFamily: "'JetBrains Mono', monospace", borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 6 }}>REQUEST PARAMETERS</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#00f2fe', fontFamily: "'JetBrains Mono', monospace", borderBottom: '1px solid var(--neu-border)', paddingBottom: 6 }}>REQUEST PARAMETERS</div>
                 
                 {/* Method & URL tag */}
-                <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border)', padding: '10px 12px', borderRadius: '6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div style={{ background: 'var(--neu-sunken)', border: '1px solid var(--neu-border)', boxShadow: 'var(--neu-pressed-sm)', padding: '10px 12px', borderRadius: '8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, display: 'flex', gap: 8, alignItems: 'center' }}>
                   <span style={{ background: METHOD_COLORS[selectedWf.method] || '#6366f1', color: '#000', fontSize: 9.5, fontWeight: 900, padding: '2px 6px', borderRadius: '4px' }}>
                     {selectedWf.method}
                   </span>
-                  <span style={{ color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                  <span style={{ color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                     /api/{projectId}{selectedWf.path}
                   </span>
                 </div>
 
                 {/* Query String Params */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 9.5, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5, fontFamily: "'JetBrains Mono', monospace" }}>Query Params</label>
+                  <label style={{ display: 'block', fontSize: 9.5, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5, fontFamily: "'JetBrains Mono', monospace" }}>Query Params</label>
                   <input type="text" value={testQuery} onChange={e => setTestQuery(e.target.value)} placeholder="e.g. ?limit=10&page=1"
                     style={{
                       width: '100%',
                       boxSizing: 'border-box',
-                      background: '#030303',
-                      border: '1px solid var(--border)',
-                      borderRadius: '6px',
+                      background: 'var(--neu-sunken)',
+                      border: '1px solid var(--neu-border)',
+                      boxShadow: 'var(--neu-pressed-sm)',
+                      borderRadius: '8px',
                       color: '#fff',
                       fontSize: 11.5,
                       fontFamily: "'JetBrains Mono', monospace",
-                      padding: '8px 10px',
+                      padding: '10px 12px',
                       outline: 'none',
                     }} />
                 </div>
 
                 {/* Headers String */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 9.5, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5, fontFamily: "'JetBrains Mono', monospace" }}>Headers (JSON)</label>
+                  <label style={{ display: 'block', fontSize: 9.5, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5, fontFamily: "'JetBrains Mono', monospace" }}>Headers (JSON)</label>
                   <textarea value={testHeaders} onChange={e => setTestHeaders(e.target.value)} placeholder='{"Authorization": "Bearer token"}' rows={3}
                     style={{
                       width: '100%',
                       boxSizing: 'border-box',
-                      background: '#030303',
-                      border: '1px solid var(--border)',
-                      borderRadius: '6px',
+                      background: 'var(--neu-sunken)',
+                      border: '1px solid var(--neu-border)',
+                      boxShadow: 'var(--neu-pressed-sm)',
+                      borderRadius: '8px',
                       color: '#fff',
                       fontSize: 11,
                       fontFamily: "'JetBrains Mono', monospace",
-                      padding: '8px 10px',
+                      padding: '10px 12px',
                       outline: 'none',
                       resize: 'vertical',
                     }} />
@@ -1278,18 +1297,19 @@ export default function BuilderPage() {
                 {/* JSON Body */}
                 {['POST', 'PUT', 'PATCH', 'DELETE'].includes(selectedWf.method) && (
                   <div>
-                    <label style={{ display: 'block', fontSize: 9.5, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5, fontFamily: "'JetBrains Mono', monospace" }}>JSON Body</label>
+                    <label style={{ display: 'block', fontSize: 9.5, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5, fontFamily: "'JetBrains Mono', monospace" }}>JSON Body</label>
                     <textarea value={testBody} onChange={e => setTestBody(e.target.value)} placeholder='{"key": "value"}' rows={4}
                       style={{
                         width: '100%',
                         boxSizing: 'border-box',
-                        background: '#030303',
-                        border: '1px solid var(--border)',
-                        borderRadius: '6px',
+                        background: 'var(--neu-sunken)',
+                        border: '1px solid var(--neu-border)',
+                        boxShadow: 'var(--neu-pressed-sm)',
+                        borderRadius: '8px',
                         color: '#fff',
                         fontSize: 11,
                         fontFamily: "'JetBrains Mono', monospace",
-                        padding: '8px 10px',
+                        padding: '10px 12px',
                         outline: 'none',
                         resize: 'vertical',
                       }} />
@@ -1299,51 +1319,53 @@ export default function BuilderPage() {
 
               {/* Right Column: Execution Response Telemetry Console */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, overflow: 'hidden' }}>
-                <div style={{ fontSize: 11, fontWeight: 800, color: '#00f2fe', fontFamily: "'JetBrains Mono', monospace", borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 6 }}>RESPONSE CONSOLE</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#00f2fe', fontFamily: "'JetBrains Mono', monospace", borderBottom: '1px solid var(--neu-border)', paddingBottom: 6 }}>RESPONSE CONSOLE</div>
                 {renderConsole()}
               </div>
 
             </div>
 
             {/* Bottom Row */}
-            <div style={{ display: 'flex', gap: 10, marginTop: 24, borderTop: '1px solid var(--border)', paddingTop: 16, justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: 10, marginTop: 24, borderTop: '1px solid var(--neu-border)', paddingTop: 16, justifyContent: 'flex-end' }}>
               <button onClick={() => { setShowTestModal(false); setTestResult(null); }}
                 style={{
-                  height: 38,
+                  height: 40,
                   padding: '0 20px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border)',
-                  background: 'transparent',
+                  borderRadius: '10px',
+                  border: '1px solid var(--neu-border)',
+                  background: 'var(--neu-surface)',
+                  boxShadow: 'var(--neu-flat-xs)',
                   color: '#94a3b8',
                   fontSize: 12.5,
                   fontWeight: 600,
                   cursor: 'pointer',
-                  transition: 'all 0.15s'
+                  transition: 'all 0.15s ease'
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--neu-border)'; e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}
               >
                 Close Sandbox
               </button>
               
               <button onClick={handleTestExecute} disabled={testLoading}
                 style={{
-                  height: 38,
+                  height: 40,
                   padding: '0 24px',
-                  borderRadius: '8px',
-                  background: '#ffffff',
-                  border: 'none',
-                  color: '#000000',
+                  borderRadius: '10px',
+                  background: testLoading ? 'var(--neu-surface)' : 'var(--neu-grad-convex)',
+                  border: '1px solid var(--neu-border)',
+                  boxShadow: testLoading ? 'none' : 'var(--neu-flat-sm)',
+                  color: testLoading ? '#64748b' : '#ffffff',
                   fontSize: 12.5,
                   fontWeight: 700,
                   cursor: testLoading ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  transition: 'all 0.15s'
+                  transition: 'all 0.15s ease'
                 }}
-                onMouseEnter={e => { if(!testLoading) e.currentTarget.style.background = '#cbd5e1'; }}
-                onMouseLeave={e => { if(!testLoading) e.currentTarget.style.background = '#ffffff'; }}
+                onMouseEnter={e => { if(!testLoading) { e.currentTarget.style.boxShadow = 'var(--neu-flat)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; } }}
+                onMouseLeave={e => { if(!testLoading) { e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; e.currentTarget.style.borderColor = 'var(--neu-border)'; } }}
               >
                 {testLoading ? (
                   <>
@@ -1365,23 +1387,23 @@ export default function BuilderPage() {
 
       {/* ── WORKFLOW TEMPLATES LIBRARY MODAL ───────────── */}
       {showTemplatesModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
-          <div style={{ background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', padding: 28, width: '100%', maxWidth: 740, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column' }} className="scroll-area">
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
+          <div style={{ background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', borderRadius: '20px', padding: 30, width: '100%', maxWidth: 760, maxHeight: '90vh', overflowY: 'auto', boxShadow: 'var(--neu-flat-lg)', display: 'flex', flexDirection: 'column' }} className="scroll-area">
             
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid var(--neu-border)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 40, height: 40, border: '1px solid var(--border)', borderRadius: '8px', background: 'rgba(56, 189, 248, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 42, height: 42, border: '1px solid var(--neu-border)', borderRadius: '12px', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Layers size={20} style={{ color: '#38bdf8' }} />
                 </div>
                 <div>
-                  <h2 style={{ fontSize: 15, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Workflow Templates</h2>
-                  <p style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>
+                  <h2 style={{ fontSize: 15, fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Workflow Templates</h2>
+                  <p style={{ fontSize: 10, color: '#94a3b8', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>
                     PRE-BUILT ARCHITECTURES · FREE BASIC & PRO ADVANCED
                   </p>
                 </div>
               </div>
-              <button onClick={() => setShowTemplatesModal(false)} style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={() => setShowTemplatesModal(false)} style={{ width: 26, height: 26, border: '1px solid var(--neu-border)', borderRadius: '8px', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X size={12} />
               </button>
             </div>
@@ -1395,10 +1417,11 @@ export default function BuilderPage() {
                     key={tpl.id}
                     onClick={() => handleApplyTemplate(tpl)}
                     style={{
-                      border: isLocked ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid var(--border)',
-                      borderRadius: '10px',
+                      border: isLocked ? '1px solid rgba(255, 255, 255, 0.04)' : '1px solid var(--neu-border)',
+                      borderRadius: '14px',
                       padding: 16,
-                      background: isLocked ? 'rgba(255, 255, 255, 0.015)' : 'rgba(255, 255, 255, 0.03)',
+                      background: isLocked ? 'var(--neu-sunken)' : 'var(--neu-surface)',
+                      boxShadow: isLocked ? 'var(--neu-pressed-sm)' : 'var(--neu-flat-xs)',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
                       position: 'relative',
@@ -1407,12 +1430,12 @@ export default function BuilderPage() {
                       gap: 10
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = isLocked ? 'rgba(0, 242, 254, 0.3)' : 'rgba(255, 255, 255, 0.3)';
-                      e.currentTarget.style.background = isLocked ? 'rgba(0, 242, 254, 0.03)' : 'rgba(255, 255, 255, 0.06)';
+                      e.currentTarget.style.borderColor = isLocked ? 'rgba(0, 242, 254, 0.4)' : 'rgba(255, 255, 255, 0.25)';
+                      if (!isLocked) e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)';
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = isLocked ? 'rgba(255, 255, 255, 0.06)' : 'var(--border)';
-                      e.currentTarget.style.background = isLocked ? 'rgba(255, 255, 255, 0.015)' : 'rgba(255, 255, 255, 0.03)';
+                      e.currentTarget.style.borderColor = isLocked ? 'rgba(255, 255, 255, 0.04)' : 'var(--neu-border)';
+                      if (!isLocked) e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)';
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1420,12 +1443,12 @@ export default function BuilderPage() {
                         <span style={{
                           fontSize: 9,
                           fontFamily: "'JetBrains Mono', monospace",
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          background: tpl.isPro ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255, 255, 255, 0.06)',
-                          color: tpl.isPro ? '#00f2fe' : 'var(--text-muted)',
-                          border: tpl.isPro ? '1px solid rgba(0, 242, 254, 0.3)' : '1px solid var(--border)',
-                          fontWeight: 700,
+                          padding: '2px 7px',
+                          borderRadius: '6px',
+                          background: tpl.isPro ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255, 255, 255, 0.04)',
+                          color: tpl.isPro ? '#00f2fe' : '#94a3b8',
+                          border: tpl.isPro ? '1px solid rgba(0, 242, 254, 0.3)' : '1px solid var(--neu-border)',
+                          fontWeight: 800,
                           textTransform: 'uppercase'
                         }}>
                           {tpl.category}
@@ -1437,8 +1460,8 @@ export default function BuilderPage() {
                             gap: 3,
                             fontSize: 9,
                             fontFamily: "'JetBrains Mono', monospace",
-                            padding: '2px 6px',
-                            borderRadius: '4px',
+                            padding: '2px 7px',
+                            borderRadius: '6px',
                             background: 'rgba(245, 158, 11, 0.15)',
                             color: '#fbbf24',
                             border: '1px solid rgba(245, 158, 11, 0.3)',
@@ -1448,17 +1471,17 @@ export default function BuilderPage() {
                           </span>
                         )}
                       </div>
-                      <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 10, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>
                         {tpl.nodes.length} Nodes
                       </span>
                     </div>
 
                     <div>
                       <h4 style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 4 }}>{tpl.title}</h4>
-                      <p style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.4 }}>{tpl.desc}</p>
+                      <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.4 }}>{tpl.desc}</p>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 8, borderTop: '1px solid var(--neu-border)' }}>
                       <span style={{ fontSize: 10, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>
                         {isLocked ? 'Requires Pro Plan' : 'Ready to Instantiate'}
                       </span>
@@ -1483,27 +1506,27 @@ export default function BuilderPage() {
 
       {/* ── PRO UPGRADE MODAL ─────────────────────────── */}
       {showUpgradeModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110, padding: 24 }}>
-          <div style={{ background: '#09090b', border: '1px solid var(--border)', borderRadius: '12px', padding: 32, width: '100%', maxWidth: 500, boxShadow: '0 8px 32px rgba(0,0,0,0.7)', textAlign: 'center' }}>
-            <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(0, 242, 254, 0.1)', border: '1px solid rgba(0, 242, 254, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110, padding: 24 }}>
+          <div style={{ background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', borderRadius: '22px', padding: 34, width: '100%', maxWidth: 500, boxShadow: 'var(--neu-flat-lg)', textAlign: 'center' }}>
+            <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--neu-surface)', border: '1px solid var(--neu-border)', boxShadow: 'var(--neu-flat-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <Zap size={26} style={{ color: '#00f2fe' }} />
             </div>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: '-0.02em' }}>Upgrade to Pro</h2>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: 24 }}>
+            <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.5, marginBottom: 24 }}>
               Unlock advanced workflow templates, 12 AI generations per month, unlimited projects, full execution history, and zero ads.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24, textAlign: 'left' }}>
-              <div style={{ padding: 16, borderRadius: '8px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Pro Monthly</div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>₹499<span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 400 }}>/mo</span></div>
+              <div style={{ padding: 16, borderRadius: '12px', border: '1px solid var(--neu-border)', background: 'var(--neu-sunken)', boxShadow: 'var(--neu-pressed-sm)' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Pro Monthly</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>₹499<span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400 }}>/mo</span></div>
                 <div style={{ fontSize: 10, color: '#64748b', marginTop: 4 }}>Flexible monthly billing</div>
               </div>
 
-              <div style={{ padding: 16, borderRadius: '8px', border: '1px solid rgba(0, 242, 254, 0.3)', background: 'rgba(0, 242, 254, 0.04)', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: -8, right: 8, background: '#00f2fe', color: '#000', fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: '4px' }}>SAVE ₹989</div>
+              <div style={{ padding: 16, borderRadius: '12px', border: '1px solid rgba(0, 242, 254, 0.35)', background: 'var(--neu-sunken)', boxShadow: 'var(--neu-pressed-sm)', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: -8, right: 8, background: '#00f2fe', color: '#000', fontSize: 9, fontWeight: 800, padding: '2px 8px', borderRadius: '4px' }}>SAVE ₹989</div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#00f2fe', textTransform: 'uppercase', marginBottom: 4 }}>Pro Yearly</div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>₹4,999<span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 400 }}>/yr</span></div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>₹4,999<span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400 }}>/yr</span></div>
                 <div style={{ fontSize: 10, color: '#38bdf8', marginTop: 4 }}>₹417/month effective</div>
               </div>
             </div>
@@ -1514,14 +1537,18 @@ export default function BuilderPage() {
                 style={{
                   flex: 1,
                   height: 42,
-                  borderRadius: '8px',
-                  border: '1px solid var(--border)',
-                  background: 'transparent',
+                  borderRadius: '10px',
+                  border: '1px solid var(--neu-border)',
+                  background: 'var(--neu-surface)',
+                  boxShadow: 'var(--neu-flat-xs)',
                   color: '#94a3b8',
                   fontSize: 13,
                   fontWeight: 600,
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
                 }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--neu-border)'; e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.boxShadow = 'var(--neu-flat-xs)'; }}
               >
                 Maybe Later
               </button>
@@ -1533,18 +1560,22 @@ export default function BuilderPage() {
                 style={{
                   flex: 1.5,
                   height: 42,
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: '#ffffff',
-                  color: '#000000',
+                  borderRadius: '10px',
+                  border: '1px solid var(--neu-border)',
+                  background: 'var(--neu-grad-convex)',
+                  boxShadow: 'var(--neu-flat-sm)',
+                  color: '#ffffff',
                   fontSize: 13,
                   fontWeight: 700,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 6
+                  gap: 6,
+                  transition: 'all 0.15s ease'
                 }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--neu-flat)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--neu-flat-sm)'; e.currentTarget.style.borderColor = 'var(--neu-border)'; }}
               >
                 Go to Plans
               </button>
