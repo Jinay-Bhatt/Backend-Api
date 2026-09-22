@@ -4,18 +4,18 @@ import pg from "pg";
 
 const { Pool } = pg;
 
-// High-Throughput Connection Pool (Tuned for Neon Serverless PostgreSQL)
+// High-Throughput Connection Pool (Tuned for Neon Serverless PostgreSQL & Cold Starts)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   max: 20,                       // Up to 20 active pool sockets per instance
-  idleTimeoutMillis: 10000,      // Recycle idle connections every 10s before Neon serverless drops them
-  connectionTimeoutMillis: 10000,// Allow 10s for initial SSL handshake
+  idleTimeoutMillis: 30000,      // Recycle idle connections every 30s
+  connectionTimeoutMillis: 30000,// Allow up to 30s for Neon serverless compute cold starts
   keepAlive: true,
 });
 
 // Handle Neon serverless idle socket drops gracefully without server interruption
 pool.on("error", (err: any) => {
-  if (err.message && err.message.includes("connection timeout")) {
+  if (err.message && (err.message.includes("connection timeout") || err.message.includes("Connection terminated"))) {
     // Normal serverless pool recycling notice — silent handle
     return;
   }
@@ -45,13 +45,44 @@ pool.query(`
 
 const adapter = new PrismaPg(pool);
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+const globalForPrisma = globalThis as unknown as { prisma?: any };
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({
+const rawPrisma = globalForPrisma.prisma ?? new PrismaClient({
   adapter,
   log: ["error"],
 });
 
+export const prisma = rawPrisma.$extends({
+  query: {
+    $allModels: {
+      async $allOperations({ model, operation, args, query }: any) {
+        let retries = 2;
+        while (retries >= 0) {
+          try {
+            return await query(args);
+          } catch (error: any) {
+            const isConnErr =
+              error?.message?.includes("connection timeout") ||
+              error?.message?.includes("Connection terminated") ||
+              error?.message?.includes("Connection closed") ||
+              error?.code === "P1001" ||
+              error?.code === "P1002" ||
+              error?.code === "P1017";
+
+            if (isConnErr && retries > 0) {
+              retries--;
+              await new Promise((resolve) => setTimeout(resolve, 1500));
+              continue;
+            }
+            throw error;
+          }
+        }
+      },
+    },
+  },
+});
+
 if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  globalForPrisma.prisma = rawPrisma;
 }
+

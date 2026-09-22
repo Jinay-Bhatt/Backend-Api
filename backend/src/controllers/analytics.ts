@@ -119,12 +119,12 @@ export async function getAnalytics(
 
     // Summary stats
     const totalRequests = logs.length;
-    const totalErrors = logs.filter((l) => l.responseStatus >= 400).length;
-    const allLatencies = logs.map((l) => l.latencyMs).sort((a, b) => a - b);
+    const totalErrors = logs.filter((l: any) => l.responseStatus >= 400).length;
+    const allLatencies = logs.map((l: any) => l.latencyMs).sort((a: number, b: number) => a - b);
     const avgLatency =
       allLatencies.length > 0
         ? Math.round(
-            allLatencies.reduce((a, b) => a + b, 0) / allLatencies.length
+            allLatencies.reduce((a: number, b: number) => a + b, 0) / allLatencies.length
           )
         : 0;
     const p95Latency =
