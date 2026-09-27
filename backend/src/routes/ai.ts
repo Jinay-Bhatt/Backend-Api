@@ -4,6 +4,7 @@ import { rateLimitAI } from "../middlewares/rateLimit.js";
 import { generateWorkflowFromPrompt } from "../services/ai.js";
 import { prisma } from "../services/db.js";
 import { createNotification } from "../services/notifications.js";
+import { checkAndResetAiQuota } from "../services/userQuota.js";
 
 export async function aiRoutes(fastify: FastifyInstance) {
   fastify.addHook("preHandler", authenticate);
@@ -28,33 +29,28 @@ export async function aiRoutes(fastify: FastifyInstance) {
       }
 
       try {
-        const user = await prisma.user.findUnique({
+        const rawUser = await prisma.user.findUnique({
           where: { id: userId },
           select: {
+            id: true,
             plan: true,
             aiGenerationsCount: true,
             aiGenerationsResetAt: true,
+            createdAt: true,
           },
         });
 
-        if (!user) {
+        if (!rawUser) {
           return reply.status(404).send({ error: "User not found" });
         }
 
-        const now = new Date();
-        let currentCount = user.aiGenerationsCount || 0;
-        let resetAt = user.aiGenerationsResetAt ? new Date(user.aiGenerationsResetAt) : now;
-        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+        // Check 30-day AI quota cycle
+        const user = await checkAndResetAiQuota(rawUser);
 
-        // Auto-reset if 30 days have elapsed since last reset date
-        if (now.getTime() - resetAt.getTime() > thirtyDaysMs) {
-          currentCount = 0;
-          resetAt = now;
-          await prisma.user.update({
-            where: { id: userId },
-            data: { aiGenerationsCount: 0, aiGenerationsResetAt: now },
-          });
-        }
+        const now = new Date();
+        const currentCount = user.aiGenerationsCount || 0;
+        const resetAt = user.aiGenerationsResetAt ? new Date(user.aiGenerationsResetAt) : now;
+        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 
         // Quota: Free = 3/month, Pro = 12/month
         const isPro = user.plan === "PRO_MONTHLY" || user.plan === "PRO_YEARLY";
@@ -77,10 +73,11 @@ export async function aiRoutes(fastify: FastifyInstance) {
 
         const workflow = await generateWorkflowFromPrompt(prompt.trim());
 
-        // Increment count
-        await prisma.user.update({
+        // Increment count in database
+        const updatedUser = await prisma.user.update({
           where: { id: userId },
           data: { aiGenerationsCount: { increment: 1 } },
+          select: { aiGenerationsCount: true },
         });
 
         // Real-time notification
@@ -96,9 +93,9 @@ export async function aiRoutes(fastify: FastifyInstance) {
           workflow,
           message: "Workflow generated successfully by AI",
           quota: {
-            used: currentCount + 1,
+            used: updatedUser.aiGenerationsCount,
             limit: monthlyLimit,
-            remaining: Math.max(0, monthlyLimit - (currentCount + 1)),
+            remaining: Math.max(0, monthlyLimit - updatedUser.aiGenerationsCount),
           },
         });
       } catch (error: any) {

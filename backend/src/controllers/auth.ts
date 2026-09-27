@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../services/db.js";
 import { verifyEmailExistence } from "../services/emailVerification.js";
 import { createNotification } from "../services/notifications.js";
+import { checkAndResetAiQuota } from "../services/userQuota.js";
 
 export async function registerUser(
   request: FastifyRequest,
@@ -55,6 +56,7 @@ export async function registerUser(
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
+    const now = new Date();
 
     const user = await prisma.user.create({
       data: {
@@ -62,6 +64,9 @@ export async function registerUser(
         email,
         passwordHash,
         gender: gender || "Prefer not to say",
+        plan: "FREE",
+        aiGenerationsCount: 0,
+        aiGenerationsResetAt: now,
       },
     });
 
@@ -110,23 +115,26 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const rawUser = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (!user || !user.passwordHash) {
+    if (!rawUser || !rawUser.passwordHash) {
       return reply.status(401).send({
         error: "Unauthorized: Invalid email or password",
       });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+    const passwordMatch = await bcrypt.compare(password, rawUser.passwordHash);
 
     if (!passwordMatch) {
       return reply.status(401).send({
         error: "Unauthorized: Invalid email or password",
       });
     }
+
+    // Check and update 30-day AI generation quota cycle (does NOT reset counter on login if within 30 days)
+    const user = await checkAndResetAiQuota(rawUser);
 
     // Sign a JWT token containing user identity details
     const token = await reply.jwtSign({
@@ -172,13 +180,14 @@ export async function googleLogin(request: FastifyRequest, reply: FastifyReply) 
   }
 
   try {
-    let user = await prisma.user.findUnique({
+    const now = new Date();
+    let rawUser = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (!user) {
+    if (!rawUser) {
       const username = name || email.split("@")[0] || "Google User";
-      user = await prisma.user.create({
+      rawUser = await prisma.user.create({
         data: {
           username,
           email,
@@ -186,14 +195,19 @@ export async function googleLogin(request: FastifyRequest, reply: FastifyReply) 
           passwordHash: null,
           gender: gender || "Prefer not to say",
           plan: "FREE",
+          aiGenerationsCount: 0,
+          aiGenerationsResetAt: now,
         },
       });
-    } else if (!user.avatar && picture) {
-      user = await prisma.user.update({
-        where: { id: user.id },
+    } else if (!rawUser.avatar && picture) {
+      rawUser = await prisma.user.update({
+        where: { id: rawUser.id },
         data: { avatar: picture },
       });
     }
+
+    // Check and update 30-day AI generation quota cycle
+    const user = await checkAndResetAiQuota(rawUser);
 
     const token = await reply.jwtSign({
       id: user.id,
@@ -227,7 +241,7 @@ export async function googleLogin(request: FastifyRequest, reply: FastifyReply) 
 export async function getMe(request: FastifyRequest, reply: FastifyReply) {
   try {
     const userId = (request.user as any).id;
-    const user = await prisma.user.findUnique({
+    const rawUser = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -242,9 +256,12 @@ export async function getMe(request: FastifyRequest, reply: FastifyReply) {
       },
     });
 
-    if (!user) {
+    if (!rawUser) {
       return reply.status(404).send({ error: "User not found" });
     }
+
+    // Check 30-day quota cycle on /auth/me call
+    const user = await checkAndResetAiQuota(rawUser);
 
     return reply.send({ user });
   } catch (error: any) {
@@ -353,6 +370,7 @@ export async function upgradePlan(request: FastifyRequest, reply: FastifyReply) 
   }
 
   try {
+    // Update plan only — preserve aiGenerationsCount and aiGenerationsResetAt as-is
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { plan },
@@ -372,8 +390,8 @@ export async function upgradePlan(request: FastifyRequest, reply: FastifyReply) 
     // Dispatch real-time notification
     createNotification({
       userId,
-      title: "Plan Upgraded",
-      message: `Successfully upgraded to ${plan.replace("_", " ")}. Your enhanced limits are active!`,
+      title: "Plan Updated",
+      message: `Successfully updated plan to ${plan.replace("_", " ")}.`,
       type: "success",
       link: "/settings?tab=plan",
     }).catch(() => {});

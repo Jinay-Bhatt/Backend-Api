@@ -23,8 +23,8 @@ async function request<T = any>(
   const method = (options.method || 'GET').toUpperCase();
   const cacheKey = `${method}:${endpoint}`;
 
-  // Serve GET requests from SWR cache instantly if available
-  if (method === 'GET') {
+  // Serve GET requests from SWR cache instantly if available (excluding /auth endpoints)
+  if (method === 'GET' && !endpoint.startsWith('/auth')) {
     const cached = apiCache.get(cacheKey);
     const now = Date.now();
     if (cached && now - cached.timestamp < CACHE_TTL_MS) {
@@ -194,8 +194,10 @@ export const api = {
     },
   },
   ai: {
-    generateWorkflow: (prompt: string) =>
-      request('/ai/generate-workflow', { method: 'POST', body: JSON.stringify({ prompt }) }),
+    generateWorkflow: (prompt: string) => {
+      clearApiCache('/auth');
+      return request('/ai/generate-workflow', { method: 'POST', body: JSON.stringify({ prompt }) });
+    },
   },
   notifications: {
     list: () => request<{ notifications: any[]; unreadCount: number }>('/notifications'),

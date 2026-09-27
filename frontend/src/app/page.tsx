@@ -1894,61 +1894,6 @@ function PricingSection() {
     },
   ];
 
-  const comparisonRows: Array<{
-    feature: string;
-    free: any;
-    monthly: any;
-    yearly: any;
-    bold?: boolean;
-    highlightYearly?: boolean;
-    isCta?: boolean;
-  }> = [
-    { feature: 'Price', free: '₹0', monthly: '₹499/month', yearly: '₹4,999/year', bold: true },
-    { feature: 'Effective Monthly Price', free: '₹0', monthly: '₹499', yearly: '₹417/month', bold: true },
-    { feature: 'Annual Saving', free: '-', monthly: '-', yearly: '₹989', bold: true, highlightYearly: true },
-    { feature: 'Visual API Builder', free: true, monthly: true, yearly: true },
-    { feature: 'Create API Workflows', free: true, monthly: true, yearly: true },
-    { feature: 'API Testing', free: true, monthly: true, yearly: true },
-    { feature: 'Live Execution', free: true, monthly: true, yearly: true },
-    { feature: 'Generate Backend Code', free: true, monthly: true, yearly: true },
-    { feature: 'Download Source Code', free: true, monthly: true, yearly: true },
-    { feature: 'GitHub Export', free: true, monthly: true, yearly: true },
-    { feature: 'Projects', free: '5', monthly: 'Unlimited', yearly: 'Unlimited', bold: true },
-    { feature: 'AI Workflow Generation', free: '3/month', monthly: '12/month', yearly: '12/month', bold: true },
-    { feature: 'Basic Templates', free: true, monthly: true, yearly: true },
-    { feature: 'Advanced Templates', free: false, monthly: true, yearly: true },
-    { feature: 'Execution History', free: 'Limited', monthly: true, yearly: true },
-    { feature: 'Advanced Workflow Features', free: 'Limited', monthly: true, yearly: true },
-    { feature: 'Custom Workflows', free: 'Limited', monthly: true, yearly: true },
-    { feature: 'API Documentation', free: 'Basic', monthly: 'Advanced', yearly: 'Advanced' },
-    { feature: 'Ads', free: true, monthly: 'No', yearly: 'No', bold: true },
-    { feature: 'Priority Support', free: false, monthly: true, yearly: true },
-    { feature: 'Best For', free: 'Students & beginners', monthly: 'Regular developers', yearly: 'Long-term users' },
-    { feature: 'Action', free: 'Get Started Free', monthly: 'Start Pro', yearly: 'Choose Yearly', isCta: true },
-  ];
-
-  const renderCellContent = (val: any, isYearly = false, isBold = false) => {
-    if (val === true) {
-      return (
-        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, borderRadius: '50%', background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>
-          <Check size={13} strokeWidth={3} />
-        </span>
-      );
-    }
-    if (val === false || val === '-') {
-      return <span style={{ color: '#475569', fontSize: 13 }}>-</span>;
-    }
-    return (
-      <span style={{
-        fontWeight: isBold ? 700 : 500,
-        color: isYearly ? '#f59e0b' : '#cbd5e1',
-        fontSize: 13,
-      }}>
-        {val}
-      </span>
-    );
-  };
-
   return (
     <section id="pricing" style={{ padding: '32px 32px 120px', position: 'relative', background: 'var(--neu-base)' }}>
       <SectionDivider />
@@ -1974,7 +1919,7 @@ function PricingSection() {
         </Reveal>
 
         {/* Pricing Cards Grid */}
-        <div className="pricing-grid" style={{ marginBottom: 72 }}>
+        <div className="pricing-grid">
           {plans.map((p, i) => {
             const isPro = p.popular;
             const isYearly = p.name === 'Pro Yearly';
@@ -2059,82 +2004,6 @@ function PricingSection() {
             );
           })}
         </div>
-
-        {/* Feature Comparison Matrix */}
-        <Reveal direction="up">
-          <div style={{
-            background: 'var(--neu-surface)',
-            border: '1px solid var(--neu-border)',
-            boxShadow: 'var(--neu-flat)',
-            borderRadius: 24,
-            padding: '36px 32px',
-            overflow: 'hidden'
-          }}>
-            <div style={{ marginBottom: 28, textAlign: 'center' }}>
-              <h3 style={{ fontSize: 24, fontWeight: 800, color: '#ffffff', marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                Detailed Feature Matrix
-              </h3>
-              <p style={{ fontSize: 14, color: '#64748b', margin: 0 }}>
-                A granular side-by-side comparison across all JBSnap product capabilities.
-              </p>
-            </div>
-
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 680 }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <th style={{ padding: '14px 16px', fontSize: 13, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Feature</th>
-                    <th style={{ padding: '14px 16px', fontSize: 14, fontWeight: 800, color: '#ffffff', textAlign: 'center', width: '22%' }}>Free</th>
-                    <th style={{ padding: '14px 16px', fontSize: 14, fontWeight: 800, color: '#818cf8', textAlign: 'center', width: '22%' }}>Pro Monthly</th>
-                    <th style={{ padding: '14px 16px', fontSize: 14, fontWeight: 800, color: '#f59e0b', textAlign: 'center', width: '22%' }}>Pro Yearly</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisonRows.map((row, idx) => (
-                    <tr
-                      key={row.feature}
-                      style={{
-                        borderBottom: idx === comparisonRows.length - 1 ? 'none' : '1px solid rgba(255,255,255,0.03)',
-                        background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
-                      }}
-                    >
-                      <td style={{ padding: '12px 16px', fontSize: 13.5, color: '#cbd5e1', fontWeight: row.bold ? 700 : 400 }}>
-                        {row.feature}
-                      </td>
-                      <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                        {row.isCta ? (
-                          <Link href="/register" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#ffffff', textDecoration: 'none' }}>
-                            {row.free}
-                          </Link>
-                        ) : (
-                          renderCellContent(row.free, false, row.bold)
-                        )}
-                      </td>
-                      <td style={{ padding: '12px 16px', textAlign: 'center', background: 'rgba(99,102,241,0.02)' }}>
-                        {row.isCta ? (
-                          <Link href="/register?plan=PRO_MONTHLY" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, background: '#6366f1', color: '#ffffff', textDecoration: 'none' }}>
-                            {row.monthly}
-                          </Link>
-                        ) : (
-                          renderCellContent(row.monthly, false, row.bold)
-                        )}
-                      </td>
-                      <td style={{ padding: '12px 16px', textAlign: 'center', background: 'rgba(245,158,11,0.03)' }}>
-                        {row.isCta ? (
-                          <Link href="/register?plan=PRO_YEARLY" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, background: '#f59e0b', color: '#000000', textDecoration: 'none' }}>
-                            {row.yearly}
-                          </Link>
-                        ) : (
-                          renderCellContent(row.yearly, true, row.bold)
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </Reveal>
       </div>
     </section>
   );

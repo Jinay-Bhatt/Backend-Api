@@ -187,9 +187,11 @@ export default function BuilderPage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const u = await api.auth.me();
-        setUser(u);
-        localStorage.setItem('ff_user', JSON.stringify(u));
+        const res = await api.auth.me();
+        if (res?.user) {
+          setUser(res.user);
+          localStorage.setItem('ff_user', JSON.stringify(res.user));
+        }
       } catch (_) {
         const stored = localStorage.getItem('ff_user');
         if (stored) {
@@ -367,7 +369,14 @@ export default function BuilderPage() {
       setEdges((workflow.edges as Edge[]) || []);
       setSelectedWf(created);
       setWorkflows(p => [created, ...p]);
-      setUser((prev: any) => prev ? { ...prev, aiGenerationsCount: (prev.aiGenerationsCount || 0) + 1 } : prev);
+      setUser((prev: any) => {
+        const nextUsed = res?.quota?.used !== undefined ? res.quota.used : ((prev?.aiGenerationsCount || 0) + 1);
+        const updated = prev ? { ...prev, aiGenerationsCount: nextUsed } : prev;
+        if (updated) {
+          localStorage.setItem('ff_user', JSON.stringify(updated));
+        }
+        return updated;
+      });
       setShowAi(false);
       setAiPrompt('');
     } catch (err: any) { setAiError(err.message); }
@@ -844,7 +853,16 @@ export default function BuilderPage() {
           </button>
 
           {/* AI Button */}
-          <button onClick={() => setShowAi(true)}
+          <button onClick={async () => {
+            setShowAi(true);
+            try {
+              const res = await api.auth.me();
+              if (res?.user) {
+                setUser(res.user);
+                localStorage.setItem('ff_user', JSON.stringify(res.user));
+              }
+            } catch (_) {}
+          }}
             style={{
               padding: '6px 12px',
               border: '1px solid var(--neu-border)',
@@ -894,7 +912,24 @@ export default function BuilderPage() {
         </div>
 
         <ReactFlow
-          nodes={nodes} edges={edges}
+          nodes={useMemo(() => {
+            if (!Array.isArray(nodes)) return [];
+            return nodes.map((n: any, idx: number) => {
+              const posX = typeof n?.position?.x === 'number' && !isNaN(n.position.x) ? n.position.x : (100 + (idx % 3) * 220);
+              const posY = typeof n?.position?.y === 'number' && !isNaN(n.position.y) ? n.position.y : (120 + Math.floor(idx / 3) * 140);
+              return {
+                ...n,
+                id: String(n?.id || `node_${idx}_${Date.now()}`),
+                type: n?.type || 'default',
+                data: n?.data || {},
+                position: { x: posX, y: posY },
+              };
+            });
+          }, [nodes])}
+          edges={useMemo(() => {
+            if (!Array.isArray(edges)) return [];
+            return edges.filter((e: any) => e && e.source && e.target);
+          }, [edges])}
           onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           nodeTypes={nodeTypes}

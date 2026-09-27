@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { User, Mail, Lock, Users } from 'lucide-react';
+import { User, Mail, Lock, Users, ArrowLeft } from 'lucide-react';
 import { api } from '../../services/api';
 import GoogleSignInButton from '../../components/GoogleSignInButton';
 
@@ -61,6 +61,24 @@ export default function RegisterPage() {
       position: 'relative',
       overflow: 'hidden',
     }}>
+      {/* Back to Landing Page Button */}
+      <Link
+        href="/"
+        style={{
+          position: 'absolute', top: 24, left: 24, zIndex: 20,
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '8px 16px', borderRadius: 99,
+          background: 'var(--neu-surface)', border: '1px solid var(--neu-border)',
+          boxShadow: 'var(--neu-flat-xs)',
+          color: '#94a3b8', fontSize: 12.5, fontWeight: 700,
+          textDecoration: 'none', transition: 'all 0.2s ease',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+        onMouseLeave={e => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.borderColor = 'var(--neu-border)'; }}
+      >
+        <ArrowLeft size={14} /> Back to Landing Page
+      </Link>
+
       {/* Subtle ambient lighting */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
         <div style={{
@@ -84,20 +102,22 @@ export default function RegisterPage() {
         {/* Sleek Header */}
         <div style={{ textAlign: 'center', marginBottom: 32, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {/* Logo Node with high-tech background glow */}
-          <div style={{
-            position: 'relative', width: 72, height: 72, borderRadius: 22,
-            background: 'var(--neu-surface)',
-            border: '1px solid var(--neu-border)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: 20,
-            boxShadow: 'var(--neu-flat-sm)',
-          }}>
-            <img src="/logo.jpg" alt="JBSnap Logo" width="40" height="40" style={{ objectFit: 'cover', borderRadius: '50%' }} />
+          <Link href="/" style={{ textDecoration: 'none' }}>
             <div style={{
-              position: 'absolute', inset: -4, borderRadius: 26,
-              border: '1.5px dashed rgba(255,255,255,0.06)', pointerEvents: 'none'
-            }} />
-          </div>
+              position: 'relative', width: 72, height: 72, borderRadius: 22,
+              background: 'var(--neu-surface)',
+              border: '1px solid var(--neu-border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: 20,
+              boxShadow: 'var(--neu-flat-sm)',
+            }}>
+              <img src="/logo.jpg" alt="JBSnap Logo" width="40" height="40" style={{ objectFit: 'cover', borderRadius: '50%' }} />
+              <div style={{
+                position: 'absolute', inset: -4, borderRadius: 26,
+                border: '1.5px dashed rgba(255,255,255,0.06)', pointerEvents: 'none'
+              }} />
+            </div>
+          </Link>
           <h1 style={{
             fontSize: 28, fontWeight: 900, color: '#ffffff', letterSpacing: '-1px',
             fontFamily: "'Plus Jakarta Sans', Inter, sans-serif", lineHeight: 1.1
@@ -390,6 +410,18 @@ export default function RegisterPage() {
           >
             Sign in
           </Link>
+        </div>
+
+        {/* Terms of Service and Privacy Policy */}
+        <div style={{ marginTop: 20, fontSize: 11.5, color: '#475569', textAlign: 'center', lineHeight: 1.6 }}>
+          By creating an account, you agree to JBSnap's{' '}
+          <Link href="/terms" style={{ color: '#94a3b8', textDecoration: 'underline' }}>
+            Terms of Service
+          </Link>{' '}
+          and{' '}
+          <Link href="/privacy" style={{ color: '#94a3b8', textDecoration: 'underline' }}>
+            Privacy Policy
+          </Link>.
         </div>
       </div>
     </main>
