@@ -495,12 +495,13 @@ export default function SettingsPage() {
                     Active Subscription
                   </div>
                   <div style={{ fontSize: 24, fontWeight: 800, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif", display: 'flex', alignItems: 'center', gap: 10 }}>
-                    {user?.plan === 'PRO_YEARLY' ? 'Pro Yearly' : user?.plan === 'PRO_MONTHLY' ? 'Pro Monthly' : 'Free Plan'}
+                    {/* {user?.plan === 'PRO_YEARLY' ? 'Pro Yearly' : user?.plan === 'PRO_MONTHLY' ? 'Pro Monthly' : 'Free Plan'} */}
+                    Free Plan
                     <span style={{
                       fontSize: 10, fontWeight: 800, padding: '2px 10px', borderRadius: 99,
-                      background: user?.plan?.startsWith('PRO') ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.06)',
-                      border: `1px solid ${user?.plan?.startsWith('PRO') ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                      color: user?.plan?.startsWith('PRO') ? '#10b981' : '#94a3b8',
+                      background: 'rgba(16,185,129,0.12)',
+                      border: '1px solid rgba(16,185,129,0.3)',
+                      color: '#10b981',
                       textTransform: 'uppercase', letterSpacing: '0.06em'
                     }}>
                       ACTIVE
@@ -510,10 +511,12 @@ export default function SettingsPage() {
 
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 22, fontWeight: 900, color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    {user?.plan === 'PRO_YEARLY' ? '₹4,999/yr' : user?.plan === 'PRO_MONTHLY' ? '₹499/mo' : '₹0'}
+                    {/* {user?.plan === 'PRO_YEARLY' ? '₹4,999/yr' : user?.plan === 'PRO_MONTHLY' ? '₹499/mo' : '₹0'} */}
+                    ₹0
                   </div>
                   <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
-                    {user?.plan === 'PRO_YEARLY' ? 'Effective ₹417/month' : user?.plan === 'PRO_MONTHLY' ? 'Billed monthly' : 'Free forever'}
+                    {/* {user?.plan === 'PRO_YEARLY' ? 'Effective ₹417/month' : user?.plan === 'PRO_MONTHLY' ? 'Billed monthly' : 'Free forever'} */}
+                    Free forever
                   </div>
                 </div>
               </div>
@@ -527,14 +530,14 @@ export default function SettingsPage() {
                       <Cpu size={12} /> AI Generations
                     </span>
                     <span style={{ fontSize: 12, fontWeight: 800, color: '#ffffff', fontFamily: 'JetBrains Mono, monospace' }}>
-                      {user?.aiGenerationsCount || 0} / {user?.plan?.startsWith('PRO') ? 12 : 3}
+                      {user?.aiGenerationsCount || 0} / 3 {/* user?.plan?.startsWith('PRO') ? 12 : 3 */}
                     </span>
                   </div>
                   <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 99, overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
-                      width: `${Math.min(100, (((user?.aiGenerationsCount || 0) / (user?.plan?.startsWith('PRO') ? 12 : 3)) * 100))}%`,
-                      background: user?.plan?.startsWith('PRO') ? '#6366f1' : '#f59e0b',
+                      width: `${Math.min(100, (((user?.aiGenerationsCount || 0) / 3) * 100))}%`,
+                      background: '#6366f1',
                       borderRadius: 99,
                     }} />
                   </div>
@@ -550,32 +553,33 @@ export default function SettingsPage() {
                       <Package size={12} /> Project Containers
                     </span>
                     <span style={{ fontSize: 12, fontWeight: 800, color: '#ffffff', fontFamily: 'JetBrains Mono, monospace' }}>
-                      {user?.plan?.startsWith('PRO') ? 'Unlimited' : '5 Max'}
+                      Unlimited {/* user?.plan?.startsWith('PRO') ? 'Unlimited' : '5 Max' */}
                     </span>
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                    {user?.plan?.startsWith('PRO') ? 'No restrictions on active projects' : 'Free tier capped at 5 projects'}
+                    No restrictions on active projects
                   </div>
                 </div>
 
                 {/* Ads Status */}
                 <div style={{ padding: 14, background: '#121214', borderRadius: 8, border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: user?.plan?.startsWith('PRO') ? '#10b981' : '#f59e0b', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#38bdf8', display: 'flex', alignItems: 'center', gap: 5 }}>
                       <Shield size={12} /> Ads Experience
                     </span>
                     <span style={{ fontSize: 12, fontWeight: 800, color: '#ffffff' }}>
-                      {user?.plan?.startsWith('PRO') ? 'Ad-Free (No Ads)' : 'Ad Supported'}
+                      Standard
                     </span>
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                    {user?.plan?.startsWith('PRO') ? 'Zero banner promotions' : 'Upgrade to Pro to remove all sponsor banners'}
+                    Community supported
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Plan Switcher Grid */}
+            {/* Plan Switcher Grid - Commented out as everything is free now */}
+            {/*
             <div style={{ marginTop: 8 }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: '#ffffff', marginBottom: 6 }}>
                 Switch or Upgrade Subscription
@@ -585,7 +589,6 @@ export default function SettingsPage() {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
-                {/* Free Plan Card */}
                 <div style={{
                   padding: 22, borderRadius: 10, background: '#09090b',
                   border: `1px solid ${(!user?.plan || user?.plan === 'FREE') ? '#ffffff' : 'var(--border)'}`,
@@ -616,7 +619,6 @@ export default function SettingsPage() {
                   </button>
                 </div>
 
-                {/* Pro Monthly Card */}
                 <div style={{
                   padding: 22, borderRadius: 10, background: '#09090b',
                   border: `1px solid ${user?.plan === 'PRO_MONTHLY' ? '#6366f1' : 'var(--border)'}`,
@@ -647,7 +649,6 @@ export default function SettingsPage() {
                   </button>
                 </div>
 
-                {/* Pro Yearly Card */}
                 <div style={{
                   padding: 22, borderRadius: 10, background: 'rgba(245,158,11,0.03)',
                   border: `1px solid ${user?.plan === 'PRO_YEARLY' ? '#f59e0b' : 'rgba(245,158,11,0.35)'}`,
@@ -683,6 +684,7 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
+            */}
           </div>
         )}
 

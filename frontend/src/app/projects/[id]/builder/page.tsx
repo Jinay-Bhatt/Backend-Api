@@ -203,10 +203,12 @@ export default function BuilderPage() {
   }, []);
 
   const handleApplyTemplate = async (template: typeof WORKFLOW_TEMPLATES[0]) => {
+    /*
     if (template.isPro && !isPro) {
       setShowUpgradeModal(true);
       return;
     }
+    */
     setCreating(true);
     try {
       const created = await api.workflows.create(projectId, {
@@ -1123,16 +1125,18 @@ export default function BuilderPage() {
               fontFamily: "'JetBrains Mono', monospace",
             }}>
               <span style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 6 }}>
-                Plan Quota: <strong style={{ color: isPro ? '#00f2fe' : '#ffffff' }}>{isPro ? 'Pro (12/mo)' : 'Free (3/mo)'}</strong>
+                AI Generation Quota: <strong style={{ color: '#ffffff' }}>3/mo</strong>
+                {/* Plan Quota: <strong style={{ color: isPro ? '#00f2fe' : '#ffffff' }}>{isPro ? 'Pro (12/mo)' : 'Free (3/mo)'}</strong> */}
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
-                  color: (user?.aiGenerationsCount || 0) >= (isPro ? 12 : 3) ? '#ef4444' : '#10b981',
+                  color: (user?.aiGenerationsCount || 0) >= 3 ? '#ef4444' : '#10b981',
                   fontWeight: 600,
                 }}>
-                  {user?.aiGenerationsCount || 0} / {isPro ? 12 : 3} used
+                  {user?.aiGenerationsCount || 0} / 3 used
+                  {/* {user?.aiGenerationsCount || 0} / {isPro ? 12 : 3} used */}
                 </span>
-                {!isPro && (
+                {/* {!isPro && (
                   <button
                     onClick={() => { setShowAi(false); setShowUpgradeModal(true); }}
                     style={{
@@ -1148,7 +1152,7 @@ export default function BuilderPage() {
                   >
                     Upgrade for 12/mo
                   </button>
-                )}
+                )} */}
               </div>
             </div>
 
@@ -1446,7 +1450,8 @@ export default function BuilderPage() {
             {/* Template Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 14 }}>
               {WORKFLOW_TEMPLATES.map(tpl => {
-                const isLocked = tpl.isPro && !isPro;
+                // const isLocked = tpl.isPro && !isPro;
+                const isLocked = false; // Everything is free now
                 return (
                   <div
                     key={tpl.id}
@@ -1539,8 +1544,8 @@ export default function BuilderPage() {
         </div>
       )}
 
-      {/* ── PRO UPGRADE MODAL ─────────────────────────── */}
-      {showUpgradeModal && (
+      {/* ── PRO UPGRADE MODAL - Commented out as everything is free now ─────────────────────────── */}
+      {/* showUpgradeModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110, padding: 24 }}>
           <div style={{ background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', borderRadius: '22px', padding: 34, width: '100%', maxWidth: 500, boxShadow: 'var(--neu-flat-lg)', textAlign: 'center' }}>
             <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--neu-surface)', border: '1px solid var(--neu-border)', boxShadow: 'var(--neu-flat-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
@@ -1617,7 +1622,7 @@ export default function BuilderPage() {
             </div>
           </div>
         </div>
-      )}
+      ) */}
     </div>
   );
 }

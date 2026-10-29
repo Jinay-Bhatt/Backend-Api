@@ -260,10 +260,12 @@ export default function DashboardPage() {
   const isPro = user?.plan === 'PRO_MONTHLY' || user?.plan === 'PRO_YEARLY';
 
   const handleNewProject = () => {
+    /*
     if (!isPro && projects.length >= 5) {
       setShowUpgradeModal(true);
       return;
     }
+    */
     setShowCreate(true);
   };
 
@@ -507,7 +509,7 @@ export default function DashboardPage() {
                 <span className="pulse-green" style={{ background: '#ffffff', boxShadow: '0 0 5px #ffffff' } as any} />
                 WORKSPACE
               </span>
-              <Link href="/settings?tab=plan" style={{
+              {/* <Link href="/settings?tab=plan" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 12px', borderRadius: 99,
                 background: isPro ? 'rgba(99,102,241,0.12)' : 'var(--neu-surface)',
                 border: `1px solid ${isPro ? 'rgba(99,102,241,0.35)' : 'var(--neu-border)'}`,
@@ -517,7 +519,7 @@ export default function DashboardPage() {
               }}>
                 {isPro ? (user?.plan === 'PRO_YEARLY' ? 'PRO YEARLY' : 'PRO MONTHLY') : 'FREE TIER'}
                 {!isPro && <span style={{ color: '#818cf8', marginLeft: 4 }}>UPGRADE</span>}
-              </Link>
+              </Link> */}
             </div>
             <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-0.7px', color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", margin: 0, lineHeight: 1.15 }}>
               {user?.username ? `Welcome back, ${user.username}` : 'Workspace Console'}
@@ -816,8 +818,8 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── Upgrade Plan Modal (Free Limit Reached) ── */}
-      {showUpgradeModal && (
+      {/* ── Upgrade Plan Modal (Free Limit Reached) - Commented out as everything is free now ── */}
+      {/* showUpgradeModal && (
         <div className="overlay" onClick={e => { if (e.target === e.currentTarget) setShowUpgradeModal(false); }}>
           <div className="modal" style={{ maxWidth: 480, border: '1px solid rgba(99,102,241,0.35)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
@@ -865,7 +867,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-      )}
+      ) */}
     </div>
   );
 }

@@ -177,8 +177,9 @@ export async function getLogs(request: FastifyRequest, reply: FastifyReply) {
       return reply.status(404).send({ error: "Project not found or unauthorized" });
     }
 
-    const isPro = project.owner?.plan === "PRO_MONTHLY" || project.owner?.plan === "PRO_YEARLY";
-    const maxAllowed = isPro ? 200 : 10;
+    // const isPro = project.owner?.plan === "PRO_MONTHLY" || project.owner?.plan === "PRO_YEARLY";
+    // const maxAllowed = isPro ? 200 : 10;
+    const maxAllowed = 200; // Everything is free now
     const take = Math.min(parseInt(limit) || 50, maxAllowed);
     const skip = (parseInt(page) - 1) * take;
 
@@ -200,7 +201,8 @@ export async function getLogs(request: FastifyRequest, reply: FastifyReply) {
       prisma.executionLog.count({ where }),
     ]);
 
-    const total = isPro ? rawTotal : Math.min(rawTotal, 10);
+    // const total = isPro ? rawTotal : Math.min(rawTotal, 10);
+    const total = rawTotal;
 
     return reply.send({
       logs,
@@ -209,8 +211,9 @@ export async function getLogs(request: FastifyRequest, reply: FastifyReply) {
         page: parseInt(page),
         limit: take,
         pages: Math.ceil(total / take),
-        isLimited: !isPro,
-        plan: project.owner?.plan || "FREE",
+        // isLimited: !isPro,
+        isLimited: false,
+        plan: "FREE",
       },
     });
   } catch (error: any) {

@@ -180,7 +180,7 @@ function Nav({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveIdx: Rea
           {[
             { name: 'Features', id: 'features' },
             { name: 'How it Works', id: 'how-it-works' },
-            { name: 'Pricing', id: 'pricing' },
+            // { name: 'Pricing', id: 'pricing' },
           ].map(l => (
             <button key={l.name} onClick={() => scrollTo(l.id)} style={{
               all: 'unset', padding: '7px 16px', borderRadius: 10, fontSize: 13.5, fontWeight: 500,
@@ -2028,7 +2028,7 @@ function Footer({ setActiveIdx }: { setActiveIdx?: React.Dispatch<React.SetState
       links: [
         { name: 'Features', action: 'scroll', target: 3 },
         { name: 'How it Works', action: 'scroll', target: 4 },
-        { name: 'Pricing', action: 'scroll', target: 6 },
+        // { name: 'Pricing', action: 'scroll', target: 6 },
         { name: 'Changelog', action: 'route', target: '/changelog' },
       ],
     },
@@ -2184,7 +2184,8 @@ const SECTIONS_NAV = [
   { id: 'features',     label: 'Features' },
   { id: 'how-it-works', label: 'How It Works' },
   { id: 'api-flow',     label: 'API Flow' },
-  { id: 'pricing',      label: 'Pricing' },
+  // { id: 'pricing',      label: 'Pricing' },
+  { id: 'footer',       label: 'Info' },
 ];
 
 function ScrollDots({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveIdx: React.Dispatch<React.SetStateAction<number>> }) {
@@ -2403,7 +2404,7 @@ export function LandingPageContent() {
           {renderSlide(5, <APIFlowSection />)}
           {renderSlide(6, (
             <>
-              <PricingSection />
+              {/* <PricingSection /> */}
               <Footer setActiveIdx={setActiveIdx} />
             </>
           ))}

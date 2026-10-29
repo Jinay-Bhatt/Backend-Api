@@ -52,21 +52,25 @@ export async function aiRoutes(fastify: FastifyInstance) {
         const resetAt = user.aiGenerationsResetAt ? new Date(user.aiGenerationsResetAt) : now;
         const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 
-        // Quota: Free = 3/month, Pro = 12/month
-        const isPro = user.plan === "PRO_MONTHLY" || user.plan === "PRO_YEARLY";
-        const monthlyLimit = isPro ? 12 : 3;
+        // Quota: Free = 3/month, Pro = 12/month (Commented out: Everything is free now, limit of using AI is 3)
+        // const isPro = user.plan === "PRO_MONTHLY" || user.plan === "PRO_YEARLY";
+        // const monthlyLimit = isPro ? 12 : 3;
+        const monthlyLimit = 3;
 
         if (currentCount >= monthlyLimit) {
           const daysRemaining = Math.max(1, Math.ceil((resetAt.getTime() + thirtyDaysMs - now.getTime()) / (24 * 60 * 60 * 1000)));
           return reply.status(403).send({
             error: "AI Generation Quota Exceeded",
+            /*
             message: isPro
               ? `You have reached your monthly quota of ${monthlyLimit} AI generations. Your quota will reset in ${daysRemaining} days.`
               : `You have reached your Free plan limit of ${monthlyLimit} AI generations this month. Upgrade to Pro for 12 generations/month, or wait ${daysRemaining} days for reset.`,
+            */
+            message: `You have reached your monthly limit of ${monthlyLimit} AI generations. Your quota will reset in ${daysRemaining} days.`,
             code: "AI_QUOTA_EXCEEDED",
             used: currentCount,
             limit: monthlyLimit,
-            plan: user.plan || "FREE",
+            plan: "FREE",
             daysRemaining,
           });
         }

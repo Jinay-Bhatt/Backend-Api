@@ -24,7 +24,8 @@ export async function createProject(
   }
 
   try {
-    // Enforce Plan Project Quota: Free plan allows max 5 projects; Pro plans are Unlimited
+    // Enforce Plan Project Quota: Free plan allows max 5 projects; Pro plans are Unlimited (Commented out: Everything is free now)
+    /*
     const userProfile = await prisma.user.findUnique({
       where: { id: user.id },
       select: { plan: true },
@@ -45,6 +46,7 @@ export async function createProject(
         });
       }
     }
+    */
 
     const project = await prisma.project.create({
       data: {

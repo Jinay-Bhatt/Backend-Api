@@ -136,6 +136,33 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/logo.jpg" />
         <link rel="apple-touch-icon" href="/logo.jpg" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        {/* Adcash Autotag Library */}
+        <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js" />
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                function initAdcash() {
+                  if (typeof aclib !== 'undefined' && aclib.runAutoTag) {
+                    aclib.runAutoTag({
+                      zoneId: 'bbnwixwo7s',
+                    });
+                  }
+                }
+                if (typeof aclib !== 'undefined' && aclib.runAutoTag) {
+                  initAdcash();
+                } else {
+                  var s = document.getElementById('aclib');
+                  if (s) {
+                    s.addEventListener('load', initAdcash);
+                  }
+                  window.addEventListener('DOMContentLoaded', initAdcash);
+                }
+              })();
+            `,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSchema) }}
