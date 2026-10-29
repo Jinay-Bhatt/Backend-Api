@@ -12,7 +12,7 @@ JBSnap is a **Visual No-Code API Builder + API Gateway Platform**. Non-coders an
 2. **Managed Execution Engine**: Instantly run APIs via visual workflows with secure VM sandbox.
 3. **TypeScript Code Export Engine**: Exports standard Fastify + TypeScript + Prisma codebases.
 4. **Git Sync**: Push exported code directly to GitHub/GitLab.
-5. **AI Workflow Generator**: Groq / Ollama generates complete workflows from natural language.
+5. **AI Workflow Generator**: BharatCode AI (Qwen 3.8 27B - https://bharatcode.ai/api/model/v1) generates complete workflows from natural language (Groq/Ollama code commented out).
 6. **API Gateway**: JWT auth, API key auth, rate limiting, CORS per endpoint.
 7. **Analytics & Monitoring**: Real-time Socket.IO metrics stream + Recharts dashboards.
 8. **Service Mesh**: Visualize and manage inter-service communication.
@@ -23,7 +23,7 @@ JBSnap is a **Visual No-Code API Builder + API Gateway Platform**. Non-coders an
 * **Frontend**: Next.js 16, React Flow (@xyflow/react), Tailwind CSS, Recharts, Socket.IO client
 * **Backend**: Node.js, Fastify 5, TypeScript, Prisma ORM 7, Socket.IO, BullMQ
 * **Database**: PostgreSQL (Neon) — 9 tables
-* **AI**: Groq API / Ollama Local LLM
+* **AI**: BharatCode AI (Qwen 3.8 27B) via https://bharatcode.ai/api/model/v1 (Groq/Ollama commented out)
 * **Queue**: BullMQ + Redis (Upstash) — Falls back to in-memory mock queue when Redis is offline to allow local development and compilation without error spam.
 * **Hosting**: Vercel (Frontend), Railway / Render (Backend)
 
@@ -143,7 +143,7 @@ Backend-Api/
 │       │   └── customNodes.tsx  ← 10 React Flow node types + palette
 │       └── services/
 │           └── api.ts           ← Full typed API client
-├── .env                         ← Add GEMINI_API_KEY here
+├── .env                         ← Add BHARATCODE_API_KEY here
 ├── package.json
 └── tsconfig.json
 ```
@@ -158,8 +158,9 @@ DATABASE_URL=postgresql://...neon.tech/neondb
 REDIS_URL=redis://...
 JWT_SECRET=...
 ENCRYPTION_KEY=...  (64 hex chars)
-GROQ_API_KEY=...    ← Get from console.groq.com
-OLLAMA_MODEL=...    ← Optional (defaults to llama3)
+BHARATCODE_API_KEY=...    ← Paste your BharatCode API key here (https://bharatcode.ai)
+# GROQ_API_KEY=... (Commented out)
+# OLLAMA_MODEL=... (Commented out)
 FRONTEND_URL=http://localhost:3000
 
 # Frontend .env.local (create if needed)

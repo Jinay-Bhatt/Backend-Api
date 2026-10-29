@@ -679,7 +679,7 @@ export default function DashboardPage() {
                   { icon: <Shield size={17} />, title: 'JWT Gateway', desc: 'Per-route auth', color: '#10b981' },
                   { icon: <BarChart3 size={17} />, title: 'Analytics', color: '#38bdf8', desc: 'Real-time metrics' },
                   { icon: <Code2 size={17} />, title: 'TS Export', desc: 'Fastify output', color: '#8b5cf6' },
-                  { icon: <GitBranch size={17} />, title: 'AI Workflows', desc: 'Groq / Ollama', color: '#f59e0b' },
+                  { icon: <GitBranch size={17} />, title: 'AI Workflows', desc: 'BharatCode (Qwen 3.8 27B)', color: '#f59e0b' },
                   { icon: <Boxes size={17} />, title: 'Service Mesh', desc: 'Visual graph', color: '#ec4899' },
                 ].map((cap, ci) => {
                   const [h, setH] = useState(false);

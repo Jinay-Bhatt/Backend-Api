@@ -45,7 +45,7 @@ const SECTIONS: DocSection[] = [
       { id: 'secure-sandbox', label: 'Secure JS Sandbox', desc: 'Isolated V8 execution with 200ms CPU guard' },
       { id: 'conditionals', label: 'Conditionals & Loops', desc: 'Boolean branching expressions and array mapping' },
       { id: 'external-apis', label: 'External APIs & HTTP', desc: 'Dispatch outgoing HTTP requests and third-party webhooks' },
-      { id: 'ai-agent', label: 'AI Agent & LLM Logic', desc: 'Gemini synthesis and intelligent workflow reasoning', badge: 'AI' },
+      { id: 'ai-agent', label: 'AI Agent & LLM Logic', desc: 'BharatCode (Qwen 3.8 27B) synthesis & reasoning', badge: 'AI' },
       { id: 'email-nodes', label: 'Email Automation', desc: 'Transactional emails with DNS MX validation' },
     ],
   },
@@ -343,7 +343,7 @@ context.response = {
           { label: 'JavaScript', color: '#f59e0b', desc: 'Sandboxed V8 custom business logic with full context object access' },
           { label: 'If / Else', color: '#10b981', desc: 'Conditional logic branching pipelines based on runtime evaluations' },
           { label: 'Auth Guard', color: '#ec4899', desc: 'Token authorization verification protecting downstream nodes' },
-          { label: 'AI Agent', color: '#a855f7', desc: 'Gemini LLM reasoning block executing prompt-driven decisions' },
+          { label: 'AI Agent', color: '#a855f7', desc: 'BharatCode (Qwen 3.8 27B) LLM reasoning block executing prompt-driven decisions' },
         ].map(n => (
           <div key={n.label} style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--neu-surface)', border: '1px solid var(--neu-border-bevel)', boxShadow: 'var(--neu-flat-xs)', borderRadius: 12, padding: '12px 18px' }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: n.color, flexShrink: 0, boxShadow: `0 0 8px ${n.color}` }} />
@@ -528,14 +528,19 @@ context.request.body.amount >= 1000`}</Code>
     <>
       <DocEyebrow>Nodes Reference</DocEyebrow>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AI Agent & LLM Logic</h1>
-      <P>Integrate Google Gemini LLM reasoning directly into your API workflows. Use natural language prompts to categorize data, extract entities, synthesize text, or make intelligent routing decisions.</P>
-      <H2>Capabilities</H2>
+      <P>Integrate <strong>BharatCode AI (Qwen 3.8 27B)</strong> reasoning directly into your API workflows. Use natural language prompts to categorize data, extract entities, synthesize text, or make intelligent routing decisions.</P>
+      <H2>Capabilities & Endpoints</H2>
+      <P>Native support for <strong>BharatCode AI</strong> (<code>https://bharatcode.ai/api/model/v1</code>) with both OpenAI-compatible <code>/chat/completions</code> and native <code>/responses</code> endpoints.</P>
       <PropTable rows={[
-        ['prompt', 'string', 'System instruction or user prompt with context interpolation'],
-        ['model', 'string', 'Gemini model target (default: gemini-2.5-flash)'],
+        ['provider', 'string', 'AI service provider: "bharatcode" (default), "openai", "gemini", "claude"'],
+        ['prompt', 'string', 'System instruction or user prompt with context interpolation ($request, $steps)'],
+        ['model', 'string', 'Target model: "qwen-3.8-27b" (default), or custom model target'],
+        ['apiKey', 'string', 'API key (leave blank to inherit server-side BHARATCODE_API_KEY from .env)'],
         ['outputFormat', 'json | text', 'Enforces strict JSON schema validation on the AI response'],
       ]} />
-      <Code lang="AI Node Config">{`Prompt: "Analyze the user feedback: \${context.request.body.comment}.
+      <Code lang="AI Node Config">{`Provider: bharatcode
+Model: qwen-3.8-27b
+Prompt: "Analyze the user feedback: \${context.request.body.comment}.
 Classify sentiment as POSITIVE, NEUTRAL, or NEGATIVE.
 Extract any mentioned product features into an array."
 
@@ -561,12 +566,12 @@ Output Format: JSON`}</Code>
     <>
       <DocEyebrow>Developer Tools</DocEyebrow>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AI Pipeline Synthesizer</h1>
-      <P>Generate full API pipelines from natural language prompts using the built-in Gemini Workflow Synthesizer.</P>
+      <P>Generate full API pipelines from natural language prompts using the built-in <strong>BharatCode AI (Qwen 3.8 27B)</strong> Workflow Synthesizer (hosted at <code>https://bharatcode.ai/api/model/v1</code>).</P>
       <H2>How It Works</H2>
-      <P>1. In the builder toolbar, click <strong>AI Synthesize</strong>.</P>
+      <P>1. In the builder toolbar, click <strong>✨ AI Synthesize</strong>.</P>
       <P>2. Describe your desired endpoint: e.g. <em>"Create an order checkout endpoint that validates JWT, verifies stock in PostgreSQL, charges Stripe via HTTP, and returns 201 Created with order receipt."</em></P>
-      <P>3. The synthesizer automatically selects appropriate nodes, connects edges, configures database queries, and formats response payloads.</P>
-      <InfoBox type="tip">You can modify or extend synthesized nodes manually at any time on the canvas.</InfoBox>
+      <P>3. The synthesizer queries BharatCode's Qwen 3.8 27B model, automatically selecting appropriate nodes, connecting edges, configuring database queries, and formatting response payloads.</P>
+      <InfoBox type="tip">You can modify or extend synthesized nodes manually at any time on the canvas. Groq and Ollama are also preserved as fallback options in the codebase.</InfoBox>
     </>
   ),
 
@@ -695,10 +700,17 @@ $ npm run dev`}</Code>
     <>
       <DocEyebrow>Deployment & SDK</DocEyebrow>
       <h1 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1.2px', margin: '8px 0 20px 0', color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Environment Secrets</h1>
-      <P>Securely manage sensitive credentials (database strings, Stripe keys, OpenAI tokens) with AES-256-GCM encryption at rest.</P>
+      <P>Securely manage sensitive credentials (database strings, BharatCode API key, Stripe keys, OpenAI tokens) with AES-256-GCM encryption at rest.</P>
+      <H2>AI Engine Configuration (.env)</H2>
+      <P>Configure your sovereign AI synthesis engine in the root <code>.env</code> file:</P>
+      <Code lang="env">{`AI_PROVIDER="bharatcode"
+BHARATCODE_API_KEY="your-bharatcode-api-key"
+BHARATCODE_BASE_URL="https://bharatcode.ai/api/model/v1"
+BHARATCODE_MODEL="qwen-3.8-27b"`}</Code>
       <H2>Accessing Secrets in Workflows</H2>
       <P>Secrets are exposed inside sandboxed JavaScript nodes and external API nodes via <code>context.secrets</code>:</P>
-      <Code lang="JavaScript">{`const stripeKey = context.secrets.STRIPE_SECRET_KEY;
+      <Code lang="JavaScript">{`const bharatKey = context.secrets.BHARATCODE_API_KEY;
+const stripeKey = context.secrets.STRIPE_SECRET_KEY;
 const dbSecret = context.secrets.DATABASE_URL;`}</Code>
       <InfoBox type="warning">Secrets are never serialized into client browser bundles or telemetry log traces.</InfoBox>
     </>

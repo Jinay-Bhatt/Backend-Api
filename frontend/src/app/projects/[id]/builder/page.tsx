@@ -72,7 +72,7 @@ const WORKFLOW_TEMPLATES = [
     nodes: [
       { id: 'node_trigger', type: 'triggerNode', position: { x: 80, y: 150 }, data: { method: 'POST', path: '/api/analyze' } },
       { id: 'node_jwt', type: 'jwtValidateNode', position: { x: 320, y: 150 }, data: { secret: 'secret_key' } },
-      { id: 'node_ai', type: 'aiNode', position: { x: 560, y: 150 }, data: { provider: 'groq', model: 'llama-3.3-70b-versatile', prompt: '$request.body.text' } },
+      { id: 'node_ai', type: 'aiNode', position: { x: 560, y: 150 }, data: { provider: 'bharatcode', model: 'qwen-3.8-27b', prompt: '$request.body.text' } },
       { id: 'node_res', type: 'responseNode', position: { x: 800, y: 150 }, data: { statusCode: 200, body: '$steps.node_ai' } },
     ],
     edges: [
@@ -1103,7 +1103,7 @@ export default function BuilderPage() {
               </div>
               <div>
                 <h2 style={{ fontSize: 15, fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Workflow Synthesizer</h2>
-                <p style={{ fontSize: 10, color: '#94a3b8', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>POWERED BY GEMINI · SPECIFY INSTRUCTIONS</p>
+                <p style={{ fontSize: 10, color: '#94a3b8', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>POWERED BY BHARATCODE AI (QWEN 3.8 27B) · SPECIFY INSTRUCTIONS</p>
               </div>
               <button onClick={() => { setShowAi(false); setAiError(''); }} style={{ marginLeft: 'auto', width: 26, height: 26, border: '1px solid var(--neu-border)', borderRadius: '8px', background: 'var(--neu-surface)', boxShadow: 'var(--neu-flat-xs)', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X size={12} />
@@ -1791,13 +1791,13 @@ function NodeConfigPanel({ node, onChange }: { node: Node; onChange: (k: string,
         <div style={{ marginBottom: 14 }}>
           <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>AI Provider</label>
           <CustomSelect
-            value={data.provider || 'groq'}
+            value={data.provider || 'bharatcode'}
             onChange={(val) => onChange('provider', val)}
-            options={['groq', 'gemini', 'claude', 'openai']}
+            options={['bharatcode', /* 'groq', 'ollama', */ 'gemini', 'claude', 'openai']}
           />
         </div>
-        <Field label="Model Name" fieldKey="model" placeholder={data.provider === 'gemini' ? 'gemini-1.5-flash' : data.provider === 'claude' ? 'claude-3-5-sonnet' : data.provider === 'openai' ? 'gpt-4o-mini' : 'llama-3.3-70b-versatile'} />
-        <Field label="API Key (Leave blank to use server ENV)" fieldKey="apiKey" type="password" placeholder="gsk_... / AIza... / sk-..." />
+        <Field label="Model Name" fieldKey="model" placeholder={data.provider === 'bharatcode' ? 'qwen-3.8-27b' : data.provider === 'gemini' ? 'gemini-1.5-flash' : data.provider === 'claude' ? 'claude-3-5-sonnet' : data.provider === 'openai' ? 'gpt-4o-mini' : 'qwen-3.8-27b'} />
+        <Field label="API Key (Leave blank to use server ENV)" fieldKey="apiKey" type="password" placeholder="bc_live_... / BharatCode API Key" />
         <Field label="System Prompt" fieldKey="systemPrompt" type="textarea" placeholder="You are a helpful assistant." />
         <Field label="User Prompt (use $request or $steps)" fieldKey="prompt" type="textarea" placeholder="Summarize this text: $request.body.content" />
       </>

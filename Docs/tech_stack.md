@@ -81,11 +81,12 @@ The **JBSnap** platform is engineered as a high-performance, real-time visual AP
 
 | Provider | Supported Models | Purpose |
 | :--- | :--- | :--- |
-| **Groq API** | `llama-3.3-70b-versatile`, `llama-3.1-8b-instant` | Instant plain-English to visual workflow DAG generation |
+| **BharatCode AI (Primary)** | `qwen-3.8-27b` (Qwen 3.8 27B) | Fast sovereign AI visual workflow synthesizer via https://bharatcode.ai/api/model/v1 |
+| **Groq API (Preserved in code)** | `llama-3.3-70b-versatile`, `openai/gpt-oss-120b` | Commented out fallback in codebase |
 | **OpenAI API** | `gpt-4o-mini` | High-accuracy workflow generation |
 | **Google Gemini API** | `gemini-1.5-flash` | Multimodal & large-context workflow generation |
 | **Anthropic Claude API** | `claude-3-5-sonnet` | Complex logic graph generation |
-| **Ollama Local** | `llama3` | 100% offline, free local AI generation fallback |
+| **Ollama Local (Preserved in code)** | `llama3` | Commented out local fallback |
 
 ---
 

@@ -419,11 +419,11 @@ export function TxtFileNode({ data, selected }: any) {
 export function AiNode({ data, selected }: any) {
   const color = '#8b5cf6';
   return (
-    <NodeShell color={color} icon="🤖" title="AI Model" subtitle={`${data.provider || 'Groq'} Integration`} selected={selected}>
+    <NodeShell color={color} icon="🤖" title="AI Model" subtitle={`${data.provider || 'BharatCode'} Integration`} selected={selected}>
       <Handle type="target" position={Position.Left} style={getHandleStyle(color)} className="handle-pulse" />
       <Handle type="source" position={Position.Right} style={getHandleStyle(color)} className="handle-pulse" />
-      <DataRow label="Provider" value={(data.provider || 'Groq').toUpperCase()} />
-      <DataRow label="Model" value={data.model || 'llama-3.3-70b-versatile'} />
+      <DataRow label="Provider" value={(data.provider || 'BharatCode').toUpperCase()} />
+      <DataRow label="Model" value={data.model || 'qwen-3.8-27b'} />
     </NodeShell>
   );
 }
@@ -463,7 +463,7 @@ export const NODE_PALETTE = [
     category: 'AI & Intelligence',
     color: '#8b5cf6',
     nodes: [
-      { type: 'aiNode', icon: '🤖', label: 'AI Integration', desc: 'Groq / Gemini / Claude / OpenAI API call', defaultData: { provider: 'groq', model: 'llama-3.3-70b-versatile', apiKey: '', systemPrompt: 'You are a helpful assistant.', prompt: '$request.body.prompt' } },
+      { type: 'aiNode', icon: '🤖', label: 'AI Integration', desc: 'BharatCode (Qwen 3.8 27B) / Gemini / Claude / OpenAI API call', defaultData: { provider: 'bharatcode', model: 'qwen-3.8-27b', apiKey: '', systemPrompt: 'You are a helpful assistant.', prompt: '$request.body.prompt' } },
     ]
   },
   {

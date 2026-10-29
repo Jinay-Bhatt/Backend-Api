@@ -636,9 +636,25 @@ export async function gatewayRoutes(fastify: FastifyInstance) {
 
           // G.4 AI Integration Node Execution
           if (node.type === "aiNode" || node.type === "ai") {
-            const provider = (node.data?.provider || "groq").toLowerCase();
-            const model = node.data?.model || (provider === "gemini" ? "gemini-1.5-flash" : provider === "claude" ? "claude-3-5-sonnet" : provider === "openai" ? "gpt-4o-mini" : "llama-3.3-70b-versatile");
-            const apiKey = node.data?.apiKey || (provider === "groq" ? process.env.GROQ_API_KEY : process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY || "");
+            // =========================================================================
+            // 🇮🇳 HACKATHON EVALUATION NOTICE:
+            // BharatCode AI Integration (Model: Qwen 3.8 27B)
+            // Base API: https://bharatcode.ai/api/model/v1
+            // Previous Groq & Ollama code commented out below as required.
+            // =========================================================================
+            const provider = (node.data?.provider || "bharatcode").toLowerCase();
+            const model = node.data?.model || (
+              provider === "bharatcode" ? (process.env.BHARATCODE_MODEL || "qwen-3.8-27b") :
+              provider === "gemini" ? "gemini-1.5-flash" :
+              provider === "claude" ? "claude-3-5-sonnet" :
+              provider === "openai" ? "gpt-4o-mini" :
+              "qwen-3.8-27b"
+            );
+            const apiKey = node.data?.apiKey || (
+              provider === "bharatcode" ? (process.env.BHARATCODE_API_KEY || "") :
+              /* provider === "groq" ? process.env.GROQ_API_KEY : */
+              process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY || ""
+            );
             const systemPrompt = node.data?.systemPrompt || "You are a helpful AI assistant.";
             const userPromptTemplate = node.data?.prompt || "$request.body.prompt";
 
@@ -649,8 +665,49 @@ export async function gatewayRoutes(fastify: FastifyInstance) {
 
             try {
               let aiResponseText = "";
-              if (provider === "groq" || provider === "openai") {
-                const endpoint = provider === "groq" ? "https://api.groq.com/openai/v1/chat/completions" : "https://api.openai.com/v1/chat/completions";
+              if (provider === "bharatcode") {
+                const endpoint = `${(process.env.BHARATCODE_BASE_URL || "https://bharatcode.ai/api/model/v1").replace(/\/+$/, "")}/chat/completions`;
+                const res = await fetch(endpoint, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`,
+                  },
+                  body: JSON.stringify({
+                    model,
+                    messages: [
+                      { role: "system", content: systemPrompt },
+                      { role: "user", content: interpolatedPrompt },
+                    ],
+                  }),
+                });
+                const resData: any = await res.json();
+                aiResponseText = resData.choices?.[0]?.message?.content || resData.output_text || resData.output || resData.text || JSON.stringify(resData);
+              }
+              /*
+              // PREVIOUS PROVIDER (GROQ) - COMMENTED OUT FOR HACKATHON BHARATCODE INTEGRATION
+              else if (provider === "groq") {
+                const endpoint = "https://api.groq.com/openai/v1/chat/completions";
+                const res = await fetch(endpoint, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`,
+                  },
+                  body: JSON.stringify({
+                    model,
+                    messages: [
+                      { role: "system", content: systemPrompt },
+                      { role: "user", content: interpolatedPrompt },
+                    ],
+                  }),
+                });
+                const resData = await res.json();
+                aiResponseText = resData.choices?.[0]?.message?.content || JSON.stringify(resData);
+              }
+              */
+              else if (provider === "openai") {
+                const endpoint = "https://api.openai.com/v1/chat/completions";
                 const res = await fetch(endpoint, {
                   method: "POST",
                   headers: {

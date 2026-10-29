@@ -13,7 +13,7 @@ This file tracks the implementation progress of the JBSnap backend server.
 - **Phase 5: WebSocket & Metrics Stream** - `[x]` Completed
 - **Phase 6: Analytics & Logs Backend** - `[x]` Completed
 - **Phase 7: Services & Gateway Config** - `[x]` Completed
-- **Phase 8: AI Workflow Generator (Groq/Ollama)** - `[x]` Completed
+- **Phase 8: AI Workflow Generator (BharatCode AI - Qwen 3.8 27B)** - `[x]` Completed
 - **Phase 9: Frontend — Auth Pages** - `[x]` Completed
 - **Phase 10: Frontend — Dashboard** - `[x]` Completed
 - **Phase 11: Frontend — Builder (React Flow + AI Modal)** - `[x]` Completed
@@ -81,7 +81,7 @@ This file tracks the implementation progress of the JBSnap backend server.
 - [x] `GET/PUT /workflows/:workflowId/gateway-config`
 
 ### ✅ Phase 8: AI Workflow Generator
-- [x] `src/services/ai.ts` — Groq / local Ollama integrations
+- [x] `src/services/ai.ts` — BharatCode AI (Qwen 3.8 27B) via https://bharatcode.ai/api/model/v1 (Groq/Ollama preserved as commented-out code)
 - [x] `src/routes/ai.ts`
 - [x] `POST /api/ai/generate-workflow`
 - [x] Returns structured nodes + edges + metadata JSON
@@ -175,5 +175,5 @@ This file tracks the implementation progress of the JBSnap backend server.
 
 ## Remaining Tasks
 - [x] Add seed demo data for presentation (Seeded to Neon successfully via `prisma/seed.ts`)
-- [ ] Configure GROQ_API_KEY or install local Ollama
+- [x] Configure BHARATCODE_API_KEY in .env (Model: qwen-3.8-27b - https://bharatcode.ai)
 - [ ] Deploy: Vercel (frontend) + Railway/Render (backend) + Neon (DB)

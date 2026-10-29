@@ -53,8 +53,11 @@ DATABASE_URL=<neon-postgres-url>
 REDIS_URL=redis://127.0.0.1:6379
 JWT_SECRET=<any-32-char-string>
 ENCRYPTION_KEY=<64-char-hex>
-AI_PROVIDER=auto
-GROQ_API_KEY=<your-groq-key>
+AI_PROVIDER=bharatcode
+BHARATCODE_API_KEY=<your-bharatcode-key>
+BHARATCODE_BASE_URL=https://bharatcode.ai/api/model/v1
+BHARATCODE_MODEL=qwen-3.8-27b
+# GROQ_API_KEY=<your-groq-key> (commented out)
 FRONTEND_URL=http://localhost:3000
 ```
 
@@ -830,7 +833,7 @@ return {
 
 ### 7.6 AI Workflow Generation
 
-> The **✨ AI Generate** button sends a natural language prompt to the backend AI service (`GROQ_API_KEY` required), which returns a complete workflow with nodes and edges already configured.
+> The **✨ AI Generate** button sends a natural language prompt to the backend AI service (`BHARATCODE_API_KEY` required, powered by **BharatCode Qwen 3.8 27B** via `https://bharatcode.ai/api/model/v1`), which returns a complete workflow with nodes and edges already configured.
 
 #### 7.6.1 Basic AI Generation
 
@@ -884,10 +887,10 @@ and return 200 with the charge ID or 400 if amount is invalid.
 
 #### 7.6.4 AI Generation — No API Key (Edge Case)
 
-- [ ] Remove `GROQ_API_KEY` from `.env` temporarily and restart backend
+- [ ] Remove `BHARATCODE_API_KEY` from `.env` temporarily and restart backend
 - [ ] Attempt to generate a workflow
 - [ ] **Expected**: Error message: `AI service not configured` or `500` response
-- [ ] Restore `GROQ_API_KEY` before continuing
+- [ ] Restore `BHARATCODE_API_KEY` before continuing
 
 ---
 
@@ -1813,11 +1816,12 @@ curl -X POST http://localhost:5000/api/ai/generate-workflow \
 ---
 
 ### 16.6 AI Provider Heartbeat & Fallback
-- [ ] Open `.env` file under backend folder. Set `GROQ_API_KEY=""`.
-- [ ] Restart backend.
-- [ ] Run the prompt synthesis.
-- [ ] **Expected**: Backend log output displays fallback initialization statements, attempting connection to Ollama at `http://127.0.0.1:11434`.
-- [ ] If Ollama is offline, verification returns an error payload to the client interface cleanly without server crashes.
+- [ ] Verify that BharatCode AI is configured as primary (`AI_PROVIDER="bharatcode"`).
+- [ ] Open `.env` file under backend/root folder. Verify `BHARATCODE_API_KEY` and `BHARATCODE_MODEL="qwen-3.8-27b"`.
+- [ ] Temporarily set `BHARATCODE_API_KEY=""` and trigger AI generation.
+- [ ] **Expected**: Backend log output displays `BHARATCODE_API_KEY is not configured in .env` without server crashes.
+- [ ] Restore `BHARATCODE_API_KEY`. Verify successful generation.
+- [ ] Note: Previous Groq and Ollama integrations remain preserved in the codebase as commented-out reference code.
 
 ---
 
@@ -2017,7 +2021,7 @@ Before declaring the platform ready:
 | `401` on all API calls | Token missing or wrong format | Re-login, check `ff_token` in localStorage |
 | Gateway returns `404` for published workflow | Cache stale | Restart backend (cache is in-memory) |
 | Export job stuck in `waiting` | Redis offline + Mock Queue issue | Check backend log for `Mock Queue` confirmation |
-| AI returns `500` | No GROQ key + Ollama offline | Set a valid `GROQ_API_KEY` in `.env` |
+| AI returns `500` | Missing BharatCode key | Set a valid `BHARATCODE_API_KEY` in `.env` (https://bharatcode.ai) |
 | Socket.IO not connecting | CORS blocked | Ensure `FRONTEND_URL` in `.env` matches port 3000 |
 | `429` immediately on login | Rate limit window still active | Wait 60 seconds and retry |
 | Stats on landing page are zeros | Backend offline / DB empty | Run seed: `npx prisma db seed` in `backend/` |

@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
   compress: true,
   reactStrictMode: true,
   turbopack: {
-    root: path.resolve('..'),
+    // Explicitly scope Turbopack root to frontend folder where Next.js package & node_modules reside
+    root: __dirname,
   },
   async headers() {
     return [

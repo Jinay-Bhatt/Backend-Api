@@ -38,6 +38,12 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET as string,
   encryptionKey: process.env.ENCRYPTION_KEY as string,
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
+  // 🇮🇳 Hackathon BharatCode AI Integration (Qwen 3.8 27B - https://bharatcode.ai/api/model/v1)
+  bharatcode: {
+    apiKey: process.env.BHARATCODE_API_KEY || "",
+    baseUrl: process.env.BHARATCODE_BASE_URL || "https://bharatcode.ai/api/model/v1",
+    model: process.env.BHARATCODE_MODEL || "qwen-3.8-27b",
+  },
   smtp: {
     host: process.env.SMTP_HOST || "smtp.gmail.com",
     port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587,
