@@ -30,3 +30,8 @@ yarn-error.log*
 # Redis dump
 dump.rdb
 backend/dump.rdb
+
+# PPTS, Scripts
+*.ppt
+*.pptx
+*script.txt
